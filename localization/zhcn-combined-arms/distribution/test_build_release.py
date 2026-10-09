@@ -59,7 +59,8 @@ class PackagingTests(unittest.TestCase):
         self.package()
         with zipfile.ZipFile(self.output) as archive:
             self.assertEqual(len(archive.namelist()), 5)
-            self.assertEqual(archive.read('@cwr-chinese/client/PoseidonGame.exe'), self.client.read_bytes())
+            self.assertTrue(all(name.startswith('Remastered/') for name in archive.namelist()))
+            self.assertEqual(archive.read('Remastered/@cwr-chinese/client/PoseidonGame.exe'), self.client.read_bytes())
 
     def test_selected_app_local_runtime_and_launcher_are_allowed(self):
         (self.files / 'cwr-chinese.exe').write_bytes(b'new-native-launcher')
@@ -68,6 +69,8 @@ class PackagingTests(unittest.TestCase):
         self.package()
         with zipfile.ZipFile(self.output) as archive:
             self.assertEqual(len(archive.namelist()), 5)
+
+            self.assertEqual(archive.read('Remastered/cwr-chinese.exe'), b'new-native-launcher')
 
 
 if __name__ == '__main__':

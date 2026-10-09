@@ -4,7 +4,8 @@ Free community **简体中文 / 繁體中文（臺灣）** translation for a leg
 Windows x64 **Cold War Assault Remastered 3.05** installation. Original game
 and engine: Bohemia Interactive. Unofficial and noncommercial.
 
-Extract `cwr-chinese.zip` beside the original `PoseidonGame.exe`, run `cwr-chinese.exe`,
+Extract `cwr-chinese.zip` into the game installation folder containing `Remastered/`
+(not inside it), run `Remastered/cwr-chinese.exe`,
 and play in Simplified Chinese immediately. Choose Traditional Chinese or any
 other supported language in Options > Game > Text language; the mod remembers
 your choice separately from the stock game's language. Earlier SC/TC choices
@@ -12,7 +13,8 @@ are retained when no separate mod preference exists.
 Everything is ready to use: no installer, preparation, first-run generation,
 game-data scanning, registry changes or stock-file replacements. The launcher
 adds `@cwr-chinese` without discarding other selected mods and selects English voices.
-Remove it by deleting `@cwr-chinese`, `cwr-chinese.exe` and `README-cwr-chinese.txt`.
+Remove it by deleting `@cwr-chinese`, `cwr-chinese.exe` and `README-cwr-chinese.txt`
+inside `Remastered`; keep the game folder itself.
 Profiles and saves remain managed by the game.
 Run the original executable for the normal game. On Windows 10/11 x64, the
 included app-local Visual C++ DLLs need no separate runtime installation.
@@ -45,7 +47,7 @@ No trademark icon is bundled or borrowed. CWRC remains an internal codename.
 [client-source branch](https://github.com/oksklok/cwr-chinese/tree/client-source).
 CWRR and cwr-vulkan remain separate. The Chinese-only master remains
 `localization/zhcn-combined-arms/distribution/payload.json` (217 tables /
-11,154 rows and nine display-reference recipes). Developers build overlays once;
+11,155 rows and eleven display-reference/Chinese HTML recipes). Developers build overlays once;
 players receive the finished files. No translation or font revisions are involved.
 
 Bohemia's [official CWR README](https://github.com/BohemiaInteractive/CWR/blob/main/README.md)

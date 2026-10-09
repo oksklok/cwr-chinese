@@ -1,14 +1,16 @@
 # Ready-to-use distribution
 
 This is a free community translation mod for Windows 10/11 x64 Remastered 3.05.
-`cwr-chinese.zip` contains `@cwr-chinese/`, `cwr-chinese.exe` and `README-cwr-chinese.txt`.
-Extract into Remastered and run cwr-chinese.exe, which enables the mod while preserving
+`cwr-chinese.zip` contains `Remastered/`, with `@cwr-chinese/`, `cwr-chinese.exe`
+and `README-cwr-chinese.txt` inside. Extract into the top-level game installation
+folder containing Remastered, then run Remastered/cwr-chinese.exe, which preserves
 other selected mods. Select SC/TC in the game's normal text-language menu.
-Delete those three entries to remove it; stock assets/executable, saves and
+Delete those three entries inside Remastered to remove it; keep Remastered itself.
+Stock assets/executable, saves and
 unrelated mods are untouched. The README uses a distinct name to avoid replacing
 a game's existing README.
 
-All content is ready-made: 217 translated tables, nine display-reference files,
+All content is ready-made: 217 translated tables, eleven display-reference/Chinese HTML files,
 24 standalone banks, 30 multiplayer banks, 36 templates, terrain and UI overlays,
 ten unchanged fonts, localization client/OpenAL, source and notices. No player-side
 Python, PyInstaller, preparation executable/marker, source inventory validation,

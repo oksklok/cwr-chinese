@@ -74,7 +74,7 @@ def package_zip(files, output, stock_executable, vc_redist):
             require(digest(file.read_bytes()) != stock_hash, f'Original game executable leaked: {relative}')
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for file in entries:
-            archive.write(file, file.relative_to(files).as_posix())
+            archive.write(file, 'Remastered/' + file.relative_to(files).as_posix())
 
 
 def main():
