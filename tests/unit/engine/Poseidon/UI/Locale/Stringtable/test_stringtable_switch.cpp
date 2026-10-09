@@ -3,8 +3,12 @@
 #include <catch2/catch_test_macros.hpp>
 #include <Poseidon/Foundation/Framework/DebugLog.hpp>
 #include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
+#include <Poseidon/UI/Locale/LanguageRegistry.hpp>
+#include <Poseidon/IO/ParamFile/ParamFile.hpp>
 #include <Poseidon/IO/Streams/QBStream.hpp>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <sys/types.h>
 #include <string>
 #include <utility>
@@ -111,6 +115,116 @@ TEST_CASE("Poseidon::SetLanguage switches by-name lookup to new column", "[strin
 
     REQUIRE(Poseidon::SetLanguage("English"));
     REQUIRE(std::string(Poseidon::LocalizeString("STR_GREETING").Data()) == "Hello");
+}
+
+TEST_CASE("Chinese column switches independently with stock English fallback", "[stringtable][switch][cwrc-language]")
+{
+    struct RegistryGuard { ~RegistryGuard() { CfgLib::LanguageRegistry::Instance().ResetToDefaults(); } } guard;
+    const char* config = "class CfgLanguages { languages[]={\"English\",\"French\",\"ChineseSimplified\",\"ChineseTraditional\"}; "
+                         "class ChineseSimplified { codepage=\"UTF8\"; voice=0; fallbackLanguage=\"English\"; }; "
+                         "class ChineseTraditional { codepage=\"UTF8\"; voice=0; fallbackLanguage=\"English\"; }; };";
+    ParamFile file;
+    QIStream input(config, strlen(config));
+    file.Parse(input);
+    CfgLib::LanguageRegistry::Instance().LoadFromConfig(*file.FindEntry("CfgLanguages"));
+    Poseidon::ClearStringtable();
+    GLanguage = "English";
+    const auto path = FixturePath("chinese_language.utf8.csv");
+    Poseidon::LoadStringtable("global", path.c_str(), 0, true);
+    int hello = Poseidon::RegisterString("STR_HELLO");
+    REQUIRE(Poseidon::SetLanguage("ChineseSimplified"));
+    CHECK(std::string(Poseidon::LocalizeString(hello).Data()) == "你好");
+    CHECK(std::string(Poseidon::LocalizeString("STR_EMPTY").Data()) == "Fallback");
+    CHECK(std::string(Poseidon::LookupStringtableCsv(path.c_str(), "STR_EMPTY").Data()) == "Fallback");
+    REQUIRE(Poseidon::SetLanguage("ChineseTraditional"));
+    CHECK(std::string(Poseidon::LocalizeString(hello).Data()) == "您好");
+    CHECK(std::string(Poseidon::LookupStringtableCsv(path.c_str(), "STR_HELLO").Data()) == "您好");
+    CHECK(std::string(Poseidon::LocalizeString("STR_EMPTY").Data()) == "Fallback");
+    REQUIRE(Poseidon::SetLanguage("ChineseSimplified"));
+    CHECK(std::string(Poseidon::LocalizeString(hello).Data()) == "你好");
+    REQUIRE(Poseidon::SetLanguage("French"));
+    CHECK(std::string(Poseidon::LocalizeString(hello).Data()) == "Bonjour");
+    REQUIRE(Poseidon::SetLanguage("English"));
+    CHECK(std::string(Poseidon::LocalizeString(hello).Data()) == "Hello");
+    CHECK(Poseidon::LocalizeStringWithFallback("STR_MISSING", "Exact fallback") == std::string_view("Exact fallback"));
+    Poseidon::ClearStringtable();
+}
+
+TEST_CASE("Missing language column uses configured fallback and its encoding",
+          "[stringtable][switch][encoding][cwrc-language][missing-column]")
+{
+    namespace fs = std::filesystem;
+    struct StateGuard
+    {
+        ~StateGuard()
+        {
+            Poseidon::ClearStringtable();
+            GLanguage = "English";
+            CfgLib::LanguageRegistry::Instance().ResetToDefaults();
+        }
+    } stateGuard;
+
+    std::string fallback = "English";
+    std::string fallbackColumn = "English";
+    std::string value = "English \xA9";
+    std::string expected = "English \xC2\xA9";
+    const char* extension = ".csv";
+    SECTION("French-first legacy addon falls back to English") {}
+    SECTION("French-first UTF-8 addon falls back to English")
+    {
+        extension = ".utf8.csv";
+        value = expected;
+    }
+    SECTION("Fallback column supplies its own legacy codepage")
+    {
+        fallback = fallbackColumn = "Czech";
+        value = "\xE8"; // CP1250 č, not CP1252 è.
+        expected = "\xC4\x8D";
+    }
+    SECTION("Absent configured fallback retains first-column behavior")
+    {
+        fallback = "German";
+        expected = "Bonjour";
+    }
+    SECTION("Unconfigured fallback retains first-column behavior")
+    {
+        fallback.clear();
+        expected = "Bonjour";
+    }
+
+    const std::string config = "class CfgLanguages { languages[]={\"English\",\"French\",\"Czech\",\"ChineseSimplified\"}; "
+        "class ChineseSimplified { codepage=\"UTF8\"; voice=0; fallbackLanguage=\"" + fallback + "\"; }; };";
+    ParamFile file;
+    QIStream input(config.data(), config.size());
+    file.Parse(input);
+    CfgLib::LanguageRegistry::Instance().LoadFromConfig(*file.FindEntry("CfgLanguages"));
+
+    const fs::path path = fs::temp_directory_path() / (std::string("cwrc_missing_language_column") + extension);
+    struct FixtureGuard
+    {
+        fs::path path;
+        ~FixtureGuard() { std::error_code error; fs::remove(path, error); }
+    } fixtureGuard{path};
+    {
+        std::ofstream out(path, std::ios::binary);
+        REQUIRE(out.is_open());
+        out << "LANGUAGE,French," << fallbackColumn << "\nSTR_FALLBACK_PROBE,Bonjour," << value << "\n";
+        out.close();
+        REQUIRE(out.good());
+    }
+
+    Poseidon::ClearStringtable();
+    GLanguage = "English";
+    Poseidon::LoadStringtable("global", path.string().c_str(), 0, true);
+    REQUIRE(Poseidon::SetLanguage("ChineseSimplified"));
+    CHECK(std::string(Poseidon::LocalizeString("STR_FALLBACK_PROBE").Data()) == expected);
+    REQUIRE(Poseidon::SetLanguage("French"));
+    CHECK(std::string(Poseidon::LocalizeString("STR_FALLBACK_PROBE").Data()) == "Bonjour");
+    if (fallbackColumn == "English")
+    {
+        REQUIRE(Poseidon::SetLanguage("English"));
+        CHECK(std::string(Poseidon::LocalizeString("STR_FALLBACK_PROBE").Data()) == "English \xC2\xA9");
+    }
 }
 
 TEST_CASE("Poseidon::SetLanguage to same language is a no-op but returns true", "[stringtable][switch]")

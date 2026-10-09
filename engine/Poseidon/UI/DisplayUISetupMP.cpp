@@ -16,6 +16,7 @@
 #include <Poseidon/Foundation/Strings/StrFormat.hpp>
 #include <Poseidon/Foundation/Strings/Bstring.hpp>
 #include <Poseidon/UI/Locale/StringtableExt.hpp>
+#include <Poseidon/UI/Locale/WorldLocalization.hpp>
 #include <Poseidon/Core/Global.hpp>
 #include <Poseidon/IO/Streams/QBStream.hpp>
 #include <Poseidon/Foundation/Logging/Logging.hpp>
@@ -357,7 +358,7 @@ void DisplayMultiplayerSetup::Update()
         RString island = "";
         if (header && header->island.GetLength() > 0)
         {
-            island = Pars >> "CfgWorlds" >> header->island >> "description";
+            island = Poseidon::LocalizeWorldDisplayName(header->island, Pars >> "CfgWorlds" >> header->island >> "description");
         }
         text->SetText(island);
     }

@@ -20,6 +20,7 @@
 // #include "strIncl.hpp"
 #include <Poseidon/UI/Locale/StringtableExt.hpp>
 #include <Poseidon/Foundation/Platform/GamePaths.hpp>
+#include <Poseidon/IO/Filesystem/FileOps.hpp>
 #include <float.h>
 #include <limits.h>
 #include <stdint.h>
@@ -246,9 +247,10 @@ RString Poseidon::ResolveMPMissionTemplateBase(RString mission, RString world)
         for (const std::string& templateName : templateNames)
         {
             std::filesystem::path base = std::filesystem::path(dir) / templateName;
-            std::error_code ec;
-            if (std::filesystem::exists(base.string() + ".pbo", ec))
+            char resolved[MaxFileName];
+            if (ResolveFilePath((base.string() + ".pbo").c_str(), resolved, sizeof(resolved)))
             {
+                base = std::filesystem::path(resolved).replace_extension();
                 LOG_DEBUG(Network, "MP mission template resolved: {} -> {}", templateName, base.string());
                 return base.string().c_str();
             }
@@ -495,6 +497,11 @@ void NetworkServer::InitMission(bool cadetMode)
         mgr.Create(_missionBank, missionDir, true);
     }
     {
+        // The bank reader tolerates case mismatches; filesystem sizing does not.
+        // Retain the actual PBO path (including extension case) for transfer/CRC.
+        char resolved[MaxFileName];
+        if (ResolveFilePath(_missionBank, resolved, sizeof(resolved)))
+            _missionBank = resolved;
         std::error_code ec;
         auto fileSize = std::filesystem::file_size(std::string(_missionBank), ec);
         if (!ec)

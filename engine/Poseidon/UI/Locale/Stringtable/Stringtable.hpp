@@ -25,7 +25,13 @@ int RegisterString(RString name);
 RString LocalizeString(int ids);
 RString LocalizeString(const char* str);
 
+// Optional localization metadata: no warning/debug text when a key is absent.
+// Returns true for an existing key (including an intentionally empty value).
+bool TryLocalizeString(const char* key, RString& value);
+
 // Localized value for `key`, or `fallback` verbatim if the key is missing/empty.
+// Missing/empty keys return the exact caller-owned fallback pointer. A found
+// value is borrowed from the stringtable and remains valid until its next reload.
 const char* LocalizeStringWithFallback(const char* key, const char* fallback);
 
 RString Localize(RString str);
@@ -66,4 +72,3 @@ void UnregisterLanguageChangedCallback(int token);
 
 } // namespace Poseidon
 #endif
-

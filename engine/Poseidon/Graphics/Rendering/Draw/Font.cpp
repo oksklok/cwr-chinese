@@ -15,6 +15,8 @@
 #include <Poseidon/Foundation/Strings/Mbcs.hpp>
 #include <Poseidon/UI/Text/FontRenderer.hpp>
 #include <Poseidon/Graphics/Rendering/Draw/FontSystem.hpp>
+#include <Poseidon/UI/Locale/LanguageRegistry.hpp>
+#include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
 #include <cmath>
 #include <memory>
 #include <unordered_map>
@@ -189,6 +191,24 @@ std::string ResolveMappedFontPath(const char* ttfPath)
 {
     if (!ttfPath || !*ttfPath)
         return {};
+
+    // Per-language files are opt-in config metadata, not a global mod font
+    // replacement. Other languages keep the usual stock/mod resolution path.
+    const auto* language = CfgLib::LanguageRegistry::Instance().Find(GLanguage.Data());
+    if (language && !language->fontDirectory.empty())
+    {
+        const char* base = strrchr(ttfPath, '\\');
+        if (!base)
+            base = strrchr(ttfPath, '/');
+        const std::string candidate = language->fontDirectory + "\\" + (base ? base + 1 : ttfPath);
+        std::string override = ResolveModOverride(candidate.c_str());
+        if (!override.empty())
+            return override;
+        QIFStreamB localized;
+        localized.AutoOpen(candidate.c_str());
+        if (localized.rest() > 0)
+            return candidate;
+    }
 
     // A mod's own Fonts\<name> wins over the base face (e.g. a CJK font).
     std::string modPath = ResolveModOverride(ttfPath);

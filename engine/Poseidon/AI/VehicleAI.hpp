@@ -227,6 +227,8 @@ struct AIUnitInfo : public SerializeClass
 {
 	RString _identityContext;
 	RString _name;
+	// Optional presentation metadata; never replaces the script/network name.
+	RString _displayNameKey;
 	RString _face;
 	RString _glasses;
 	RString _speaker;
@@ -237,6 +239,8 @@ struct AIUnitInfo : public SerializeClass
 	Ref<Texture> _squadPicture;
 	RString _squadTitle;
 
+	void LoadIdentityName(const ParamEntry &identity);
+	RString GetDisplayName() const;
 	LSError Serialize(ParamArchive &ar) override;
 };
 

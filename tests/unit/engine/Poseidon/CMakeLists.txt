@@ -13,6 +13,7 @@ set(POSEIDON_CORE_TEST_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/unit/engine/Poseidon/Support/test_stubs.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/engine/Poseidon/Asset/Addon/test_config_replace.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/engine/Poseidon/Asset/Formats/Common/test_format_detector.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit/engine/Poseidon/Asset/Formats/Common/test_csv_reader.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/engine/Poseidon/UI/Locale/Stringtable/test_stringtable.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/engine/Poseidon/UI/Locale/Stringtable/test_codepage_transcode.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit/engine/Poseidon/UI/Locale/Stringtable/test_stringtable_encoding.cpp
@@ -81,6 +82,7 @@ target_link_libraries(PoseidonCoreTests PRIVATE
 
 target_compile_definitions(PoseidonCoreTests PRIVATE
     GAME_DATA_DIR="${OFPR_GAME_DATA_DIR}"
+    TESTS_ROOT_DIR="${CMAKE_SOURCE_DIR}/tests"
 )
 
 target_include_directories(PoseidonCoreTests PRIVATE
@@ -449,6 +451,7 @@ list(APPEND POSEIDON_TEST_SOURCES
     AI/test_entity_event_handlers.cpp
     AI/test_vehicle_ai.cpp
     AI/test_entity_displayname_lang_switch.cpp
+    AI/test_radio_language_switch.cpp
     AI/test_ai_subgroup.cpp
     AI/test_unit_number_list.cpp
 

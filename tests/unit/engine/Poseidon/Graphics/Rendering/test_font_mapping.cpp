@@ -16,6 +16,10 @@
 #include <catch2/catch_test_macros.hpp>
 #include <Poseidon/Graphics/Rendering/Draw/FontMapping.hpp>
 #include <Poseidon/Core/ModSystem.hpp>
+#include <Poseidon/UI/Locale/LanguageRegistry.hpp>
+#include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
+#include <Poseidon/IO/ParamFile/ParamFile.hpp>
+#include <Poseidon/IO/Streams/QBStream.hpp>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -156,4 +160,55 @@ TEST_CASE("A mod's Fonts/ TTF overrides the base font path", "[font][mapping][mo
     Poseidon::ModSystem::SetModPath("");
     std::error_code ec;
     fs::remove_all(root, ec);
+}
+
+TEST_CASE("Language font directory is opt-in and falls back without its mod", "[font][mapping][cwrc-language]")
+{
+    namespace fs = std::filesystem;
+    std::random_device rd;
+    const auto root = fs::temp_directory_path() / ("cwr_languagefont_" + std::to_string(rd()));
+    const auto mod = root / "@language";
+    fs::create_directories(mod / "Fonts/ChineseSimplified");
+    std::ofstream(mod / "Fonts/ChineseSimplified/cwr_language_probe.ttf") << "TTF-BYTES";
+    fs::create_directories(mod / "Fonts/ChineseTraditional");
+    std::ofstream(mod / "Fonts/ChineseTraditional/cwr_language_probe.ttf") << "TW-TTF-BYTES";
+    const char* config = "class CfgLanguages { languages[]={\"English\",\"French\",\"ChineseSimplified\",\"ChineseTraditional\"}; "
+                         "class ChineseSimplified { voice=0; fontDirectory=\"Fonts/ChineseSimplified\"; }; "
+                         "class ChineseTraditional { voice=0; fontDirectory=\"Fonts/ChineseTraditional\"; }; };";
+    ParamFile file;
+    QIStream input(config, strlen(config));
+    file.Parse(input);
+    struct Guard
+    {
+        fs::path root;
+        RString previous = GLanguage;
+        ~Guard()
+        {
+            Poseidon::ModSystem::SetModPath("");
+            CfgLib::LanguageRegistry::Instance().ResetToDefaults();
+            GLanguage = previous;
+            std::error_code error;
+            fs::remove_all(root, error);
+        }
+    } guard{root};
+    CfgLib::LanguageRegistry::Instance().LoadFromConfig(*file.FindEntry("CfgLanguages"));
+    Poseidon::ModSystem::SetModPath(mod.string().c_str());
+    constexpr const char* path = "Fonts\\cwr_language_probe.ttf";
+    GLanguage = "English";
+    CHECK(Poseidon::ResolveMappedFontPath(path).empty());
+    GLanguage = "French";
+    CHECK(Poseidon::ResolveMappedFontPath(path).empty());
+    GLanguage = "ChineseSimplified";
+    const auto localized = Poseidon::ResolveMappedFontPath(path);
+    CHECK_FALSE(localized.empty());
+    CHECK(fs::exists(localized));
+    CHECK(localized.find("ChineseSimplified") != std::string::npos);
+    GLanguage = "ChineseTraditional";
+    const auto traditional = Poseidon::ResolveMappedFontPath(path);
+    CHECK_FALSE(traditional.empty());
+    CHECK(fs::exists(traditional));
+    CHECK(traditional != localized);
+    CHECK(traditional.find("ChineseTraditional") != std::string::npos);
+    Poseidon::ModSystem::SetModPath("");
+    CHECK(Poseidon::ResolveMappedFontPath(path).empty());
 }

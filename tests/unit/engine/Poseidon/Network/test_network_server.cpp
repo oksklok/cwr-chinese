@@ -722,6 +722,51 @@ TEST_CASE("MP mission lookup resolves active mod mission PBOs before base direct
     std::filesystem::remove_all(root, ec);
 }
 
+TEST_CASE("MP mixed-case mission banks retain mod priority and a sizeable transfer path",
+          "[network][mission][mods][case-path]")
+{
+    const auto root = MakeTempDir();
+    const auto preferred = root / "@preferred" / "MPMissions";
+    const auto fallback = root / "@fallback" / "mpmissions";
+    std::filesystem::create_directories(preferred);
+    std::filesystem::create_directories(fallback);
+    const std::string payload = "preferred mission bank";
+    // Actual committed official mission spellings; lookup supplies lowercase worlds.
+    const std::pair<const char*, const char*> missions[] = {
+        {"1-10_T_TeamFlagFight", "Abel"},
+        {"1-12_D_FLAGFIGHT3", "NOE"},
+        {"1-9_T_Conquerors", "cain"},
+    };
+    for (const auto& [name, world] : missions)
+    {
+        std::string lowerWorld = world;
+        std::transform(lowerWorld.begin(), lowerWorld.end(), lowerWorld.begin(),
+                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        const auto actual = preferred / (std::string(name) + "." + world + ".pbo");
+        std::ofstream(actual, std::ios::binary) << payload;
+        std::ofstream(fallback / (std::string(name) + "." + lowerWorld + ".pbo"), std::ios::binary)
+            << "lower-priority bank";
+        RString resolved;
+        {
+            // Last-listed mod has priority; exact casing in a lower mod must not win.
+            const ScopedModPath mods(fallback.parent_path().string() + ";" + preferred.parent_path().string());
+            resolved = Poseidon::ResolveMPMissionTemplateBase(name, lowerWorld.c_str());
+        }
+        const auto transfer = std::filesystem::path(std::string((const char*)resolved) + ".pbo");
+        CHECK(NormalizePathForCompare(transfer) == NormalizePathForCompare(actual));
+#ifndef _WIN32
+        CHECK(transfer.filename() == actual.filename());
+#endif
+        std::error_code ec;
+        const auto size = std::filesystem::file_size(transfer, ec);
+        CHECK_FALSE(ec);
+        CHECK(size == payload.size());
+        CHECK(ReadBinaryFile(transfer) == payload);
+    }
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+}
+
 TEST_CASE("voice channel routing targets normal network player ids", "[network][VoN]")
 {
     REQUIRE(Poseidon::SelectNetworkVoiceTargetPlayerId(42, 0) == 42);

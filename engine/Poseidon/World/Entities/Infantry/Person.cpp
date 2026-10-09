@@ -50,6 +50,7 @@ void Person::ApplyIdentity()
         return;
 
     _info._identityContext = RString();
+    _info._displayNameKey = RString();
     _info._name = identity->name;
     _info._face = identity->face;
     _info._glasses = identity->glasses;

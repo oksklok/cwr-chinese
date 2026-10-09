@@ -232,6 +232,35 @@ TEST_CASE("KbmPage: BindingPrimary skips out-of-device entries", "[UI][KbmPage]"
     CHECK(std::string(p.BindingAlt(1)).empty());
 }
 
+TEST_CASE("KbmPage: Chinese Page key labels fit the narrow alternate cell", "[UI][KbmPage][zhcn]")
+{
+    UserKeysSnapshot snap;
+    struct LanguageSnapshot
+    {
+        RString saved = GLanguage;
+        ~LanguageSnapshot() { GLanguage = saved; }
+    } language;
+    TestableKbmPage page;
+    auto& p = page.Provider();
+    auto& profile = InputSubsystem::Instance().GetProfile(InputContext::Infantry);
+    profile.ClearBindings(UAMoveForward);
+    profile.Bind(UAMoveForward, InputCode::Key(SDL_SCANCODE_PAGEUP));
+    profile.Bind(UAMoveForward, InputCode::Key(SDL_SCANCODE_PAGEDOWN));
+
+    for (const char* chinese : {"ChineseSimplified", "ChineseTraditional"})
+    {
+        GLanguage = chinese;
+        CHECK(std::string(p.BindingPrimary(1)) == "PgUp");
+        CHECK(std::string(p.BindingAlt(1)) == "PgDn");
+    }
+    for (const char* stock : {"English", "French", "Italian", "Spanish", "German", "Czech", "Polish", "Russian"})
+    {
+        GLanguage = stock;
+        CHECK(std::string(p.BindingPrimary(1)) == (const char*)GetKeyName(SDL_SCANCODE_PAGEUP));
+        CHECK(std::string(p.BindingAlt(1)) == (const char*)GetKeyName(SDL_SCANCODE_PAGEDOWN));
+    }
+}
+
 TEST_CASE("KbmPage: changing category through SetRowValue rebinds the row list", "[UI][KbmPage]")
 {
     TestableKbmPage page;

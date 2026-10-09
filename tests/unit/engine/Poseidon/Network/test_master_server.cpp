@@ -11,6 +11,8 @@
 #include <Poseidon/Foundation/PoseidonPCH.hpp>
 
 #include <catch2/catch_test_macros.hpp>
+#include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
+#include "../Support/test_fixtures.hpp"
 
 #include <cstring>
 #include <filesystem>
@@ -172,11 +174,27 @@ TEST_CASE("master service requests carry structured user-agent", "[network][mast
 
 TEST_CASE("master server attribution label includes the configured endpoint", "[network][master][ui]")
 {
+    Poseidon::ClearStringtable();
     REQUIRE(std::string(FormatNetworkMasterServerAttribution("https://master.example")) ==
             "Operated by master.example");
     REQUIRE(std::string(FormatNetworkMasterServerAttribution("http://master.example")) == "Operated by master.example");
     REQUIRE(std::string(FormatNetworkMasterServerAttribution("master.example")) == "Operated by master.example");
     REQUIRE(std::string(FormatNetworkMasterServerAttribution("")) == "Operated by disabled");
+}
+
+TEST_CASE("master attribution optional metadata keeps endpoint and stock language fallbacks", "[network][master][ui][localization]")
+{
+    using namespace Poseidon;
+    ClearStringtable();
+    GLanguage = "English";
+    LoadStringtable("global", TestFixtures::GetTestFixturePath("residual_ui.utf8.csv"), 0, true);
+    CHECK(FormatNetworkMasterServerAttribution("https://master.example") == RString("运营方：master.example"));
+    CHECK(FormatNetworkMasterServerAttribution("") == RString("主服务器已禁用"));
+    REQUIRE(SetLanguage("French"));
+    CHECK(FormatNetworkMasterServerAttribution("http://master.example") == RString("Operated by master.example"));
+    CHECK(FormatNetworkMasterServerAttribution("") == RString("Operated by disabled"));
+    ClearStringtable();
+    GLanguage = "English";
 }
 
 TEST_CASE("master mod list URL uses the workshop catalog app and current version", "[network][master][mods]")

@@ -24,6 +24,8 @@ struct LanguageInfo
     int win32PrimaryLang = 0;                                 // Win32 PRIMARYLANGID value, 0 = none
     std::string voiceSuffix;                                  // PBO suffix for voice overlays, e.g. "cz"; empty = none
     bool hasVoice = true;                                     // whether voiceover is provided for this language
+    std::string fallbackLanguage;                            // optional per-cell stringtable fallback
+    std::string fontDirectory;                               // optional language-specific mapped TTF directory
 };
 
 // Single source of truth for the supported-language set and its per-language metadata. A process-wide

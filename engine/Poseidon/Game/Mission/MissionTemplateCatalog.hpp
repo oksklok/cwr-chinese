@@ -17,6 +17,7 @@ RString GetMissionTemplateRoot(bool multiplayer);
 RString GetMissionTemplateBasePath(bool multiplayer, RString templ, RString world);
 RString ResolveMissionTemplateDisplayName(RString missionDirectory, RString fallback);
 RString GetMissionTemplateSelectorText(const MissionTemplateEntry& templ);
+RString ResolveMissionTemplateBankPath(RString relativePath);
 void ListMissionTemplates(AutoArray<MissionTemplateEntry>& templates, bool multiplayer, RString world);
 
 } // namespace Poseidon

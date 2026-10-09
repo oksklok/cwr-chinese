@@ -15,6 +15,7 @@ namespace Poseidon
 } // namespace Poseidon
 #include <Poseidon/Foundation/Platform/AppConfig.hpp>
 #include <Poseidon/UI/Controls/UIControls.hpp>
+#include <Poseidon/UI/Controls/HtmlTextWrap.hpp>
 #include <Poseidon/Input/InputSubsystem.hpp>
 #include <Poseidon/Graphics/Core/Engine.hpp>
 #include <Poseidon/World/World.hpp>
@@ -271,6 +272,8 @@ bool CStatic::OnKeyDown(unsigned nChar, unsigned nRepCnt, unsigned nFlags)
 void CStatic::FormatText()
 {
     _lines.Clear();
+    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
 
     float lineWidth = _w - 2 * _scale * textBorder;
     float size = _scale * _size;
@@ -286,6 +289,14 @@ void CStatic::FormatText()
         while (true)
         {
             const char* q = p;
+            if (chinese && width > 0 &&
+                HtmlTextWrap::IsChineseWrapBoundary(
+                    HtmlTextWrap::PreviousCodepoint(_text, static_cast<int>(q - (const char*)_text)),
+                    HtmlTextWrap::Codepoint(q)))
+            {
+                ++n;
+                word = q;
+            }
             char c = *p++;
             if (c == 0)
             {

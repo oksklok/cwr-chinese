@@ -1,6 +1,7 @@
 #include <Poseidon/Core/Application.hpp>
 #include <Poseidon/AI/AI.hpp>
 #include <Poseidon/UI/Locale/Stringtable/CodepageTranscode.hpp>
+#include <Poseidon/UI/Locale/IdentityLocalization.hpp>
 #include <Poseidon/AI/AIRadio.hpp>
 #include <Poseidon/Core/Global.hpp>
 #include <Poseidon/Core/Config/UserConfig.hpp>
@@ -459,7 +460,7 @@ void AIUnit::Load(const ParamEntry& cls)
     {
         AIUnitInfo& info = soldier->GetInfo();
         info._identityContext = cls.GetContext();
-        info._name = DecodeLegacyTextToRString(cls >> "name", GLanguage);
+        info.LoadIdentityName(cls);
         info._face = cls >> "face";
         info._glasses = cls >> "glasses";
         soldier->SetFace(info._face);
@@ -546,10 +547,24 @@ const EnumName* Foundation::GetEnumNames(AIUnit::DisabledAI dummy)
     return DisabledAINames;
 }
 
+void AIUnitInfo::LoadIdentityName(const ParamEntry& identity)
+{
+    _name = DecodeLegacyTextToRString(identity >> "name", GLanguage);
+    const ParamEntry* key = identity.FindEntry("nameKey");
+    _displayNameKey = key ? RString(*key) : RString();
+}
+
+RString AIUnitInfo::GetDisplayName() const
+{
+    return LocalizeIdentityDisplayName(_name, _displayNameKey);
+}
+
 LSError AIUnitInfo::Serialize(ParamArchive& ar)
 {
     PARAM_CHECK(ar.Serialize("identityContext", _identityContext, 1, RString()))
     PARAM_CHECK(ar.Serialize("name", _name, 1))
+    // Optional, backwards-compatible metadata; the existing name stays canonical.
+    PARAM_CHECK(ar.Serialize("displayNameKey", _displayNameKey, 1, RString()))
     PARAM_CHECK(ar.Serialize("experience", _experience, 1, 0))
     PARAM_CHECK(ar.SerializeEnum("rank", _rank, 1, RankPrivate))
     PARAM_CHECK(ar.Serialize("face", _face, 1, ""))
@@ -1107,6 +1122,8 @@ TMError AIUnit::TransferMsg(NetworkMessageContext& ctx)
                 int playerId = GetPerson()->GetRemotePlayer();
                 TMCHECK(ctx.IdxTransfer(indices->playerId, playerId))
                 TMCHECK(ctx.IdxTransfer(indices->name, info._name))
+                if (!ctx.IsSending())
+                    info._displayNameKey = RString();
                 TMCHECK(ctx.IdxTransfer(indices->face, info._face))
                 TMCHECK(ctx.IdxTransfer(indices->glasses, info._glasses))
                 TMCHECK(ctx.IdxTransfer(indices->speaker, info._speaker))

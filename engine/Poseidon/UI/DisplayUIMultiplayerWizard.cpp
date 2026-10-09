@@ -683,7 +683,7 @@ static void SaveFile(const FileInfoO& fi, const FileBankType* files, void* conte
 static void ExtractBank(RString dst, RString src)
 {
     QFBank bank;
-    bank.open(src);
+    bank.open(ResolveMissionTemplateBankPath(src));
 
     // enumerate files in bank
     SaveContext saveContext;
@@ -768,6 +768,23 @@ bool DisplayWizardMap::CreateMission()
             CreateMsgBox(MB_BUTTON_OK, LocalizeString(IDS_MSG_LOAD_TEMPL_FAIL));
             return false;
         }
+    }
+
+    // Archive loading resolves Intel text. Keep its original references when
+    // writing the generated mission so it can switch languages afterwards.
+    ParamFile rawMission;
+    if (rawMission.ParseBinOrTxt(filename))
+    {
+        auto restoreIntel = [&](const char* section, ArcadeTemplate& target)
+        {
+            if (const ParamEntry* source = rawMission.FindEntry(section))
+                if (const ParamEntry* intel = source->FindEntry("Intel"))
+                    RestoreMissionIntelText(*intel, target.intel.briefingName, target.intel.briefingDescription);
+        };
+        restoreIntel("Mission", mission);
+        restoreIntel("Intro", intro);
+        restoreIntel("OutroWin", outroWin);
+        restoreIntel("OutroLoose", outroLoose);
     }
 
     // remove markers

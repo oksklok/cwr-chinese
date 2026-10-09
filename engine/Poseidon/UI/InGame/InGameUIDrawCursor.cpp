@@ -330,7 +330,7 @@ bool InGameUI::DrawTargetInfo(const Camera& camera, AIUnit* unit, Vector3Par dir
             Person* person = u->GetPerson();
             if (person->IsNetworkPlayer())
             {
-                vName = vName + RString(" (") + person->GetInfo()._name + RString(")");
+                vName = vName + RString(" (") + person->GetInfo().GetDisplayName() + RString(")");
             }
 #if _ENABLE_CHEATS
             else if (CHECK_DIAG(DECombat) && v->GetVarName().GetLength() > 0)

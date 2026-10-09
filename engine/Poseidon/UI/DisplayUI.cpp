@@ -16,6 +16,8 @@
 #include <Poseidon/IO/Streams/QBStream.hpp>
 #include <Poseidon/UI/Locale/Stringtable/CodepageTranscode.hpp>
 #include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
+#include <Poseidon/UI/Locale/WorldLocalization.hpp>
+#include <Poseidon/UI/Locale/MissionHtmlLocalization.hpp>
 
 #include <Random/randomGen.hpp>
 #include <Poseidon/Foundation/Strings/StrFormat.hpp>
@@ -504,9 +506,9 @@ RString GetKeyName(int dikCode)
         case INPUT_DEVICE_STICK + 7:
             return "RT";
         case INPUT_DEVICE_STICK + 8:
-            return "Stick Btn. #9";
+            return LocalizeStringWithFallback("STR_CWRC_STICK_BUTTON_9", "Stick Btn. #9");
         case INPUT_DEVICE_STICK + 9:
-            return "Stick Btn. #10";
+            return LocalizeStringWithFallback("STR_CWRC_STICK_BUTTON_10", "Stick Btn. #10");
         case INPUT_DEVICE_STICK + 10:
             return "LS";
         case INPUT_DEVICE_STICK + 11:
@@ -1218,7 +1220,8 @@ Control* DisplaySelectIsland::OnCreateCtrl(int type, int idc, const ParamEntry& 
                 }
 
                 int index = lbox->AddString(
-                    Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage));
+                    Poseidon::LocalizeWorldDisplayName(name,
+                        Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage)));
                 lbox->SetData(index, name);
                 if (stricmp(name, Glob.header.worldname) == 0)
                 {
@@ -1620,7 +1623,8 @@ void DisplayCustomArcade::InsertGames()
             CTreeItem* itemWorld = itemCampaign->AddChild();
 
             itemWorld->text =
-                Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage);
+                Poseidon::LocalizeWorldDisplayName(name,
+                    Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage));
             itemWorld->data = name;
             bool wexp = stricmp(Glob.header.worldname, name) == 0;
             if (wexp && Glob.header.filename[0] == 0)
@@ -1654,7 +1658,7 @@ void DisplayCustomArcade::InsertGames()
                 CTreeItem* itemCampaign = root->AddChild();
                 ParamFile cfg;
                 cfg.Parse(GetCampaignDirectory(campaign) + RString("description.ext"));
-                itemCampaign->text = cfg >> "Campaign" >> "name";
+                itemCampaign->text = LocalizeCampaignDisplayName(cfg >> "Campaign");
                 itemCampaign->data = campaign;
                 // int m = (Pars>>"CfgWorlds">>"worlds").GetSize();
                 int m = (Pars >> "CfgWorldList").GetEntryCount();
@@ -1679,7 +1683,8 @@ void DisplayCustomArcade::InsertGames()
                     CTreeItem* itemWorld = itemCampaign->AddChild();
 
                     itemWorld->text =
-                        Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage);
+                        Poseidon::LocalizeWorldDisplayName(name,
+                            Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage));
                     itemWorld->data = name;
                     bool wexp = stricmp(Glob.header.worldname, name) == 0;
                     _finddata_t info;

@@ -470,7 +470,12 @@ void DisplaySingleMission::ScanMissionDirectory(const RString& dir, C3DListBox* 
                 else
                 {
                     // Subdirectory
-                    int index = lbox->AddString(name + RString("..."));
+                    RString displayName = name;
+                    RString localized;
+                    if (stricmp(name, "Resistance") == 0 &&
+                        TryLocalizeString("STR_SINGLE_CATEGORY_RESISTANCE", localized) && localized.GetLength() > 0)
+                        displayName = localized;
+                    int index = lbox->AddString(displayName + RString("..."));
                     lbox->SetData(index, name);
                     lbox->SetValue(index, -1); // subdirectory
                 }
@@ -1038,7 +1043,7 @@ void DisplayCampaignLoad::OnChangeCampaign()
     C3DStatic* text = dynamic_cast<C3DStatic*>(GetCtrl(IDC_CAMPAIGN_CAMPAIGN));
     if (text)
     {
-        text->SetText(DecodeUserFacingLegacyText(_cfg >> "Campaign" >> "name"));
+        text->SetText(LocalizeCampaignDisplayName(_cfg >> "Campaign"));
     }
 
     C3DActiveText* active = dynamic_cast<C3DActiveText*>(GetCtrl(IDC_CAMPAIGN_PREV));

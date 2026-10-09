@@ -144,7 +144,7 @@ void InGameUI::CreateAttackList(AIGroup* group, Menu* submenu, int cmdBase)
         if (g == group)
         {
             snprintf(text, sizeof(text), LocalizeString(IDS_TARGET_MENU_GROUP),
-                     (const char*)u->GetPerson()->GetInfo()._name, (const char*)name, u->ID());
+                     (const char*)u->GetPerson()->GetInfo().GetDisplayName(), (const char*)name, u->ID());
         }
         else
         {
@@ -1057,7 +1057,7 @@ void InGameUI::ProcessMenu(const Camera& camera, EntityAI* vehicle)
                                     if (g == group)
                                     {
                                         snprintf(text, sizeof(text), LocalizeString(IDS_TARGET_MENU_GROUP),
-                                                 (const char*)u->GetPerson()->GetInfo()._name, (const char*)name,
+                                                 (const char*)u->GetPerson()->GetInfo().GetDisplayName(), (const char*)name,
                                                  u->ID());
                                     }
                                     else

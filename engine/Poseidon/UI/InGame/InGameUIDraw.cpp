@@ -1219,7 +1219,7 @@ void InGameUI::DrawUnitInfo(EntityAI* vehicle)
     }
     if (_unitInfo->name)
     {
-        if (_unitInfo->name->SetText(unit->GetPerson()->GetInfo()._name))
+        if (_unitInfo->name->SetText(unit->GetPerson()->GetInfo().GetDisplayName()))
         {
             dirty = true;
         }

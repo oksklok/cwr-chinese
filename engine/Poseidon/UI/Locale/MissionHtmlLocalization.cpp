@@ -328,6 +328,24 @@ RString LoadLocalizedMissionHtmlUtf8(RString filename)
     return ExpandMissionHtmlStringtableTokens(RString(rawUtf8.c_str()), GetMissionStringtableFileForHtml(filename));
 }
 
+RString LocalizeCampaignDisplayName(const ParamEntry& campaign)
+{
+    const ParamEntry* key = campaign.FindEntry("nameKey");
+    RString value;
+    if (key && TryLocalizeString(key->GetValue(), value) && value.GetLength() > 0)
+        return value;
+    // name stays stock, so removing the mod never leaves a missing-key token.
+    return DecodeLegacyTextToRString(campaign >> "name", GLanguage);
+}
+
+void RestoreMissionIntelText(const ParamEntry& intel, RString& name, RString& description)
+{
+    if (const ParamEntry* field = intel.FindEntry("briefingName"))
+        name = field->GetValueRaw();
+    if (const ParamEntry* field = intel.FindEntry("briefingDescription"))
+        description = field->GetValueRaw();
+}
+
 RString LoadLocalizedMissionBriefingName(RString missionDirectory, RString fallback)
 {
     const RString raw = LoadMissionBriefingNameRaw(missionDirectory);

@@ -72,7 +72,7 @@ static void UpdateGetReadyTitleText(CStatic* text)
         return;
     }
 
-    text->SetText(FormatLocalizedBriefingTitle(unit->GetPerson()->GetInfo()._name, grp->GetName(), unit->ID()));
+    text->SetText(FormatLocalizedBriefingTitle(unit->GetPerson()->GetInfo().GetDisplayName(), grp->GetName(), unit->ID()));
 }
 
 static int FindSectionForUnit(CHTML* html, RString sectionName, AIUnit* unit)
@@ -207,7 +207,7 @@ void DisplayMap::UpdateUnitsInBriefing()
             snprintf(id, sizeof(id), "%d: ", unit->ID());
             RString text = RString(id) +
                            LocalizeString(IDS_SHORT_PRIVATE + ClampRankIndex(unit->GetPerson()->GetRank())) +
-                           RString(". ") + unit->GetPerson()->GetInfo()._name;
+                           RString(". ") + unit->GetPerson()->GetInfo().GetDisplayName();
             if (unit->IsGroupLeader())
             {
                 text = text + LocalizeString(IDS_BRIEF_GROUP_LEADER);
@@ -232,7 +232,7 @@ void DisplayMap::UpdateUnitsInBriefing()
                 RString text = LocalizeString(IDS_BRIEF_COMMANDER);
                 text = text + LocalizeString(IDS_PRIVATE + ClampRankIndex(u->GetPerson()->GetRank()));
                 text = text + RString(" ");
-                text = text + u->GetPerson()->GetInfo()._name;
+                text = text + u->GetPerson()->GetInfo().GetDisplayName();
                 if (u->IsGroupLeader())
                 {
                     text = text + LocalizeString(IDS_BRIEF_GROUP_LEADER);
@@ -249,7 +249,7 @@ void DisplayMap::UpdateUnitsInBriefing()
                 RString text = LocalizeString(IDS_BRIEF_DRIVER);
                 text = text + LocalizeString(IDS_PRIVATE + ClampRankIndex(u->GetPerson()->GetRank()));
                 text = text + RString(" ");
-                text = text + u->GetPerson()->GetInfo()._name;
+                text = text + u->GetPerson()->GetInfo().GetDisplayName();
                 if (u->IsGroupLeader())
                 {
                     text = text + LocalizeString(IDS_BRIEF_GROUP_LEADER);
@@ -266,7 +266,7 @@ void DisplayMap::UpdateUnitsInBriefing()
                 RString text = LocalizeString(IDS_BRIEF_GUNNER);
                 text = text + LocalizeString(IDS_PRIVATE + ClampRankIndex(u->GetPerson()->GetRank()));
                 text = text + RString(" ");
-                text = text + u->GetPerson()->GetInfo()._name;
+                text = text + u->GetPerson()->GetInfo().GetDisplayName();
                 if (u->IsGroupLeader())
                 {
                     text = text + LocalizeString(IDS_BRIEF_GROUP_LEADER);
@@ -292,7 +292,7 @@ void DisplayMap::UpdateUnitsInBriefing()
                 RString text = LocalizeString(IDS_BRIEF_CARGO);
                 text = text + LocalizeString(IDS_PRIVATE + ClampRankIndex(u->GetPerson()->GetRank()));
                 text = text + RString(" ");
-                text = text + u->GetPerson()->GetInfo()._name;
+                text = text + u->GetPerson()->GetInfo().GetDisplayName();
                 if (u->IsGroupLeader())
                 {
                     text = text + LocalizeString(IDS_BRIEF_GROUP_LEADER);

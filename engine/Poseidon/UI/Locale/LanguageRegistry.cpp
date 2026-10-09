@@ -160,6 +160,10 @@ void LanguageRegistry::LoadFromConfig(const Poseidon::ParamEntry& cfgLanguages)
                 info.voiceSuffix = (const char*)e->GetValue();
             if (const ParamEntry* e = cls->FindEntry("voice"))
                 info.hasVoice = (int)*e != 0;
+            if (const ParamEntry* e = cls->FindEntry("fallbackLanguage"))
+                info.fallbackLanguage = (const char*)e->GetValue();
+            if (const ParamEntry* e = cls->FindEntry("fontDirectory"))
+                info.fontDirectory = (const char*)e->GetValue();
             if (const ParamEntry* e = cls->FindEntry("win32"))
                 info.win32PrimaryLang = (int)*e;
             if (const ParamEntry* e = cls->FindEntry("localeAliases"); e && e->IsArray())

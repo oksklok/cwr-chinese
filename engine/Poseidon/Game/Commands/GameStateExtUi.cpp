@@ -33,6 +33,7 @@
 #include <Poseidon/Game/Chat.hpp>
 #include <Poseidon/UI/Locale/StringtableExt.hpp>
 #include <Poseidon/UI/Locale/Stringtable/CodepageTranscode.hpp>
+#include <Poseidon/UI/Locale/IdentityLocalization.hpp>
 
 #include <Poseidon/Game/UiActions.hpp>
 #include <Poseidon/Foundation/Logging/Logging.hpp>
@@ -217,7 +218,7 @@ GameValue ObjSetIdentity(const GameState* state, GameValuePar oper1, GameValuePa
     {
         AIUnitInfo& info = person->GetInfo();
         info._identityContext = RString();
-        info._name = DecodeLegacyTextToRString((*entry) >> "name", GLanguage);
+        info.LoadIdentityName(*entry);
         info._face = (*entry) >> "face";
         info._glasses = (*entry) >> "glasses";
         info._speaker = (*entry) >> "speaker";

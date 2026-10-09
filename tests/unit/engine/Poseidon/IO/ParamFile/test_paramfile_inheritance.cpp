@@ -6,6 +6,7 @@
 #include <string.h>
 #include <catch2/catch_message.hpp>
 #include <string>
+#include <filesystem>
 
 // Phase 5: ParamFile Inheritance & Merging
 // This file tests class inheritance and config merging functionality.
@@ -18,6 +19,43 @@
 
 // Import shared fixture utilities
 using namespace TestFixtures;
+
+TEST_CASE("Chinese display addon preserves stock weapon inheritance", "[paramfile][cwrc-ui]")
+{
+    const char* stock = R"(
+        class CfgWeapons {
+            class Default { simulation = "weapon"; };
+            class MGun: Default { canDrop = 1; };
+            class Riffle: MGun { type = 1; };
+            class G36aBase: Riffle {
+                scopeWeapon = 2;
+                class FullAuto { displayName = "G36 Auto"; autoFire = 1; reloadTime = 0.07; };
+            };
+            class G36a: G36aBase { magazines[] = {"G36aMag"}; };
+        };
+    )";
+    ParamFile base;
+    QIStream input(stock, strlen(stock));
+    base.Parse(input);
+    // Non-MSVC builds remap __FILE__ to a relative path. Use the explicit
+    // source root so CTest's build-directory working directory is irrelevant.
+    const auto path = std::filesystem::path(TESTS_ROOT_DIR).parent_path() /
+                      "localization/zhcn-combined-arms/ui/config.cpp";
+    REQUIRE(std::filesystem::is_regular_file(path));
+    ParamFile addon;
+    REQUIRE(addon.Parse(path.string().c_str()) == LSOK);
+    REQUIRE(addon.FindEntry("CfgMusic") != nullptr); // no premature parse failure
+    base.Update(addon);
+    const ParamEntry& weapon = base >> "CfgWeapons" >> "G36a";
+    REQUIRE(std::string((weapon >> "simulation").GetValue().Data()) == "weapon");
+    REQUIRE(static_cast<int>(weapon >> "canDrop") == 1);
+    REQUIRE(static_cast<int>(weapon >> "type") == 1);
+    REQUIRE(static_cast<int>(weapon >> "scopeWeapon") == 2);
+    REQUIRE(static_cast<int>(weapon >> "FullAuto" >> "autoFire") == 1);
+    REQUIRE(static_cast<float>(weapon >> "FullAuto" >> "reloadTime") == Catch::Approx(0.07));
+    REQUIRE(std::string((weapon >> "FullAuto" >> "displayName").GetValueRaw().Data()) == "$STR_CWRC_G36_AUTO");
+    REQUIRE((weapon >> "magazines").GetSize() == 1);
+}
 
 // Section 5.1: Basic Inheritance (10 tests)
 

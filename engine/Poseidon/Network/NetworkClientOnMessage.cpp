@@ -1391,6 +1391,7 @@ void NetworkClient::OnMessage(int from, NetworkMessage* msg, NetworkMessageType 
                     if (identity)
                     {
                         person->GetInfo()._name = identity->name;
+                        person->GetInfo()._displayNameKey = RString();
                     }
                 }
             }
@@ -1419,6 +1420,7 @@ void NetworkClient::OnMessage(int from, NetworkMessage* msg, NetworkMessageType 
                     if (identity)
                     {
                         person->GetInfo()._name = identity->name;
+                        person->GetInfo()._displayNameKey = RString();
                     }
                 }
             }

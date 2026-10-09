@@ -3,12 +3,16 @@
 #include <Poseidon/Foundation/Common/GamePaths.hpp>
 #include <Poseidon/UI/Settings/GameSettingsConfig.hpp>
 #include <Poseidon/IO/Filesystem/Utf8Paths.hpp>
+#include <Poseidon/UI/Locale/LanguageRegistry.hpp>
+#include <Poseidon/IO/ParamFile/ParamFile.hpp>
+#include <Poseidon/IO/Streams/QBStream.hpp>
 
 #include <filesystem>
 #include <fstream>
 #include <random>
 #include <string>
 #include <optional>
+#include <cstring>
 
 using Poseidon::ResolveEffectiveViewDistance;
 
@@ -46,6 +50,34 @@ TEST_CASE("GameSettingsConfig: defaults follow detected language", "[Settings][G
     CHECK(cfg.blood == true);
     CHECK(cfg.preferredViewDistance == 900.0f);
     CHECK(cfg.respectMissionViewDistance == true);
+}
+
+TEST_CASE("GameSettingsConfig: configured Chinese text persists independently of English voices", "[Settings][GameSettings][cwrc-language]")
+{
+    const char* config = "class CfgLanguages { languages[]={\"English\",\"ChineseSimplified\",\"ChineseTraditional\"}; "
+                         "class ChineseSimplified { code=\"ZH-CN\"; autonym=\"简体中文\"; codepage=\"UTF8\"; voice=0; }; "
+                         "class ChineseTraditional { code=\"zh-TW\"; autonym=\"繁體中文\"; codepage=\"UTF8\"; voice=0; }; };";
+    ParamFile file;
+    QIStream input(config, strlen(config));
+    file.Parse(input);
+    struct Guard { ~Guard() { CfgLib::LanguageRegistry::Instance().ResetToDefaults(); } } guard;
+    CfgLib::LanguageRegistry::Instance().LoadFromConfig(*file.FindEntry("CfgLanguages"));
+    for (const char* language : {"ChineseSimplified", "ChineseTraditional"})
+    {
+        GameSettingsConfig source;
+        source.textLanguage = language;
+        source.voiceLanguage = "English";
+        const auto path = TmpPath("chinese.cfg");
+        REQUIRE(source.Save(path));
+        GameSettingsConfig restored;
+        REQUIRE(restored.Load(path));
+        FakeEnvironment environment;
+        environment.language = "English";
+        CHECK_FALSE(restored.Normalize(environment));
+        CHECK(restored.textLanguage == language);
+        CHECK(restored.voiceLanguage == "English");
+        std::filesystem::remove_all(std::filesystem::path(path).parent_path());
+    }
 }
 
 TEST_CASE("GameSettingsConfig: defaults normalize unsupported detected language", "[Settings][GameSettings]")

@@ -32,13 +32,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "\0"
+            VALUE "Comments", "Unofficial modified client; original engine by Bohemia Interactive.\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", PRODUCTNAME
             VALUE "FileVersion", STRFILEVER
             VALUE "InternalName", INTERNALNAME
             VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "CWA-CE.exe\0"
+            VALUE "OriginalFilename", "PoseidonGame.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", PRODUCTNAME
             VALUE "ProductVersion", STRPRODUCTVER
@@ -60,7 +60,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-APPICON                 ICON    DISCARDABLE     "..\\..\\resources\\icon-game.ico"
+// Use the neutral Windows application icon, not the original game trademark.
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////

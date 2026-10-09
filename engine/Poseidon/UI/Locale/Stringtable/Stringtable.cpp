@@ -24,6 +24,8 @@ using Poseidon::QIFStreamB;
 #include <vector>
 #include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
 #include <Poseidon/UI/Locale/Stringtable/CodepageTranscode.hpp>
+#include <Poseidon/UI/Locale/LanguageRegistry.hpp>
+#include <Poseidon/Graphics/Rendering/Draw/FontMapping.hpp>
 namespace Poseidon
 {
 
@@ -284,6 +286,10 @@ void StringTableDynamic::Load(const char* filename, std::set<std::string>& appli
     f.AutoOpen(filename);
     bool fileIsUtf8 = HasUtf8CsvSuffix(filename);
     int column = -1;
+    int fallbackColumn = -1;
+    const auto* language = CfgLib::LanguageRegistry::Instance().Find(GLanguage.Data());
+    const std::string fallbackLanguage = language ? language->fallbackLanguage : std::string();
+    Poseidon::Codepage fallbackCp = Poseidon::Codepage::CP1252;
     int headerColumns = 0;
     int legacyCommaColumn = -1;
     Poseidon::Codepage columnCp = Poseidon::Codepage::CP1252;
@@ -314,7 +320,11 @@ void StringTableDynamic::Load(const char* filename, std::set<std::string>& appli
                 {
                     column = c - 1; // column index into value columns (0-based after key)
                     columnCp = fileIsUtf8 ? Poseidon::Codepage::Utf8 : Poseidon::CodepageForLanguage(row[c].c_str());
-                    break;
+                }
+                if (!fallbackLanguage.empty() && stricmp(row[c].c_str(), fallbackLanguage.c_str()) == 0)
+                {
+                    fallbackColumn = c - 1;
+                    fallbackCp = fileIsUtf8 ? Poseidon::Codepage::Utf8 : Poseidon::CodepageForLanguage(row[c].c_str());
                 }
             }
             break;
@@ -323,8 +333,9 @@ void StringTableDynamic::Load(const char* filename, std::set<std::string>& appli
     if (column < 0)
     {
         RptF("Unsupported language %s in %s", (const char*)GLanguage, filename);
-        column = 0;
-        columnCp = fileIsUtf8 ? Poseidon::Codepage::Utf8 : Poseidon::Codepage::CP1252;
+        column = fallbackColumn >= 0 ? fallbackColumn : 0;
+        columnCp = fallbackColumn >= 0 ? fallbackCp
+            : (fileIsUtf8 ? Poseidon::Codepage::Utf8 : Poseidon::Codepage::CP1252);
     }
 
     while (!f.eof())
@@ -354,9 +365,15 @@ void StringTableDynamic::Load(const char* filename, std::set<std::string>& appli
 
         // column is 0-based index into value columns (row[1], row[2], ...)
         int valueIdx = column + 1;
+        auto valueCp = columnCp;
+        if ((valueIdx >= static_cast<int>(row.size()) || row[valueIdx].empty()) && fallbackColumn >= 0)
+        {
+            valueIdx = fallbackColumn + 1;
+            valueCp = fallbackCp;
+        }
         if (valueIdx < static_cast<int>(row.size()) && !row[valueIdx].empty())
         {
-            std::string value = Poseidon::DecodeLegacyTextToUtf8(row[valueIdx], columnCp);
+            std::string value = Poseidon::DecodeLegacyTextToUtf8(row[valueIdx], valueCp);
             Add(RString(name.c_str()), RString(value.c_str()), fileIsUtf8, appliedInBatch);
         }
     }
@@ -390,6 +407,7 @@ class StringTable
 
     RString Localize(int ids);
     RString Localize(const char* str);
+    bool TryLocalize(const char* str, RString& value);
 
     bool SetLanguage(RString newLang);
 
@@ -564,25 +582,38 @@ bool StringTable::SetLanguage(RString newLang)
     return true;
 }
 
-RString StringTable::Localize(const char* str)
+bool StringTable::TryLocalize(const char* str, RString& value)
 {
     const StringTableItem& item1 = _tableMission[str];
     if (!_tableMission.IsNull(item1))
     {
-        return item1.value;
+        value = item1.value;
+        return true;
     }
 
     const StringTableItem& item2 = _tableCampaign[str];
     if (!_tableCampaign.IsNull(item2))
     {
-        return item2.value;
+        value = item2.value;
+        return true;
     }
 
     const StringTableItem& item3 = _tableGlobal[str];
     if (!_tableGlobal.IsNull(item3))
     {
-        return item3.value;
+        value = item3.value;
+        return true;
     }
+
+    value = RString();
+    return false;
+}
+
+RString StringTable::Localize(const char* str)
+{
+    RString value;
+    if (TryLocalize(str, value))
+        return value;
 
     RptF("String %s not found", (const char*)str);
 #if _ENABLE_CHEATS
@@ -634,10 +665,17 @@ RString LocalizeString(const char* str)
     return GStringTable.Localize(str);
 }
 
+bool TryLocalizeString(const char* key, RString& value)
+{
+    return GStringTable.TryLocalize(key, value);
+}
+
 const char* LocalizeStringWithFallback(const char* key, const char* fallback)
 {
-    RString s = LocalizeString(key);
-    return s.GetLength() > 0 ? s.Data() : fallback;
+    RString s;
+    // Successful values are owned by the loaded table (until its next reload).
+    // LocalizeString's missing-key diagnostic is a temporary, not table storage.
+    return key && *key && TryLocalizeString(key, s) && s.GetLength() > 0 ? s.Data() : fallback;
 }
 
 RString Localize(RString str)
@@ -834,6 +872,7 @@ bool SetLanguage(RString newLang)
         return ok;
     }
     ++GLanguageGeneration;
+    ResetFontRenderers();
     // Iterate a copy so a callback can safely register/unregister without
     // invalidating the iteration.
     auto snapshot = GetLangCallbacks();

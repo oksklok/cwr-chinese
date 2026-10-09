@@ -4,6 +4,9 @@
 #include <Poseidon/Foundation/platform.hpp>
 #include <Poseidon/IO/Filesystem/DirScanner.hpp>
 #include <Poseidon/UI/Locale/MissionHtmlLocalization.hpp>
+#include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
+#include <Poseidon/UI/Locale/Languages.hpp>
+#include <Poseidon/IO/Filesystem/FileOps.hpp>
 
 #include <cctype>
 #include <set>
@@ -85,7 +88,42 @@ RString ResolveMissionTemplateDisplayName(RString missionDirectory, RString fall
 
 RString GetMissionTemplateSelectorText(const MissionTemplateEntry& templ)
 {
+    // Optional display-only metadata; keep the template identity in list data.
+    std::string key = "STR_CWRC_WIZARD_";
+    for (unsigned char c : std::string((const char*)templ.name))
+        key += c == '-' ? '_' : static_cast<char>(std::toupper(c));
+    RString value;
+    if (TryLocalizeString(key.c_str(), value) && value.GetLength() > 0)
+        return stricmp(value, templ.name) == 0 ? templ.name : value;
     return templ.name;
+}
+
+RString ResolveMissionTemplateBankPath(RString relativePath)
+{
+    // Generation must extract the same mod bank that the preview loads.
+    struct Context { RString relative; RString result; } ctx{relativePath, relativePath};
+    ModSystem::EnumDirectories([](RStringB dir, void* context) -> bool
+    {
+        if (dir.GetLength() == 0)
+            return false;
+        auto* c = static_cast<Context*>(context);
+        const char separator[] = {PATH_SEP, '\0'};
+        const RString path = dir + RString(separator) + c->relative;
+        if (const char* suffix = GetLanguagePboSuffix(GLanguage))
+        {
+            const RString localized = path + RString(".") + RString(suffix);
+            if (FilePathExists(localized + RString(".pbo")))
+            {
+                c->result = localized;
+                return true;
+            }
+        }
+        if (!FilePathExists(path + RString(".pbo")))
+            return false;
+        c->result = path;
+        return true;
+    }, &ctx);
+    return ctx.result;
 }
 
 void ListMissionTemplates(AutoArray<MissionTemplateEntry>& templates, bool multiplayer, RString world)

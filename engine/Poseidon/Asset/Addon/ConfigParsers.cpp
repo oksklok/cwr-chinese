@@ -88,6 +88,7 @@ static bool s_menuOverriddenByMod = false;
 // A mod's bin/config replaced the base master config; read to restore the base config-extra
 // (CfgLanguages) it shadowed.
 static bool s_configOverriddenByMod = false;
+static RString s_modConfigExtra;
 
 bool IsMenuOverriddenByMod()
 {
@@ -140,7 +141,21 @@ void MergeBaseConfigExtra()
             // in the resource-extra path.
             Pars.SetFile(&Pars);
             LOG_INFO(Config, "MergeBaseConfigExtra: restored base {} over the mod config", (const char*)extraFile);
-            return;
+            break;
+        }
+    }
+    // Restore remaster defaults first, then retain the winning mod's explicit
+    // additions (e.g. a text-only language). Otherwise the stock languages[]
+    // array silently replaces the mod's registry after ParseConfig merged it.
+    if (s_modConfigExtra.GetLength() > 0)
+    {
+        ParamFile extra;
+        const char* path = s_modConfigExtra;
+        const char* slash = strrchr(path, '/');
+        if (ParseTextFileFromResolvedPath(extra, s_modConfigExtra, slash ? slash + 1 : path))
+        {
+            Pars.Update(extra);
+            Pars.SetFile(&Pars);
         }
     }
 }
@@ -181,6 +196,7 @@ bool ParseConfig(RStringB dir, void* context)
     // A mod's bin/config replaces the base outright: EnumDirectories stops at the first mod that
     // returns true, so vanilla content the mod omits does not leak back in. Mirrors ParseResource.
     s_configOverriddenByMod = false; // reset so a re-init with no mod config leaves it false
+    s_modConfigExtra = RString();
     RString binDirUsed;
     for (bool upperCase : {false, true})
     {
@@ -200,6 +216,8 @@ bool ParseConfig(RStringB dir, void* context)
     RString extraFileName;
     if (ResolveFileInDir(binDirUsed, "config-extra.cpp", extraFile, extraFileName))
     {
+        if (dir.GetLength() > 0)
+            s_modConfigExtra = extraFile;
         ParamFile extra;
         ParseTextFileFromResolvedPath(extra, extraFile, extraFileName);
         Pars.Update(extra);

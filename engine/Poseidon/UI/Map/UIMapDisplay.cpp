@@ -603,7 +603,7 @@ static void UpdateGetReadyTitleText(CStatic* text)
         return;
     }
 
-    text->SetText(FormatLocalizedBriefingTitle(unit->GetPerson()->GetInfo()._name, grp->GetName(), unit->ID()));
+    text->SetText(FormatLocalizedBriefingTitle(unit->GetPerson()->GetInfo().GetDisplayName(), grp->GetName(), unit->ID()));
 }
 
 void DisplayMap::ReloadBriefingContent(RString activeSection)
@@ -922,7 +922,7 @@ bool DisplayMap::OnKeyUp(unsigned nChar, unsigned nRepCnt, unsigned nFlags)
 UnitWeaponsInfo::UnitWeaponsInfo(AIUnit* u)
 {
     unit = u;
-    name = u->GetPerson()->GetInfo()._name;
+    name = u->GetPerson()->GetInfo().GetDisplayName();
     Person* veh = u->GetPerson();
     weaponSlots = veh->GetType()->_weaponSlots;
     for (int i = 0; i < veh->NWeaponSystems(); i++)

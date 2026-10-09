@@ -183,6 +183,15 @@ TEST_CASE("Stringtable - LocalizeStringWithFallback", "[stringtable][localize]")
 
     REQUIRE(std::string(Poseidon::LocalizeStringWithFallback("STR_HELLO", "fb")) == "Hello");
     REQUIRE(std::string(Poseidon::LocalizeStringWithFallback("STR_DOES_NOT_EXIST", "fb")) == "fb");
+    const std::string fallback = "Exact stock fallback, including punctuation and a deliberately long lifetime-safe value.";
+    REQUIRE(Poseidon::LocalizeStringWithFallback("STR_DOES_NOT_EXIST", fallback.c_str()) == fallback.c_str());
+    REQUIRE(Poseidon::LocalizeStringWithFallback("", fallback.c_str()) == fallback.c_str());
+    REQUIRE(Poseidon::LocalizeStringWithFallback(nullptr, fallback.c_str()) == fallback.c_str());
+    REQUIRE(Poseidon::LocalizeStringWithFallback("STR_DOES_NOT_EXIST", nullptr) == nullptr);
+    const char* translated = Poseidon::LocalizeStringWithFallback("STR_HELLO", fallback.c_str());
+    // A successful result is borrowed from the table, not the helper's local RString.
+    REQUIRE(std::string(translated) == "Hello");
+    REQUIRE(translated == Poseidon::LocalizeString("STR_HELLO").Data());
 }
 
 TEST_CASE("Stringtable - Localize by name", "[stringtable][localize]")

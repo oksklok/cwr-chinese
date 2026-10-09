@@ -646,12 +646,10 @@ void SentenceParams::AddAzimutRelDir(Vector3Par dir)
     static const RStringB azimSay[13] = {
         "at12", "at1", "at2", "at3", "at4", "at5", "at6", "at7", "at8", "at9", "at10", "at11", "at12",
     };
-    static const RStringB azimWrite[13] = {
-        LocalizeString(IDS_WORD_AT12), LocalizeString(IDS_WORD_AT1),  LocalizeString(IDS_WORD_AT2),
-        LocalizeString(IDS_WORD_AT3),  LocalizeString(IDS_WORD_AT4),  LocalizeString(IDS_WORD_AT5),
-        LocalizeString(IDS_WORD_AT6),  LocalizeString(IDS_WORD_AT7),  LocalizeString(IDS_WORD_AT8),
-        LocalizeString(IDS_WORD_AT9),  LocalizeString(IDS_WORD_AT10), LocalizeString(IDS_WORD_AT11),
-        LocalizeString(IDS_WORD_AT12),
+    // Resolve display text for each new message, not just the first language used.
+    const int azimWriteIds[13] = {
+        IDS_WORD_AT12, IDS_WORD_AT1, IDS_WORD_AT2, IDS_WORD_AT3, IDS_WORD_AT4, IDS_WORD_AT5,
+        IDS_WORD_AT6, IDS_WORD_AT7, IDS_WORD_AT8, IDS_WORD_AT9, IDS_WORD_AT10, IDS_WORD_AT11, IDS_WORD_AT12,
     };
 
     int azimut = toInt(atan2(dir.X(), dir.Z()) * (6 / H_PI));
@@ -662,7 +660,7 @@ void SentenceParams::AddAzimutRelDir(Vector3Par dir)
 
     if (azimut >= 0 && azimut <= 12)
     {
-        AddWord(azimSay[azimut], azimWrite[azimut]);
+        AddWord(azimSay[azimut], LocalizeString(azimWriteIds[azimut]));
     }
 }
 
@@ -680,28 +678,25 @@ void SentenceParams::AddDistance(float dist)
         "dist2000", "dist2000", "dist2000", "dist2000", "dist2000",
         "far", // 2500 (and more)
     };
-    static const RStringB distWrite[] = {
-        LocalizeString(IDS_WORD_DIST50),
-        LocalizeString(IDS_WORD_DIST100), // 50..150
-        LocalizeString(IDS_WORD_DIST200),  LocalizeString(IDS_WORD_DIST200),  LocalizeString(IDS_WORD_DIST500),
-        LocalizeString(IDS_WORD_DIST500), // 500
-        LocalizeString(IDS_WORD_DIST500),  LocalizeString(IDS_WORD_DIST1000), LocalizeString(IDS_WORD_DIST1000),
-        LocalizeString(IDS_WORD_DIST1000),
-        LocalizeString(IDS_WORD_DIST1000), // 1000
-        LocalizeString(IDS_WORD_DIST1000), LocalizeString(IDS_WORD_DIST1000), LocalizeString(IDS_WORD_DIST1000),
-        LocalizeString(IDS_WORD_DIST1000), LocalizeString(IDS_WORD_DIST1000), LocalizeString(IDS_WORD_DIST2000),
-        LocalizeString(IDS_WORD_DIST2000), LocalizeString(IDS_WORD_DIST2000), LocalizeString(IDS_WORD_DIST2000),
-        LocalizeString(IDS_WORD_DIST2000), // 2000
-        LocalizeString(IDS_WORD_DIST2000), LocalizeString(IDS_WORD_DIST2000), LocalizeString(IDS_WORD_DIST2000),
-        LocalizeString(IDS_WORD_DIST2000), LocalizeString(IDS_WORD_DIST2000),
-        LocalizeString(IDS_WORD_DISTFAR), // 2500 (and more)
+    const int distWriteIds[] = {
+        IDS_WORD_DIST50,
+        IDS_WORD_DIST100, // 50..150
+        IDS_WORD_DIST200, IDS_WORD_DIST200, IDS_WORD_DIST500,
+        IDS_WORD_DIST500, // 500
+        IDS_WORD_DIST500, IDS_WORD_DIST1000, IDS_WORD_DIST1000, IDS_WORD_DIST1000,
+        IDS_WORD_DIST1000, // 1000
+        IDS_WORD_DIST1000, IDS_WORD_DIST1000, IDS_WORD_DIST1000, IDS_WORD_DIST1000, IDS_WORD_DIST1000,
+        IDS_WORD_DIST2000, IDS_WORD_DIST2000, IDS_WORD_DIST2000, IDS_WORD_DIST2000,
+        IDS_WORD_DIST2000, // 2000
+        IDS_WORD_DIST2000, IDS_WORD_DIST2000, IDS_WORD_DIST2000, IDS_WORD_DIST2000, IDS_WORD_DIST2000,
+        IDS_WORD_DISTFAR, // 2500 (and more)
     };
 
     int dist100 = toInt(dist * 0.01);
-    const int maxDist = sizeof(distWrite) / sizeof(*distWrite) - 1;
+    const int maxDist = sizeof(distWriteIds) / sizeof(*distWriteIds) - 1;
     saturate(dist100, 0, maxDist);
 
-    AddWord(distSay[dist100], distWrite[dist100]);
+    AddWord(distSay[dist100], LocalizeString(distWriteIds[dist100]));
 }
 
 void SentenceParams::AddRelativePosition(Vector3Par dir)

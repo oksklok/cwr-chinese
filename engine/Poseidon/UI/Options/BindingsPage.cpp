@@ -397,7 +397,16 @@ std::string FormatBinding(int code, int modifier)
         out += (const char*)GetKeyName(modifier);
         out += "+";
     }
-    out += (const char*)GetKeyName(code);
+    // These standard keycap abbreviations fit the notebook's six-character
+    // alternate cell. Only the Chinese presentation changes, never the binding.
+    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
+    if (chinese && code == SDL_SCANCODE_PAGEUP)
+        out += "PgUp";
+    else if (chinese && code == SDL_SCANCODE_PAGEDOWN)
+        out += "PgDn";
+    else
+        out += (const char*)GetKeyName(code);
     return out;
 }
 } // namespace
@@ -528,10 +537,13 @@ void BindingsPage::Provider::OnRowAction(int row, Display& host)
 
     BindingsPage* page = m_owner;
     char title[160];
-    snprintf(title, sizeof(title), "Reset \"%s\" bindings?",
+    snprintf(title, sizeof(title),
+             LocalizeStringWithFallback("STR_CWRC_RESET_CATEGORY_TITLE", "Reset \"%s\" bindings?"),
              (const char*)LocalizeString(kCategoryStrIds[m_owner->m_category]));
     char body[160];
-    snprintf(body, sizeof(body), "All current %s bindings in this category will be replaced with defaults.",
+    snprintf(body, sizeof(body),
+             LocalizeStringWithFallback("STR_CWRC_RESET_CATEGORY_BODY",
+                                        "All current %s bindings in this category will be replaced with defaults."),
              m_owner->DeviceNoun());
     auto onYes = [page]()
     {
@@ -539,7 +551,9 @@ void BindingsPage::Provider::OnRowAction(int row, Display& host)
             page->ResetCurrentCategoryToDefaults();
         page->RefreshAfterCapture();
     };
-    shell->PushPage(std::make_unique<ConfirmPage>(title, body, std::move(onYes), "Reset", "Cancel"));
+    shell->PushPage(std::make_unique<ConfirmPage>(
+        title, body, std::move(onYes), LocalizeStringWithFallback("STR_CWRC_RESET_CATEGORY_BUTTON", "Reset"),
+        std::string((const char*)LocalizeString("STR_DISP_OPT_CAP_CANCEL"))));
 }
 
 const char* BindingsPage::Provider::FindBindingConflict(const char* /*formatted*/, int /*excludeRow*/,

@@ -32,6 +32,34 @@ using Poseidon::MissionTemplateEntry;
 using Poseidon::ResolveMissionTemplateDisplayName;
 using Poseidon::SetLanguage;
 
+TEST_CASE("Campaign display metadata retains its exact stock name without a table", "[localization][cwrc-language]")
+{
+    ParamFile config;
+    const std::string text = "class Campaign { name=\"1985 - Cold War Crisis\"; nameKey=\"STR_CAMPAIGN_TEST\"; };";
+    QIStream input(text.c_str(), text.size());
+    config.Parse(input);
+    Poseidon::ClearStringtable();
+    GLanguage = "English";
+    CHECK(Poseidon::LocalizeCampaignDisplayName(config >> "Campaign") == RString("1985 - Cold War Crisis"));
+    CHECK(RString(config >> "Campaign" >> "name") == RString("1985 - Cold War Crisis"));
+}
+
+TEST_CASE("Wizard generation preserves raw Intel references and user literals", "[localization][cwrc-language]")
+{
+    ParamFile config;
+    const std::string text = "class Intel { briefingName=\"$STR_HELLO\"; briefingDescription=\"@STR_DESC\"; };"
+                             "class Literal { briefingName=\"My custom mission\"; };";
+    QIStream input(text.c_str(), text.size());
+    config.Parse(input);
+    RString name = "resolved title", description = "resolved description";
+    Poseidon::RestoreMissionIntelText(config >> "Intel", name, description);
+    CHECK(name == RString("$STR_HELLO"));
+    CHECK(description == RString("@STR_DESC"));
+    Poseidon::RestoreMissionIntelText(config >> "Literal", name, description);
+    CHECK(name == RString("My custom mission"));
+    CHECK(description == RString("@STR_DESC"));
+}
+
 namespace
 {
 

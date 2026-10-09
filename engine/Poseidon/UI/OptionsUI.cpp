@@ -21,6 +21,7 @@
 
 #include <Poseidon/IO/Streams/QBStream.hpp>
 #include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
+#include <Poseidon/UI/Locale/WorldLocalization.hpp>
 
 #include <Random/randomGen.hpp>
 
@@ -2175,7 +2176,7 @@ void DisplayMain::LoadHeader()
             text->SetText(buffer);
         }
         text = dynamic_cast<C3DStatic *>(GetCtrl(IDC_MAIN_ISLAND));
-        if (text) text->SetText(Pars>>"CfgWorlds">>header.island>>"description");
+        if (text) text->SetText(Poseidon::LocalizeWorldDisplayName(header.island, Pars>>"CfgWorlds">>header.island>>"description"));
         text = dynamic_cast<C3DStatic *>(GetCtrl(IDC_MAIN_MISSION));
         if (text)
         {

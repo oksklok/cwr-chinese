@@ -1,0 +1,5 @@
+LANGUAGE,English,French
+STR_CWRC_WORLD_EDEN,艾弗隆（Everon）,Everon
+STR_CWRC_MASTER_DISABLED,主服务器已禁用,Operated by disabled
+STR_CWRC_MASTER_OPERATED_BY,运营方：%s,Operated by %s
+STR_CWRC_WIZARD_1_10_T_TEAMFLAGFIGHT,团队夺旗战,1-10_T_TeamFlagFight

@@ -903,7 +903,7 @@ void DisplayDebriefing::CreateDebriefing()
     RString playerName = GetLocalPlayerName();
     if (newInfo.unit)
     {
-        playerName = newInfo.unit->GetPerson()->GetInfo()._name;
+        playerName = newInfo.unit->GetPerson()->GetInfo().GetDisplayName();
     }
 
     // preload and create section

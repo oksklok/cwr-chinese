@@ -12,7 +12,7 @@ static int LangID = English;
 
 int FindLangID(const char* language)
 {
-    if (stricmp(language, "Chinese") == 0)
+    if (stricmp(language, "Chinese") == 0 || stricmp(language, "ChineseSimplified") == 0)
     {
         return Chinese;
     }

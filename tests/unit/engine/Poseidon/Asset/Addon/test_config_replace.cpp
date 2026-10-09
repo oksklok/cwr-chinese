@@ -121,3 +121,36 @@ TEST_CASE("with no config-replacement mod the base loads and applies its own con
     CHECK(registry.Find("Tundra") != nullptr);
     registry.ResetToDefaults();
 }
+
+TEST_CASE("winning mod language additions survive restoring stock config-extra", "[config][mods][replace][cwrc-language]")
+{
+    CwdGuard cwd(FixtureRoot());
+    REQUIRE(Poseidon::ParseConfig("language-mod", nullptr));
+    Poseidon::MergeBaseConfigExtra();
+    auto& registry = CfgLib::LanguageRegistry::Instance();
+    registry.LoadFromConfig(*Pars.FindEntry("CfgLanguages"));
+    CHECK(registry.Count() == 5);
+    CHECK(registry.Find("Tundra") != nullptr);
+    const auto* chinese = registry.Find("ChineseSimplified");
+    REQUIRE(chinese != nullptr);
+    CHECK(chinese->autonym == "简体中文");
+    CHECK(chinese->codepage == Poseidon::Codepage::Utf8);
+    CHECK(chinese->fallbackLanguage == "English");
+    CHECK_FALSE(chinese->hasVoice);
+    const auto* traditional = registry.Find("ChineseTraditional");
+    REQUIRE(traditional != nullptr);
+    CHECK(traditional->autonym == "繁體中文");
+    CHECK(traditional->code == "zh-TW");
+    CHECK(traditional->codepage == Poseidon::Codepage::Utf8);
+    CHECK(traditional->fallbackLanguage == "English");
+    CHECK(traditional->fontDirectory == "Fonts/ChineseTraditional");
+    CHECK_FALSE(traditional->hasVoice);
+    CHECK(registry.VoiceCount() == 2);
+    // Resetting to stock must not replay the previously winning mod's extra.
+    REQUIRE(Poseidon::ParseConfig("", nullptr));
+    Poseidon::MergeBaseConfigExtra();
+    registry.LoadFromConfig(*Pars.FindEntry("CfgLanguages"));
+    CHECK(registry.Find("ChineseSimplified") == nullptr);
+    CHECK(registry.Find("ChineseTraditional") == nullptr);
+    registry.ResetToDefaults();
+}

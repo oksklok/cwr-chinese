@@ -1,6 +1,8 @@
 #include <Poseidon/Network/NetworkConfig.hpp>
 #include <Poseidon/Core/Config/EngineConfig.hpp>
 #include <Poseidon/Foundation/Strings/RString.hpp>
+#include <Poseidon/Foundation/Strings/StrFormat.hpp>
+#include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
 #include <cstring>
 
 const int DefaultNetworkPort = 1985;
@@ -77,7 +79,12 @@ void SetNetworkMasterServer(const RString& host)
 RString FormatNetworkMasterServerAttribution(const RString& host)
 {
     if (host.GetLength() == 0)
+    {
+        RString value;
+        if (Poseidon::TryLocalizeString("STR_CWRC_MASTER_DISABLED", value) && value.GetLength() > 0)
+            return value;
         return "Operated by disabled";
+    }
 
     const char* stripped = host;
     if (std::strncmp(stripped, "https://", 8) == 0)
@@ -85,6 +92,9 @@ RString FormatNetworkMasterServerAttribution(const RString& host)
     else if (std::strncmp(stripped, "http://", 7) == 0)
         stripped += 7;
 
+    RString format;
+    if (Poseidon::TryLocalizeString("STR_CWRC_MASTER_OPERATED_BY", format) && format.GetLength() > 0)
+        return Format((const char*)format, stripped);
     return RString("Operated by ") + stripped;
 }
 

@@ -1857,6 +1857,7 @@ void AICenter::BeginArcade(ArcadeTemplate& t, AutoArray<VehicleInitCmd, MemAlloc
                             {
                                 AIUnitInfo& info = player->GetPerson()->GetInfo();
                                 info._identityContext = RString();
+                                info._displayNameKey = RString();
                                 info._name = identity->name;
                                 info._face = identity->face;
                                 info._glasses = identity->glasses;
@@ -1903,6 +1904,7 @@ void AICenter::BeginArcade(ArcadeTemplate& t, AutoArray<VehicleInitCmd, MemAlloc
                         playerUnit->GetPerson()->SetRemotePlayer(0);
                         AIUnitInfo& info = playerUnit->GetPerson()->GetInfo();
                         info._identityContext = RString();
+                        info._displayNameKey = RString();
                         info._name = Glob.header.playerName;
                         info._face = Glob.header.playerFace;
                         info._glasses = Glob.header.playerGlasses;
@@ -1983,6 +1985,7 @@ void AICenter::BeginArcade(ArcadeTemplate& t, AutoArray<VehicleInitCmd, MemAlloc
                             {
                                 AIUnitInfo& info = unit->GetPerson()->GetInfo();
                                 info._identityContext = RString();
+                                info._displayNameKey = RString();
                                 info._name = identity->name;
                                 info._face = identity->face;
                                 info._glasses = identity->glasses;
@@ -2023,6 +2026,7 @@ void AICenter::BeginArcade(ArcadeTemplate& t, AutoArray<VehicleInitCmd, MemAlloc
                         {
                             AIUnitInfo& info = playerUnit->GetPerson()->GetInfo();
                             info._identityContext = RString();
+                            info._displayNameKey = RString();
                             info._name = Glob.header.playerName;
                             info._face = Glob.header.playerFace;
                             info._glasses = Glob.header.playerGlasses;

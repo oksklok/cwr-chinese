@@ -3,6 +3,8 @@ using namespace Poseidon;
 #include <Poseidon/Core/Config/EngineConfig.hpp>
 #include <Poseidon/UI/Locale/Stringtable/CodepageTranscode.hpp>
 #include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
+#include <Poseidon/UI/Locale/WorldLocalization.hpp>
+#include <Poseidon/Game/Mission/MissionTemplateCatalog.hpp>
 #include <Poseidon/Core/Config/UserConfig.hpp>
 #include <Poseidon/Core/resincl.hpp>
 #include <Poseidon/World/Terrain/Landscape.hpp>
@@ -148,7 +150,9 @@ void __cdecl ReportRemountFailure()
     if (options != nullptr)
     {
         options->CreateMsgBox(MB_BUTTON_OK,
-                              RString("Could not load the selected mod set. Reverted to the previous one."));
+                              LocalizeStringWithFallback(
+                                  "STR_CWRC_MOD_LOAD_FAILED",
+                                  "Could not load the selected mod set. Reverted to the previous one."));
     }
 }
 
@@ -2276,7 +2280,8 @@ Control* DisplayServer::OnCreateCtrl(int type, int idc, const ParamEntry& cls)
                 }
 
                 int index = lbox->AddString(
-                    Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage));
+                    Poseidon::LocalizeWorldDisplayName(name,
+                        Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage)));
                 lbox->SetData(index, name);
                 if (stricmp(name, Glob.header.worldname) == 0)
                 {
@@ -2614,6 +2619,18 @@ void DisplayServer::SaveParams()
 
 namespace
 {
+bool HasMPMissionBankRow(C3DListBox* lbox, const char* name)
+{
+    for (int i = 0; i < lbox->GetSize(); ++i)
+    {
+        if (lbox->GetValue(i) == 0 && stricmp(lbox->GetData(i), name) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void AddMPMissionBankRow(C3DListBox* lbox, const char* filename)
 {
     char name[256];
@@ -2631,7 +2648,13 @@ void AddMPMissionBankRow(C3DListBox* lbox, const char* filename)
     }
     *ext = 0;
 
-    const int index = lbox->AddString(name);
+    // Mod paths can be enumerated with both case spellings on Windows.
+    // Keep one bank entry; mission resolution already prefers active mods.
+    if (HasMPMissionBankRow(lbox, name))
+    {
+        return;
+    }
+    const int index = lbox->AddString(Poseidon::GetMissionTemplateSelectorText({name, "", true}));
     lbox->SetData(index, name);
     lbox->SetValue(index, 0); // public/mod bank
 }
@@ -2805,7 +2828,13 @@ void DisplayServer::UpdateMissions(RString filename)
                 {
                     *ext = 0;
                 }
-                int index = lbox->AddString(name);
+                // A mod bank overrides the stock loose mission of this identity.
+                // Listing the loose copy too would bypass that override on selection.
+                if (HasMPMissionBankRow(lbox, name))
+                {
+                    continue;
+                }
+                int index = lbox->AddString(Poseidon::GetMissionTemplateSelectorText({name, "", false}));
                 lbox->SetData(index, name);
                 lbox->SetValue(index, 1); // public directory
             }
@@ -2910,7 +2939,8 @@ Control* DisplayRemoteMissions::OnCreateCtrl(int type, int idc, const ParamEntry
                 }
 
                 int index = lbox->AddString(
-                    Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage));
+                    Poseidon::LocalizeWorldDisplayName(name,
+                        Poseidon::DecodeLegacyTextToRString(Pars >> "CfgWorlds" >> name >> "description", GLanguage)));
                 lbox->SetData(index, name);
                 if (stricmp(name, Glob.header.worldname) == 0)
                 {

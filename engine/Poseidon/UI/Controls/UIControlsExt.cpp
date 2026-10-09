@@ -1816,6 +1816,8 @@ void CHTMLContainer::FormatSection(int s)
 {
     float maxLineWidth = GetPageWidth();
     float minHeight = _sizeP;
+    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
 
     HTMLSection& section = _sections[s];
     section.rows.Clear();
@@ -2000,11 +2002,34 @@ void CHTMLContainer::FormatSection(int s)
 
                 int wordI = 0;
                 int n = field.text.GetLength();
+                // A link/bold span is a separate field. Reserve its following
+                // punctuation so a comma after a link cannot become a new row.
+                float trailingWidth = 0;
+                if (chinese && f + 1 < section.fields.Size())
+                {
+                    const auto& next = section.fields[f + 1];
+                    if (!next.nextline && next.format == field.format && next.tableWidth == 0)
+                    {
+                        int end = 0;
+                        while (end < next.text.GetLength() &&
+                               HtmlTextWrap::IsClosingPunctuation(HtmlTextWrap::Codepoint(next.text + end)))
+                            end += HtmlTextWrap::Utf8CharBytes(next.text + end, next.text.GetLength() - end);
+                        if (end > 0)
+                            trailingWidth = GetTextWidth(size, font, next.text.Substring(0, end));
+                    }
+                }
                 for (int i = 0; i < n;)
                 {
                     const int j = i;
                     const int charBytes = HtmlTextWrap::Utf8CharBytes(field.text + i, n - i);
                     PoseidonAssert(charBytes > 0);
+                    if (chinese && i > 0 &&
+                        HtmlTextWrap::IsChineseWrapBoundary(HtmlTextWrap::PreviousCodepoint(field.text, i),
+                                                           HtmlTextWrap::Codepoint(field.text + i)))
+                    {
+                        wordI = i;
+                        wordW = curW;
+                    }
                     if (HtmlTextWrap::IsWrapWhitespace(field.text + i, charBytes))
                     {
                         wordI = i + charBytes;
@@ -2017,7 +2042,7 @@ void CHTMLContainer::FormatSection(int s)
                                          ? it->second
                                          : (charWidthCache[cacheKey] = GetTextWidth(size, font, ch));
 
-                    if (curW + cW > lineWidth)
+                    if (curW + cW + ((i + charBytes == n) ? trailingWidth : 0) > lineWidth)
                     {
                         if (wordW > 0)
                         {
