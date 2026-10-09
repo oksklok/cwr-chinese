@@ -57,3 +57,16 @@ TEST_CASE("LoadModSelection returns empty for a missing file", "[mods][selection
 {
     CHECK(LoadModSelection("/no/such/path/mods.cfg").empty());
 }
+
+TEST_CASE("MODS UI keeps the parsed mount set alive during selection persistence", "[mods][selection][regression]")
+{
+    // All() returns a reference. Iterating All() on a temporary ActiveMods
+    // used a destroyed container and silently saved an empty mods.cfg.
+    const auto source = std::filesystem::path(TESTS_ROOT_DIR).parent_path() /
+                        "engine/Poseidon/UI/OptionsUIApp.cpp";
+    std::ifstream input(source);
+    REQUIRE(input.is_open());
+    const std::string text((std::istreambuf_iterator<char>(input)), {});
+    CHECK(text.find("ActiveModsFromMountPath((const char*)modPath).All()") == std::string::npos);
+    CHECK(text.find("ActiveModsFromMountPath((const char*)ModSystem::GetModList()).All()") == std::string::npos);
+}

@@ -1317,7 +1317,8 @@ static AutoArray<ModRow> ScanModRows()
     scan(LocalModsRoot(), ModRowSource::Local);
     scan(WorkshopModsRoot(), ModRowSource::Workshop);
     scan(std::filesystem::current_path().string(), ModRowSource::Local);
-    for (const auto& mod : ActiveModsFromMountPath((const char*)ModSystem::GetModList()).All())
+    const auto activeMods = ActiveModsFromMountPath((const char*)ModSystem::GetModList());
+    for (const auto& mod : activeMods.All())
         scan(std::filesystem::path(mod.path).parent_path().string(), ModRowSource::Local);
     return rows;
 }
@@ -1564,7 +1565,8 @@ void DisplayMods::OnButtonClicked(int idc)
 
         RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
         std::vector<std::string> selection;
-        for (const auto& mod : ActiveModsFromMountPath((const char*)modPath).All())
+        const auto selectedMods = ActiveModsFromMountPath((const char*)modPath);
+        for (const auto& mod : selectedMods.All())
             selection.push_back(mod.path);
         if (!SaveModSelection(Foundation::GamePaths::Instance().UserDir() + "mods.cfg", selection))
         {
@@ -1844,7 +1846,8 @@ void DisplayMods::OnChildDestroyed(int idd, int exit)
             MarkCheckedDownloadsReady(list, true);
             RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
             std::vector<std::string> selection;
-            for (const auto& mod : ActiveModsFromMountPath((const char*)modPath).All())
+            const auto selectedMods = ActiveModsFromMountPath((const char*)modPath);
+            for (const auto& mod : selectedMods.All())
                 selection.push_back(mod.path);
             if (!SaveModSelection(Foundation::GamePaths::Instance().UserDir() + "mods.cfg", selection))
             {
