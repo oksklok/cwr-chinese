@@ -60,6 +60,44 @@ supplies UCRT. No VC++ installation step is needed. The native launcher is built
 with a static CRT, forwards optional arguments and has no console window.
 Both executables use an original neutral book icon, not proprietary artwork.
 
+## Current player-facing ZIP acceptance — 2026-10-09
+
+Artifact: `game-local/cwr-chinese-public/cwr-chinese.zip`, **132,253,867 bytes**.
+SHA-256: `924c06c32856bedf7329ac4d0a09938ab08014ae13b7a8fc83168ad3fb0a8a42`.
+Packaged main: `9504b08310da25ea73f6efdde040cb584b9b4232`.
+Client: `4902d20085ab60e5e3bfb10fb6dd73b8d14307df` (pinned by main).
+The previous ready-made ZIP below remains byte-identical.
+
+This exact archive was extracted into disposable GOG and actual Steam 3.05
+(app 65790, BuildID 24792092). Both native launchers worked with no arguments,
+from a different working directory; forwarded window/log arguments also worked,
+including a quoted path with spaces. The launcher is a 405,504-byte x64 GUI
+executable importing only USER32/KERNEL32, with no console or external CRT.
+The client and OpenAL loaded all three VC++ DLLs from `@cwr-chinese/client`,
+not System32; only OS UCRT came from Windows. No redistributable installation
+was performed. This was module-path/import verification on the available PC,
+not a separate pristine-Windows VM test. DLL file version: 14.44.35211.0.
+
+Both passed normal SC/TC selection, English voice selection, other saved mod
+loading (independent addon class verified), CWC Combined Arms, Resistance
+Contact and standalone Bomberman Chinese briefings and playable mission starts.
+English/French text switching also passed. Normal quit/relaunch retained TC on
+GOG and SC on Steam. The window title was Poseidon; both small and large live
+window icons matched the embedded original neutral artwork. Modified-client
+identification remains in file metadata and notices. Captures: `game-local/public-captures`.
+
+After deleting the three extracted entries and temporary test addon via Recycle
+Bin, stock English worked on both, including Steam's normal launch route.
+Both stock executables and the 119 original campaign files were unchanged;
+profiles, saves, existing personal mods and additional missions were preserved.
+No restoration or preparation ran. Finished translations and fonts are unchanged.
+
+Passed: launcher/client builds, 94 client cases / 1,496 assertions, 92 core cases /
+371 assertions, three CSV tests, four packaging tests (including stale runtime
+and stock-executable rejection), content reconstruction and deployment checks.
+Audio remained muted; English voice selection was checked, not audibly assessed.
+Multiplayer was not replayed in this presentation-only pass; prior results follow.
+
 ## Previous ready-made ZIP acceptance — 2026-10-09
 
 Artifact: `game-local/cwrc-ready/CWRC.zip`, **131,907,425 bytes**.
