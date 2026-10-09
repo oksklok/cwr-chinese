@@ -19,7 +19,7 @@ The client and launcher share the original neutral icon in client-source's
 `apps/cwr/Game/localization.ico`; `make_icon.py` reproduces it without external tools.
 
 Choose an absent output directory outside the game. Existing builders construct
-and check 217 tables, three metadata edits, campaign text, 24 standalone and
+and check 217 tables, eleven display-reference/Chinese HTML files, campaign text, 24 standalone and
 30 multiplayer missions, 36 templates, terrain and UI overlays. Exact output
 hashes preserve completed translations and original language columns. The game
 is read-only. Retail-derived adaptations ship ready-made under APL-SA; no
