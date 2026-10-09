@@ -1,7 +1,7 @@
 CWRC -- unofficial Chinese localization and modified client
 
 Original engine and game: Bohemia Interactive.
-Compatible only with a legitimate GOG Remastered 3.05 installation.
+Requires a legitimate, compatible Windows x64 Remastered 3.05 installation.
 Not affiliated with, endorsed by, or an official release of Bohemia Interactive.
 No original commercial executable or game data is included in this download.
 
