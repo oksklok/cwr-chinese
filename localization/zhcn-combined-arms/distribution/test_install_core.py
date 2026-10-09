@@ -431,7 +431,7 @@ class InstallCoreTests(unittest.TestCase):
         staging = self.game / core.STATE / 'pending.tmp'
         next_record = dict(pending, written=list(pending['files'])[:2])
         expected = (json.dumps(next_record, indent=2, ensure_ascii=False) + '\n').encode()
-        for data in (expected, expected[:len(expected) // 2], b''):
+        for data in (expected, expected.replace(b'\n', b'\r\n'), expected[:len(expected) // 2], b'{\r', b''):
             staging.write_bytes(data)
             self.assertIn('pending.tmp', core.state_files(staging.parent, pending))
         staging.write_bytes(b'player note')

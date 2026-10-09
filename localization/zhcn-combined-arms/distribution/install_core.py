@@ -101,7 +101,8 @@ def state_files(state, record):
         path = target(state, name)
         if path.is_file():
             expected = (json.dumps(update, indent=2, ensure_ascii=False) + '\n').encode('utf-8')
-            require(expected.startswith(path.read_bytes()), f'Preserved unrecognized state file: {name}')
+            staged = path.read_bytes().replace(b'\r\n', b'\n').removesuffix(b'\r')
+            require(expected.startswith(staged), f'Preserved unrecognized state file: {name}')
             known.add(name)
     known.update('backup/' + rel for rel, item in record['files'].items() if item['original'] is not None)
     actual = {p.relative_to(state).as_posix() for p in state.rglob('*') if p.is_file() or reparse(p)}
