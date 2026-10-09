@@ -225,9 +225,12 @@ void OptionsScrollList::FormatCell(const char* val, int innerChars, bool marquee
 int OptionsScrollList::RowLabelInnerChars(int row) const
 {
     Kind kind = m_provider.RowKind(row);
+    // Square Chinese mono glyphs need an earlier marquee than Latin letters.
+    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
     if (kind == KindBinding && m_provider.BindingUsesChevronUi(row))
-        return kBindingLabelInnerChars;
-    return kLabelInnerChars;
+        return chinese ? 4 : kBindingLabelInnerChars;
+    return chinese ? 6 : kLabelInnerChars;
 }
 
 bool OptionsScrollList::RowLabelNeedsMarquee(int row) const
@@ -755,12 +758,15 @@ void OptionsScrollList::UpdateRowHighlight()
     if (!desc)
         desc = "";
     int descCpLen = Utf8Length(desc);
-    if (descCpLen > kHintInnerChars)
+    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
+    const int hintChars = chinese ? 18 : kHintInnerChars;
+    if (descCpLen > hintChars)
     {
         DWORD elapsed = GlobalTickCount() - m_marqueeStartMs;
-        int offset = MarqueeOffset(elapsed, descCpLen, kHintInnerChars);
+        int offset = MarqueeOffset(elapsed, descCpLen, hintChars);
         char buf[128];
-        FormatMarquee(desc, offset, kHintInnerChars, buf, sizeof(buf));
+        FormatMarquee(desc, offset, hintChars, buf, sizeof(buf));
         SetRowValue(kIdcHint, buf, desc);
     }
     else
