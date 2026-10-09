@@ -7,6 +7,8 @@
 - Complete: ready-made mod content built with existing builders; no player-side
   preparation, installer, scanning, backup/recovery system or stock replacements.
 - Complete: retain other selected mods and original campaign/save paths.
+- Complete: first mod launch defaults to Simplified Chinese; one separate user
+  language preference remembers all choices without changing stock languages.
 - Complete: ASCII public names, native x64 launcher, app-local VC++ runtime,
   neutral original icon and plain Poseidon title; exact ZIP tested on GOG/Steam.
 - Complete: physical acceptance of the exact ready-made ZIP on GOG/Steam,

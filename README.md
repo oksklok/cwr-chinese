@@ -61,9 +61,11 @@ and [ROADMAP.md](ROADMAP.md). This remains local development: no tag, public
 release or binary upload. Final source/notice review and public release notes
 remain before publication.
 
-The current ZIP passed representative GOG and actual Steam 3.05 checks:
+The native-launcher distribution passed representative GOG and actual Steam 3.05 checks:
 native launch, app-local runtime loading, both campaigns, standalone missions,
 language selection/persistence, English/French fallback, another enabled mod,
 deletion and stock English launch. Existing multiplayer content is unchanged;
 its earlier physical acceptance is recorded in the distribution notes.
 This is not a full campaign playthrough or remote multiplayer qualification.
+The subsequent first-launch language change passed focused settings tests and
+a GOG in-game SC/TC/English persistence check with the stock preference intact.

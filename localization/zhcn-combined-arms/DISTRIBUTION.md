@@ -60,7 +60,28 @@ supplies UCRT. No VC++ installation step is needed. The native launcher is built
 with a static CRT, forwards optional arguments and has no console window.
 Both executables use an original neutral book icon, not proprietary artwork.
 
-## Current player-facing ZIP acceptance — 2026-10-09
+## First-launch language update — 2026-10-09
+
+`game-local/cwr-chinese-language/cwr-chinese.zip`: **132,258,450 bytes**;
+SHA-256 `890c38133e65496b926bcd505c0918b0e50948b471050e11bfdacd3e3d5e9d57`.
+Packaged main `0221893`, client `28918ce`. Earlier ZIPs are preserved.
+
+With the mod's Chinese languages registered, one `cwr-chinese-language.cfg`
+in the normal user settings directory stores the text choice. A missing mod
+preference starts in SC, retaining an earlier SC/TC value from `game.cfg`.
+Established mod preferences, including English/French, take priority. Mod saves
+leave the stock text/voice language fields intact. No launcher or content changes.
+
+Passed: client build and 12 focused settings cases / 138 assertions, including
+old SC/TC choices, stock English/French, persisted TC/English/French and no-mod
+behavior. Practical check on disposable GOG 3.05 with the exact ZIP: existing
+stock English -> first mod launch SC -> normal menu change/quit/relaunch TC ->
+normal menu change/quit/relaunch English -> original executable still English.
+The stock language fields and original executable stayed unchanged. The copied
+test profile's stale reference to an already-removed test addon was removed
+before the successful sequence. No Steam or broad gameplay retest in this pass.
+
+## Native-launcher ZIP acceptance — 2026-10-09
 
 Artifact: `game-local/cwr-chinese-public/cwr-chinese.zip`, **132,253,867 bytes**.
 SHA-256: `924c06c32856bedf7329ac4d0a09938ab08014ae13b7a8fc83168ad3fb0a8a42`.
