@@ -341,7 +341,17 @@ void DisplaySingleMission::ScanMissionDirectory(const RString& dir, C3DListBox* 
                     }
                 }
 
-                int index = lbox->AddString(Localize(name));
+                // Like loose missions, bank missions have not loaded their
+                // local table at picker time. Resolve it without mounting or
+                // replacing the active mission/global stringtables.
+                RString displayName;
+                if (name[0] == '$' || name[0] == '@')
+                    displayName = LookupStringtableCsv("stringtable.csv", (const char*)name + 1, &bank);
+                if (displayName.GetLength() == 0)
+                    displayName = Localize(name);
+                if (displayName.GetLength() == 0)
+                    displayName = nameNoExt;
+                int index = lbox->AddString(displayName);
                 lbox->SetData(index, nameNoExt);
                 lbox->SetValue(index, 1); // bank
             }

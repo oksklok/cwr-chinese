@@ -698,7 +698,7 @@ RString Localize(RString str)
     return str;
 }
 
-RString LookupStringtableCsv(RString csvPath, const char* key)
+RString LookupStringtableCsv(RString csvPath, const char* key, const QFBank* bank)
 {
     if (csvPath.GetLength() == 0 || !key || !*key)
     {
@@ -711,17 +711,20 @@ RString LookupStringtableCsv(RString csvPath, const char* key)
         const int n = csvPath.GetLength() - static_cast<int>(strlen(".csv"));
         std::string candidate(static_cast<const char*>(csvPath), n);
         candidate += ".utf8.csv";
-        if (QIFStreamB::FileExist(candidate.c_str()))
+        if (bank ? bank->FileExists(candidate.c_str()) : QIFStreamB::FileExist(candidate.c_str()))
         {
             resolved = RString(candidate.c_str());
         }
     }
-    if (!QIFStreamB::FileExist(resolved))
+    if (!(bank ? bank->FileExists(resolved) : QIFStreamB::FileExist(resolved)))
     {
         return RString();
     }
     QIFStreamB f;
-    f.AutoOpen(resolved);
+    if (bank)
+        f.open(*bank, resolved);
+    else
+        f.AutoOpen(resolved);
     const bool fileIsUtf8 = HasUtf8CsvSuffix(resolved);
     int column = -1;
     int englishColumn = -1;

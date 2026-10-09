@@ -42,7 +42,9 @@ RString Localize(RString str);
 // list scanner to resolve briefingName="$STR_…" / "@STR…" tokens against a
 // per-mission stringtable.csv (or .utf8.csv) without polluting the global
 // _tableMission. Cheap enough to call once per mission during the list build.
-RString LookupStringtableCsv(RString csvPath, const char* key);
+class QFBank;
+// bank is optional for an unmounted mission bank used by the mission picker.
+RString LookupStringtableCsv(RString csvPath, const char* key, const QFBank* bank = nullptr);
 
 void ClearStringtable();
 

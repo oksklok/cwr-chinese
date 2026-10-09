@@ -9,6 +9,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <chrono>
 #include <sys/types.h>
 #include <string>
 #include <utility>
@@ -115,6 +116,47 @@ TEST_CASE("Poseidon::SetLanguage switches by-name lookup to new column", "[strin
 
     REQUIRE(Poseidon::SetLanguage("English"));
     REQUIRE(std::string(Poseidon::LocalizeString("STR_GREETING").Data()) == "Hello");
+}
+
+TEST_CASE("Mission picker reads an unmounted bank's local UTF8 table", "[stringtable][cwrc-language]")
+{
+    const auto stem = std::filesystem::temp_directory_path() /
+                      ("cwrc_picker_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const auto path = stem.string() + ".pbo";
+    const std::string legacy = "LANGUAGE,English\nSTR_BANK_ONLY,Wrong legacy table\n";
+    const std::string utf8 = "LANGUAGE,English,ChineseSimplified,ChineseTraditional\n"
+                             "STR_BANK_ONLY,Hello,简体任务,繁體任務\n";
+    {
+        std::ofstream output(path, std::ios::binary);
+        for (const auto& member : {std::make_pair("stringtable.csv", legacy),
+                                   std::make_pair("stringtable.utf8.csv", utf8)})
+        {
+            output.write(member.first, std::strlen(member.first) + 1);
+            const uint32_t fields[] = {0, 0, 0, 0, static_cast<uint32_t>(member.second.size())};
+            output.write(reinterpret_cast<const char*>(fields), sizeof(fields));
+        }
+        const char end[21] = {};
+        output.write(end, sizeof(end));
+        output << legacy << utf8;
+    }
+    const RString savedLanguage = GLanguage;
+    {
+        Poseidon::QFBank bank;
+        bank.open(stem.string().c_str());
+        for (const auto& item : {std::make_pair("English", "Hello"),
+                                std::make_pair("ChineseSimplified", "简体任务"),
+                                std::make_pair("ChineseTraditional", "繁體任務"),
+                                std::make_pair("French", "Hello")})
+        {
+            GLanguage = item.first;
+            CHECK(Poseidon::LookupStringtableCsv("stringtable.csv", "STR_BANK_ONLY", &bank) == RString(item.second));
+        }
+        CHECK(Poseidon::LookupStringtableCsv("stringtable.csv", "STR_MISSING", &bank).GetLength() == 0);
+        CHECK(Poseidon::LookupStringtableCsv("missing.csv", "STR_BANK_ONLY", &bank).GetLength() == 0);
+        CHECK(std::string(Poseidon::LocalizeStringWithFallback("STR_BANK_ONLY", "Unchanged global")) == "Unchanged global");
+    }
+    GLanguage = savedLanguage;
+    std::filesystem::remove(path);
 }
 
 TEST_CASE("Chinese column switches independently with stock English fallback", "[stringtable][switch][cwrc-language]")
