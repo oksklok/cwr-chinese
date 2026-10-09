@@ -367,8 +367,13 @@ EngineGL33::EngineGL33(int width, int height, bool windowed, int bpp)
 #ifdef _WIN32
     // Borrow the installed game's artwork at runtime; no proprietary icon is
     // embedded in the community client. The launcher keeps the game as cwd.
-    HMODULE resources = LoadLibraryExW(L"PoseidonGame.exe", nullptr,
-                                      LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+    // Use the absolute game path: a bare name can resolve to this already
+    // loaded modified executable, which deliberately has no proprietary icon.
+    wchar_t stockExecutable[MAX_PATH];
+    const DWORD stockPathLength = GetFullPathNameW(L"PoseidonGame.exe", MAX_PATH, stockExecutable, nullptr);
+    HMODULE resources = stockPathLength > 0 && stockPathLength < MAX_PATH
+        ? LoadLibraryExW(stockExecutable, nullptr, LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE)
+        : nullptr;
     if (resources)
     {
         EnumResourceNamesW(resources, MAKEINTRESOURCEW(14), [](HMODULE module, LPCWSTR, LPWSTR name, LONG_PTR context) -> BOOL {
