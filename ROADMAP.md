@@ -1,8 +1,9 @@
 # Chinese localization roadmap
 
 - Current milestone: Phase 3 complete; Phase 4 Windows local release candidate implemented and tested
-- Next task: Final public source/license/notice review and release documentation
-- Known blockers: public-release review/publication gates remain; no known installer acceptance blocker
+- Current work: practical existing-installation RC2; exact-installer acceptance in progress
+- Next task: finish RC2 acceptance, then final public source/license/notice review and release documentation
+- Known blockers: public-release review/publication gates remain; Steam runtime acceptance still pending
 - Do not forget: inherited stock Return to Eden briefing defect, redistribution audit and exact public-artifact testing
 
 This is the source of truth for remaining localization work. Follow the phases and checklist order below.
@@ -46,6 +47,8 @@ This is the source of truth for remaining localization work. Follow the phases a
 - [x] Implement the Chinese-only payload and local installation/uninstallation core: exact reconstruction, original backups, receipts, rollback, reinstall and user-edit preservation.
 - [x] Build the Windows installer/uninstaller wrapper around the tested core: neutral CWRC client, private PyInstaller helper and Inno Setup local RC; not published.
 - [x] Add verified clean GOG Remastered 3.05 compatibility/hash/conflict checks.
+- [x] Narrow compatibility to required 3.05 sources, preserve extra content/mods, and move standalone localization into mod PBOs.
+- [ ] Complete exact RC2 installer acceptance on GOG and the available Steam installation.
 - [x] Complete bounded clean-install core runtime acceptance: authored MP lobby/briefing/gameplay, radio live switching and no-mod English; see DISTRIBUTION.md for chat-history and test limits.
 - [x] Test the exact local RC wrapper's install/uninstall/reinstall workflow, shortcut launch, user-edit conflict preservation and interruption/retry; exact original restoration verified.
 - [ ] Audit redistribution rights, licenses and package contents.

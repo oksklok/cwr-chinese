@@ -1,7 +1,44 @@
 # Distribution plan and installation core
 
 Local Windows release-candidate installer built and tested; nothing published or tagged.
-Target: Windows x64 GOG Remastered 3.05. This practical audit is not a legal opinion.
+Target: Windows x64 Remastered 3.05. This practical audit is not a legal opinion.
+
+## Practical installation layout (RC2)
+
+RC2 checks 582 consumed sources rather than the entire 7,596-file GOG inventory.
+561 retain exact hashes for table/offset/config reconstruction and the existing
+terrain, wizard and MP builders. The other 21 add-ons contribute only referenced
+global table rows: their PBO format must parse and all reconstructed table hashes
+must match; unrelated members may differ. The original executable must be PE x64
+and report 3.05, without a storefront-specific executable hash. Other assets,
+extra missions and separately installed mods are ignored. Required-source edits,
+unrecognized CWRC output/state, unsafe paths, running target games and insufficient
+space still stop installation with an explanation. Original 1.96/1.99 and future
+versions are unsupported.
+An added base `BIN/config.cpp` conflicts with the required binary config and is
+rejected explicitly; modifications in separate mod folders remain selectable.
+
+All 24 standalone missions now use locally reconstructed mod PBOs, including the
+Resistance subdirectory. Their original files remain untouched. Authored MP,
+Templates/SPTemplates, shared bin overlays and ten Chinese fonts already load
+through the mod and retain that route. Campaign translations and two campaign
+description edits retain the original loose deployment and exact backup/restore:
+`QFBank::ScanPatchFiles` gives existing loose files precedence over campaign banks.
+A physical sparse-bank trial still showed English campaign names/subtitles, so
+no engine precedence redesign is introduced merely to eliminate these replacements.
+
+The shortcut uses `--add-mod @zhcn-prototype --voice English`. This appends CWRC
+to an explicit `--mod` list or the existing `mods.cfg` selection format; the MODS
+screen now saves choices and retains actual game-local/managed/workshop paths.
+Reinstall does not retain an obsolete absolute copy of the appended mod. Profiles
+and saves remain in the game's existing paths. RC2 owns 239 files with 119 original
+backups. Same-artifact reinstall is a verified no-op; older/different CWRC requires
+normal uninstall first. Legacy receipts remain restorable. Failed/interrupted
+installation uses the existing journal/recovery path; later user edits are retained.
+
+An actual installed Steam 3.05 tree (BuildID 24792092) is available. Initial data
+checks match GOG; exact RC2 installer and runtime acceptance are in progress.
+The RC1 sections below are retained historical evidence, not RC2 acceptance.
 
 ## Dedicated patch repository
 

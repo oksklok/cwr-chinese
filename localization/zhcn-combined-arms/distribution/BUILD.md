@@ -33,7 +33,8 @@ the localization-focused `main` checkout. No old GitHub repository is required.
    and `/DOutputDir` paths. Setup installs per-user; choose a writable legitimate
    Remastered folder. The normal Windows uninstaller runs exact restoration
    before removing wrapper components. Conflicts abort cleanup and retain backups.
-5. Test THAT installer in a disposable, source-hash-verified GOG 3.05 copy. Audit
+5. Test THAT installer in a disposable compatible Remastered 3.05 copy, including
+   extra content/mods; test an actual Steam installation when available. Audit
    installed package hashes against `package-manifest.json` and reject any PBO,
    stock-language table, original executable, backup or developer artifact.
 

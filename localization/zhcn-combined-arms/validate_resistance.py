@@ -31,10 +31,10 @@ def stock_csv_rows(text, strict=False):
     return list(csv.reader(io.StringIO(text), skipinitialspace=True, strict=strict))
 
 
-def addon_globals(with_rows=False):
+def addon_globals(with_rows=False, names=None):
     """Read only stock add-on CSV members, including their other language columns."""
     values = {}
-    for name in sorted(p.name for p in (GAME / 'AddOns').glob('*.pbo')):
+    for name in sorted(names if names is not None else (p.name for p in (GAME / 'AddOns').glob('*.pbo'))):
         data = (GAME / 'AddOns' / name).read_bytes()
         pos, entries = 0, []
         while True:

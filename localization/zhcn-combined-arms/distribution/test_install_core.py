@@ -8,9 +8,67 @@ from unittest.mock import patch
 
 import install_core as core
 RECONSTRUCT = core.reconstruct
+CONTENT_OUTPUTS = core.content_outputs
+VERIFY_GAME = core.verify_game
 
 
 class InstallCoreTests(unittest.TestCase):
+    def test_version_checks_accept_compatible_x64_without_an_executable_hash(self):
+        data = bytearray(72)
+        data[:2] = b'MZ'
+        core.struct.pack_into('<I', data, 60, 64)
+        data[64:68] = b'PE\0\0'
+        core.struct.pack_into('<H', data, 68, 0x8664)
+        exe = self.game / 'PoseidonGame.exe'
+        exe.write_bytes(data)
+        with patch.object(core.subprocess, 'check_output', return_value='3.05\n'):
+            VERIFY_GAME(self.game)
+            exe.write_bytes(data + b'different storefront bytes')
+            VERIFY_GAME(self.game)
+        with patch.object(core.subprocess, 'check_output', return_value='3.06\n'):
+            with self.assertRaisesRegex(ValueError, 'Unsupported Remastered version'):
+                VERIFY_GAME(self.game)
+        core.struct.pack_into('<H', data, 68, 0x14c)
+        exe.write_bytes(data)
+        with self.assertRaisesRegex(ValueError, 'Windows x64'):
+            VERIFY_GAME(self.game)
+
+    def test_compatibility_ignores_unconsumed_assets_and_extra_missions(self):
+        unrelated = self.game / 'Worlds/custom.wrp'
+        unrelated.parent.mkdir()
+        unrelated.write_bytes(b'player asset')
+        manifest = dict(self.manifest, tables=[{'rows': [['STR', '中', '中', ['row', self.rel, 'STR']]]}],
+                        edits=[], sources={**self.manifest['sources'], 'Worlds/custom.wrp': 'a' * 64})
+        extra = self.game / 'Missions/player.eden/mission.sqm'
+        extra.parent.mkdir(parents=True)
+        extra.write_bytes(b'player mission')
+        core.verify_sources(self.game, manifest)
+        self.assertEqual(core.source_inputs(manifest), self.manifest['sources'])
+        (self.game / self.rel).write_bytes(b'incompatible critical table')
+        with self.assertRaisesRegex(ValueError, 'Restore this required file'):
+            core.verify_sources(self.game, manifest)
+        self.assertEqual(extra.read_bytes(), b'player mission')
+
+    def test_standalone_mod_bank_preserves_members_and_campaigns_keep_backups(self):
+        root = self.root / 'patch'
+        self.fake_reconstruct(self.game, self.payload, root)
+        rel = 'Resistance/player.noe'
+        original = self.game / 'Missions' / rel
+        original.mkdir(parents=True)
+        (original / 'mission.sqm').write_bytes(b'original mission logic')
+        (original / 'extra.txt').write_bytes(b'player addition')
+        translated = root / 'standalone' / rel
+        translated.mkdir(parents=True)
+        (translated / 'stringtable.utf8.csv').write_bytes(b'Chinese table')
+        outputs = CONTENT_OUTPUTS(root, self.game, self.root / core.MOD)
+        self.assertIn(self.rel, outputs)
+        self.assertFalse((self.root / core.MOD / 'Campaigns').exists())
+        from build_labels import pbo_parts
+        members = pbo_parts(outputs[core.MOD + '/Missions/' + rel + '.pbo'].read_bytes())[2]
+        self.assertEqual(members, {b'mission.sqm': b'original mission logic',
+                                  b'extra.txt': b'player addition', b'stringtable.utf8.csv': b'Chinese table'})
+        self.assertEqual((self.game / self.rel).read_bytes(), self.original)
+
     def test_space_estimate_does_not_count_hardlinked_stock_assets(self):
         stock = self.game / 'AddOns/stock.pbo'
         stock.parent.mkdir()
@@ -41,8 +99,13 @@ class InstallCoreTests(unittest.TestCase):
         (self.payload / 'payload.json').write_text(json.dumps(self.manifest))
         self.addCleanup(patch.stopall)
         patch.object(core, 'check_idle').start()
+        patch.object(core, 'verify_game').start()
         patch.object(core, 'run_builders').start()
         patch.object(core, 'reconstruct', self.fake_reconstruct).start()
+        # Keep the established replacement/restoration fault tests exercising
+        # legacy loose-file receipts; current layout is checked separately.
+        patch.object(core, 'content_outputs', side_effect=lambda root, game, mod:
+                     {self.rel: root / 'campaign/1985/missions/test.eden/stringtable.utf8.csv'}).start()
 
     def fake_reconstruct(self, game, payload, out):
         for rel, data in [('campaign/1985/missions/test.eden/stringtable.utf8.csv', b'localized'),
@@ -301,7 +364,7 @@ class InstallCoreTests(unittest.TestCase):
 
     def test_bad_source_conflict_and_space_preflight(self):
         (self.game / self.rel).write_bytes(b'unsupported')
-        with self.assertRaisesRegex(ValueError, 'Not clean'):
+        with self.assertRaisesRegex(ValueError, 'Incompatible Remastered 3.05 source'):
             self.install()
         (self.game / self.rel).write_bytes(self.original)
         conflict = self.game / core.MOD
@@ -322,11 +385,11 @@ class InstallCoreTests(unittest.TestCase):
         self.assertEqual(tmp.read_bytes(), b'user temp')
         self.assertFalse((self.game / core.STATE).exists())
 
-    def test_unknown_stock_loader_input_is_rejected_untouched(self):
+    def test_unrelated_extra_content_is_allowed_untouched(self):
         extra = self.game / 'Campaigns/1985/config.cpp'
         extra.write_bytes(b'unsupported loose override')
-        with self.assertRaisesRegex(ValueError, 'Unrecognized stock input'):
-            self.install()
+        self.install()
+        self.assertEqual(core.uninstall(self.game), [])
         self.assertEqual(extra.read_bytes(), b'unsupported loose override')
         self.assertEqual((self.game / self.rel).read_bytes(), self.original)
 

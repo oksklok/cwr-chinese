@@ -12,6 +12,8 @@ import json
 import os
 import shutil
 import stat
+import struct
+import subprocess
 import sys
 import tempfile
 from pathlib import Path, PurePosixPath
@@ -24,6 +26,12 @@ import validate_resistance
 MOD = '@zhcn-prototype'
 STATE = '.crwc-install'
 RETIRED = STATE + '-retired'
+# Only these stock add-ons supply referenced global rows. Their other members
+# are not reconstruction inputs; table output hashes verify the required rows.
+GLOBAL_ADDONS = ('6G30.pbo', 'ABox.pbo', 'Apac.pbo', 'BISCamel.pbo', 'BMP2.pbo',
+                 'Bizon.pbo', 'Flags.pbo', 'G36a.pbo', 'Hunter.pbo', 'KOLO.PBO',
+                 'LaserGuided.pbo', 'M2A2.pbo', 'MINI.PBO', 'Mm-1.pbo', 'O.pbo',
+                 'O_WP.PBO', 'Steyr.pbo', 'XMS.pbo', 'kozl.pbo', 'trab.pbo', 'vulcan.pbo')
 
 
 def digest(data):
@@ -139,14 +147,16 @@ def read_stock(game, source):
     return stock_columns(data, name.lower().endswith('.utf8.csv'))
 
 
-def stock_globals(game):
+def stock_globals(game, sources=None):
     values = read_stock(game, 'BIN/STRINGTABLE.CSV')
-    for p in sorted((game / 'BIN').glob('STRINGTABLE_*.utf8.csv')):
+    tables = ((game / rel for rel in sources if rel.startswith('BIN/STRINGTABLE_') and rel.endswith('.utf8.csv'))
+              if sources is not None else (game / 'BIN').glob('STRINGTABLE_*.utf8.csv'))
+    for p in sorted(tables):
         values.update(read_stock(game, p.relative_to(game).as_posix()))
     prior = validate_resistance.GAME
     try:
         validate_resistance.GAME = game
-        for k, v in validate_resistance.addon_globals(with_rows=True).items():
+        for k, v in validate_resistance.addon_globals(with_rows=True, names=GLOBAL_ADDONS).items():
             values.setdefault(k, v)
     finally:
         validate_resistance.GAME = prior
@@ -157,7 +167,7 @@ def reconstruct(game, payload, out):
     """Only reconstruct language tables/reference edits; reuse stock CSV rules."""
     manifest = json.loads((payload / 'payload.json').read_text(encoding='utf-8'))
     require(manifest['schema'] == 1, 'Unsupported payload')
-    globals_ = stock_globals(game)
+    globals_ = stock_globals(game, manifest.get('sources'))
     sources = {}
     for table in manifest['tables']:
         rows = [table['header']]
@@ -265,28 +275,65 @@ def load_payload(payload):
         require(digest(target(payload, rel).read_bytes()) == expected, f'Payload file differs: {rel}')
     # Git/Windows newline normalization must not turn an identical payload into an upgrade.
     canonical = json.dumps(manifest, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')
-    return manifest, digest(canonical)
+    return manifest, digest(b'CWRC-mod-layout-2\0' + canonical)
 
 
 def verify_sources(game, manifest, receipt=None):
     tracked = receipt['files'] if receipt else {}
-    for rel, expected in manifest['sources'].items():
+    if 'BIN/CONFIG.BIN' in source_inputs(manifest):
+        require(not target(game, 'BIN/config.cpp').exists(),
+                'Conflicting base BIN/config.cpp: it overrides the required CONFIG.BIN. Restore the base config or keep that modification in a separate mod.')
+    for rel, expected in source_inputs(manifest).items():
         p = target(game, rel)
         if rel in tracked:
             require(digest(p.read_bytes()) == tracked[rel]['installed'], f'User modified installed file: {rel}')
             backup = target(game / STATE / 'backup', rel)
             require(digest(backup.read_bytes()) == expected, f'Original backup differs: {rel}')
         else:
-            require(p.is_file() and digest(p.read_bytes()) == expected, f'Not clean supported GOG 3.05: {rel}')
-    # Loose stock trees must not contain extra loader/config/translation inputs.
-    # User profiles, saves and separately named mods outside these stock trees are untouched.
-    roots = {PurePosixPath(rel).parts[0] for rel in manifest['sources'] if '/' in rel}
-    for folder in roots:
-        for p in target(game, folder).rglob('*'):
-            require(not reparse(p), f'Unsupported stock reparse point: {p}')
-            if p.is_file():
-                rel = p.relative_to(game).as_posix()
-                require(rel in manifest['sources'] or rel in tracked, f'Unrecognized stock input: {rel}')
+            if rel in {'AddOns/' + name for name in GLOBAL_ADDONS}:
+                require(p.is_file(), f'Missing required localization source: {rel}')
+                continue
+            require(p.is_file() and digest(p.read_bytes()) == expected,
+                    f'Incompatible Remastered 3.05 source: {rel}. Restore this required file; unrelated assets/mods need not be removed.')
+
+
+def verify_game(game):
+    exe = target(game, 'PoseidonGame.exe')
+    require(exe.is_file(), 'Select Remastered containing the original PoseidonGame.exe')
+    data = exe.read_bytes()
+    require(len(data) > 64 and data[:2] == b'MZ', 'Original client is not a Windows executable')
+    offset = struct.unpack_from('<I', data, 60)[0]
+    require(offset + 6 <= len(data) and data[offset:offset+4] == b'PE\0\0'
+            and struct.unpack_from('<H', data, offset+4)[0] == 0x8664,
+            'Windows x64 Remastered 3.05 is required; original 1.96/1.99 data is unsupported')
+    if os.name == 'nt':
+        quoted = str(exe).replace("'", "''")
+        version = subprocess.check_output(['powershell.exe', '-NoProfile', '-Command',
+            f"(Get-Item -LiteralPath '{quoted}').VersionInfo.ProductVersion"], text=True).strip()
+        require(version == '3.05', f'Unsupported Remastered version: {version or "missing"}; expected 3.05')
+
+
+def source_inputs(manifest):
+    """The existing recipes need these inputs, not a storefront-wide inventory."""
+    if 'tables' not in manifest:  # Small restoration fixtures and legacy receipts.
+        return manifest['sources']
+    needed = set()
+    for table in manifest['tables']:
+        for row in table['rows']:
+            ref = row[3]
+            if ref[0] in ('row', 'alias'):
+                needed.add(ref[1][0] if isinstance(ref[1], list) else ref[1])
+            elif ref[0] == 'span':
+                needed.add(ref[1])
+            elif ref[0] == 'terrain':
+                needed.add('AddOns/Noe.pbo' if ref[1] == 'Noe' else 'BIN/CONFIG.BIN')
+    needed.update(edit['source'] for edit in manifest['edits'])
+    needed.update(rel for rel in manifest['sources'] if
+                  (rel.startswith('BIN/') and '.csv' in rel.lower()) or
+                  rel.startswith(('Templates/', 'SPTemplates/', 'MPMissions/')))
+    if any(row[3][0] == 'global' for table in manifest['tables'] for row in table['rows']):
+        needed.update('AddOns/' + name for name in GLOBAL_ADDONS)
+    return {rel: manifest['sources'][rel] for rel in sorted(needed)}
 
 
 def check_idle(game):
@@ -335,7 +382,7 @@ def replace_file(source, dest):
 
 def required_space(game, payload, manifest, client=None):
     """Bound real allocations; the stock staging tree is hardlinked, not copied."""
-    sizes = {rel: target(game, rel).stat().st_size for rel in manifest['sources']}
+    sizes = {rel: target(game, rel).stat().st_size for rel in source_inputs(manifest)}
     # Only these banks/configs are reconstructed by the four existing builders.
     banks = sum(size for rel, size in sizes.items() if
                 rel in ('AddOns/Noe.pbo', 'BIN/CONFIG.BIN') or
@@ -349,7 +396,45 @@ def required_space(game, payload, manifest, client=None):
     # runtime destination and one maximum atomic-replacement temp, plus filesystem slack.
     atomic = max([tables, runtime, authored, *[size for rel, size in sizes.items()
                  if rel in ('AddOns/Noe.pbo', 'BIN/CONFIG.BIN')]], default=0)
-    return 3 * (tables + authored) + 2 * banks + source_text + runtime + atomic + 64 * 1024**2
+    mission_dirs = {PurePosixPath(table['path']).parent.relative_to('standalone').as_posix()
+                    for table in manifest.get('tables', []) if table['path'].startswith('standalone/')}
+    missions = sum(p.stat().st_size for rel in mission_dirs
+                   for p in target(game, 'Missions/' + rel).rglob('*') if p.is_file())
+    return 3 * (tables + authored) + 2 * (banks + missions) + source_text + runtime + atomic + 64 * 1024**2
+
+
+def content_outputs(patch, game, mod):
+    """Ordinary mod banks, generated locally from the existing table recipes."""
+    sys.path.insert(0, str(PATCH / 'multiplayer'))
+    from build_missions import pack
+    outputs = {}
+    # Campaign banks intentionally prefer loose patch files at their virtual
+    # prefix (QFBank::ScanPatchFiles). Stock campaign tables therefore shadow
+    # a mod bank. Retain the existing exact-backup replacements for campaigns.
+    for name in ('1985', 'resistance'):
+        folder = patch / 'campaign' / name
+        if folder.exists():
+            for f in folder.rglob('*'):
+                if f.is_file():
+                    outputs['Campaigns/' + name + '/' + f.relative_to(folder).as_posix()] = f
+    standalone = patch / 'standalone'
+    folders = sorted({f.parent for f in standalone.rglob('stringtable.utf8.csv')})
+    for folder in folders:
+        relative = folder.relative_to(standalone).as_posix()
+        original = target(game, 'Missions/' + relative)
+        require((original / 'mission.sqm').is_file(), f'Missing standalone mission: {folder.name}')
+        members = {}
+        for f in sorted(original.rglob('*')):
+            target(game, f.relative_to(game).as_posix())
+            if f.is_file():
+                members[f.relative_to(original).as_posix()] = f.read_bytes()
+        members.update({f.relative_to(folder).as_posix(): f.read_bytes()
+                        for f in sorted(folder.rglob('*')) if f.is_file()})
+        bank = mod / 'Missions' / (relative + '.pbo')
+        bank.parent.mkdir(parents=True, exist_ok=True)
+        bank.write_bytes(pack(members))
+        outputs[MOD + '/Missions/' + relative + '.pbo'] = bank
+    return outputs
 
 
 def install(game, payload, client=None, fail_after=None):
@@ -357,6 +442,7 @@ def install(game, payload, client=None, fail_after=None):
     game = game.resolve()
     require(game.is_dir(), 'Invalid game root')
     check_idle(game)
+    verify_game(game)
     resume_retired(game)
     manifest, package = load_payload(payload)
     state = target(game, STATE)
@@ -366,7 +452,7 @@ def install(game, payload, client=None, fail_after=None):
     if receipt:
         validate_record(game, receipt)
         require(receipt['schema'] == 1 and receipt['package'] == package and receipt['status'] == 'installed',
-                'Different/incomplete installation receipt')
+                'Different/incomplete CWRC installation. Uninstall the existing CWRC first; original backups are retained.')
         for rel, item in receipt['files'].items():
             p = target(game, rel)
             require(p.is_file() and digest(p.read_bytes()) == item['installed'], f'User modified installed file: {rel}')
@@ -379,7 +465,7 @@ def install(game, payload, client=None, fail_after=None):
         print('PASS: recognized installation; originals retained; reinstall is an exact no-op')
         return receipt
     require(not state.exists(), f'Unrecognized installation state: {state}')
-    print('STEP 10 Verifying the original GOG 3.05 installation', flush=True)
+    print('STEP 10 Verifying required Remastered 3.05 sources', flush=True)
     verify_sources(game, manifest)
     require(not target(game, MOD).exists(), 'Conflicting existing Chinese mod; leave it untouched')
     require(not target(game, 'crwc-client').exists(), 'Conflicting client directory')
@@ -391,11 +477,13 @@ def install(game, payload, client=None, fail_after=None):
         stage = Path(temp)
         stock = stage / 'game'
         patch = stage / 'patch'
-        for rel in manifest['sources']:
+        for rel in source_inputs(manifest):
             p = target(stock, rel)
             p.parent.mkdir(parents=True, exist_ok=True)
             os.link(target(game, rel), p)
-        reconstruct(game, payload, patch)
+        if (game / 'PoseidonGame.exe').exists():
+            os.link(target(game, 'PoseidonGame.exe'), stock / 'PoseidonGame.exe')
+        reconstruct(stock, payload, patch)
         mod = stock / MOD
         shutil.copytree(patch / 'mod/bin', mod / 'bin')
         for language, source in [('ChineseSimplified', patch / 'font'), ('ChineseTraditional', patch / 'font/ChineseTraditional')]:
@@ -408,10 +496,9 @@ def install(game, payload, client=None, fail_after=None):
         run_builders(patch, stock)
         run_builders(patch, stock, check=True)
         outputs = {f.relative_to(stock).as_posix(): f for f in mod.rglob('*') if f.is_file()}
-        for section, destination in [('campaign/1985', 'Campaigns/1985'), ('campaign/resistance', 'Campaigns/resistance'), ('standalone', 'Missions')]:
-            for f in (patch / section).rglob('*'):
-                if f.is_file():
-                    outputs[destination + '/' + f.relative_to(patch / section).as_posix()] = f
+        # Standalone discovery uses a full mission bank; campaigns retain the
+        # engine's established loose patch precedence and exact restoration.
+        outputs.update(content_outputs(patch, game, mod))
         if client:
             # Developer-only local runtime input, never stored in the payload or public bundle here.
             for name in ('PoseidonGame.exe', 'OpenAL32.dll'):

@@ -1,7 +1,7 @@
 # CWRC Chinese localization
 
 Unofficial **简体中文 / 繁體中文（台灣）** localization for a legitimate Windows x64
-GOG Cold War Assault Remastered **3.05** installation. Original game and engine:
+Cold War Assault Remastered **3.05** installation. Original game and engine:
 Bohemia Interactive. Not affiliated with or endorsed by Bohemia Interactive.
 
 This repository is the source of truth for the Chinese patch. Its
@@ -21,8 +21,18 @@ multiplayer missions, 36 wizard templates, shared UI/editor/encyclopedia text,
 terrain labels and generated display names. English voices and all eight stock
 languages are preserved.
 
-The Windows installer **local RC** passed installation, launch, uninstall,
-reinstall, interrupted-install recovery and user-edit preservation checks.
+The installer accepts compatible Windows x64 3.05 data without requiring a
+pristine installation or a particular storefront. Standalone missions, authored
+MP, wizard templates, shared bin data and Chinese fonts load through the mod.
+Campaign tables/metadata retain exact backups: the engine's loose-file precedence
+prevents campaign PBOs from overriding them reliably. Unrelated assets, extra
+missions, profiles, saves and other mods are preserved.
+
+CWRC's shortcut adds its mod to the saved MODS selection. The MODS screen saves
+selected folders; explicit `--mod "@other;@another" --add-mod @zhcn-prototype`
+also retains that list. Missing selected mods produce a clear launch error.
+The new **local RC2** is undergoing exact-installer acceptance; the historical
+RC1 passed install/launch/uninstall/reinstall/recovery and user-edit checks.
 It is not a public release: final corresponding-source/license/notice review,
 public documentation and final artifact testing remain. See [ROADMAP.md](ROADMAP.md)
 and [distribution findings](localization/zhcn-combined-arms/DISTRIBUTION.md).
@@ -46,7 +56,7 @@ No download is published by this repository split.
 Use a checkout of this repository's pinned `client-source` branch to build the client:
 
 ```powershell
-git worktree add --detach build/client-source db89dd646838e7d2486121151b9266900f072f8d
+git worktree add --detach build/client-source 4a568d7de6a5720d2fe8feef12d18bd3010c2d51
 ```
 
 If already present, use that checkout rather than creating another. The worktree
@@ -61,13 +71,15 @@ Assemble the unchanged safe payload (choose an absent output):
 python localization/zhcn-combined-arms/distribution/make_payload.py assemble game-local/payload
 ```
 
-Reconstruct against a **clean, verified** legitimate GOG 3.05 installation:
+Reconstruct against a legitimate, compatible Remastered 3.05 installation:
 
 ```powershell
 python localization/zhcn-combined-arms/distribution/install_core.py reconstruct "C:\path\to\Remastered" --payload game-local/payload --output game-local/reconstructed
 ```
 
-Every reconstructed table and metadata file must match its recorded hash.
+Only required source files are checked; generated tables and metadata must
+still match their recorded hashes. An older CWRC layout/client must be removed
+with its existing uninstaller before installing RC2; keep its original backups.
 Reconstruction does not install or modify the game. Keep generated output ignored.
 Never hand-edit stock-language cells or weaken expected hashes to hide differences.
 The inherited `make_payload.py export` is a legacy developer operation requiring

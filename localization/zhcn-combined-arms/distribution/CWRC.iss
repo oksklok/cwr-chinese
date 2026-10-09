@@ -8,7 +8,7 @@
 [Setup]
 AppId={{C7E3DA19-B196-4273-9F58-16B31D6A764C}
 AppName=CWRC
-AppVersion=3.05-rc1
+AppVersion=3.05-rc2
 AppPublisher=CWRC contributors
 AppComments=Unofficial Chinese localization and modified client. Original engine by Bohemia Interactive.
 DefaultDirName={localappdata}\Programs\CWRC
@@ -20,7 +20,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputDir={#OutputDir}
-OutputBaseFilename=CWRC-3.05-rc1-setup
+OutputBaseFilename=CWRC-3.05-rc2-setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -38,7 +38,7 @@ Source: "{#PackageDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 Filename: "{app}\game.ini"; Section: "CWRC"; Key: "Game"; String: "{code:GameDirectory}"; Flags: uninsdeleteentry uninsdeletesectionifempty
 
 [Icons]
-Name: "{group}\CWRC"; Filename: "{code:GameDirectory}\crwc-client\PoseidonGame.exe"; Parameters: "--mod @zhcn-prototype --voice English"; WorkingDir: "{code:GameDirectory}"; Comment: "Unofficial Chinese localization; requires your original GOG Remastered 3.05 data"
+Name: "{group}\CWRC"; Filename: "{code:GameDirectory}\crwc-client\PoseidonGame.exe"; Parameters: "--add-mod @zhcn-prototype --voice English"; WorkingDir: "{code:GameDirectory}"; Comment: "Unofficial Chinese localization; requires your original Remastered 3.05 data"
 Name: "{group}\Uninstall CWRC"; Filename: "{uninstallexe}"
 
 [Code]
@@ -91,8 +91,8 @@ var
   Game: String;
 begin
   GamePage := CreateInputDirPage(wpSelectDir, 'Select your existing game',
-    'GOG Remastered 3.05 is required',
-    'Select the Remastered folder containing the ORIGINAL PoseidonGame.exe. Stock data will be verified before any replacement. Profiles, saves and unrelated mods are preserved.', False, '');
+    'Windows x64 Remastered 3.05 is required',
+    'Select the Remastered folder containing the ORIGINAL PoseidonGame.exe. Required localization sources will be verified. Profiles, saves and unrelated mods are preserved.', False, '');
   GamePage.Add('Existing Remastered folder:');
   Game := ExpandConstant('{param:GAME|}') ;
   if Game = '' then Game := GetPreviousData('Game', '');
