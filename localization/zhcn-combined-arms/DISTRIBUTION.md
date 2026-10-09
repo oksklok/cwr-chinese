@@ -66,6 +66,16 @@ Both executables use an original gold five-pointed star icon, not proprietary ar
 
 ## Briefing and presentation polish — 2026-10-10
 
+`game-local/cwr-chinese-polish/cwr-chinese.zip`: **132,384,581 bytes**;
+SHA-256 `0a5a7bf2dba6e94c577d566fb72186fa63387c41272e7dadbc792417f542c014`.
+Packaged main `b895f86`, client `a151692`. The previous visual-pass ZIP remains
+byte-identical. The final ZIP was extracted into the GOG test installation's
+top-level directory and launched through its native launcher: current client,
+Chinese Heavy Metal briefing and the previously selected personal mod verified.
+Windows title-bar/taskbar star verified; extracted launcher/client icons and live
+small/large window icons match. Fonts, terrain and UI addons match the prior ZIP
+byte-for-byte; the original executable is unchanged. No public release was made.
+
 One focused briefing review covered both campaigns, all 24 standalone missions
 and 30 authored multiplayer missions. Finite Chinese-only HTML variants cover
 20 Resistance, 24 standalone and 21 multiplayer briefings (130 SC/TC files).
