@@ -4,12 +4,14 @@ Unofficial **简体中文 / 繁體中文（台灣）** localization for a legiti
 GOG Cold War Assault Remastered **3.05** installation. Original game and engine:
 Bohemia Interactive. Not affiliated with or endorsed by Bohemia Interactive.
 
-This repository is now the source of truth for the Chinese patch. The engine
-continues in [oksklok/CWR](https://github.com/oksklok/CWR), pinned by
-[engine-source.json](engine-source.json). CWRR/Vulkan is a separate project.
+This repository is the source of truth for the Chinese patch. Its
+[`client-source` branch](https://github.com/oksklok/cwr-chinese/tree/client-source)
+contains the required engine/client source, pinned by
+[engine-source.json](engine-source.json). It starts at official 3.05 and contains
+only CWRC source/test changes. CWRR/Vulkan is a separate repository.
 The old CWR localization directory is retained as development history; do not
 edit both copies. No engine history, commercial assets or release binaries are
-imported here.
+imported into `main`; neither branch depends on the old GitHub fork.
 
 ## Status
 
@@ -41,7 +43,14 @@ No download is published by this repository split.
 
 ## Development
 
-Use the pinned separate engine checkout to build the client. Supply it via
+Use a checkout of this repository's pinned `client-source` branch to build the client:
+
+```powershell
+git worktree add --detach build/client-source db89dd646838e7d2486121151b9266900f072f8d
+```
+
+If already present, use that checkout rather than creating another. The worktree
+is backed by this repository's `.git`, never the old CWR repository. Supply it via
 `build_release.py --engine-repo PATH`; the assembler includes matching source
 from both repositories. See [build instructions](localization/zhcn-combined-arms/distribution/BUILD.md).
 Builders need Python and fontTools; players will not need development tools.
@@ -76,8 +85,9 @@ $env:CWRC_TRANSLATION_ROOT = (Resolve-Path game-local/reconstructed).Path
 $env:CWRC_VALIDATION_REPO = 'C:\Users\KyouKyou\Downloads\CWR'
 ```
 
-The second variable points only to the existing **local** deployed test game and
-original backup inventories. Nothing is copied into Git. Run `validate_campaign.py`,
+The second variable points only to the preserved **local** deployed test game and
+original backup inventories, not a source/GitHub dependency. Nothing is copied
+into Git. Run `validate_campaign.py`,
 `validate_resistance.py`, `validate_standalone.py`, `validate_multiplayer.py`, and
 `validate_ui.py`; the four deployment checks use `install_core.run_builders` with
 the reconstructed root and `check=True`. Without the required local fixtures these

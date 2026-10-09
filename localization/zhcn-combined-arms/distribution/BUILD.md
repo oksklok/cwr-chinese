@@ -2,10 +2,11 @@
 
 Build only on Windows x64. No game assets are release inputs. End users need
 neither Python nor development tools; these instructions are for builders.
-The patch and engine are now separate repositories. Clone the engine repository
-and check out the exact revision in root `engine-source.json`; do not build from
-CWRR. Client CMake commands below run in that engine checkout, helper/installer
-commands in this patch checkout.
+Patch and client are separate branches of `oksklok/cwr-chinese`. Check out the
+exact `client-source` revision in root `engine-source.json` (for example using
+the worktree command in the root README); do not build from the old fork or CWRR.
+Client CMake commands below run in that checkout, helper/installer commands in
+the localization-focused `main` checkout. No old GitHub repository is required.
 
 1. Build `PoseidonGame`, `PoseidonCoreTests` and `PoseidonTests` with the repository
    CMake/vcpkg setup. The tested configuration is RelWithDebInfo, clang-cl,
@@ -23,7 +24,8 @@ commands in this patch checkout.
    ```
 
 3. Assemble safe payload/client/helper/source/notices with `build_release.py`.
-   Supply `--engine-repo` pointing to the clean pinned engine checkout.
+   `--engine-repo` points to the clean pinned client-source checkout; its default
+   is `build/client-source` under this repository's main checkout.
    Supply the built client, frozen helper, vcpkg checkout/installed directory,
    compiler-wrapper directory, Inno Setup directory and downloaded helper source archives. It rejects
    an existing output directory and never reads the commercial game tree.

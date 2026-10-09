@@ -8,8 +8,10 @@ Target: Windows x64 GOG Remastered 3.05. This practical audit is not a legal opi
 Patch development now lives in `oksklok/cwr-chinese`. Its Chinese-only master,
 ten unchanged fonts, authored recipes, builders, installer/core and notes were
 split from CWR commit `87078e2`; no commercial files, full stock-language tables,
-client binaries or engine history were imported. Engine source remains separate
-and pinned in root `engine-source.json`; `build_release.py --engine-repo` includes
+client binaries or engine history were imported into main. Required client source
+now lives on this repository's `client-source` branch, official 3.05 plus only
+CWRC source/test changes, pinned in root `engine-source.json`; the old GitHub fork
+is no longer a source dependency. `build_release.py --engine-repo` includes
 matching client and patch sources in distinct source-archive roots.
 
 The local RC reported below predates the split and stays in the original CWR
@@ -17,6 +19,17 @@ checkout. It was not rebuilt, uploaded or re-labelled as a new tested artifact.
 The split was checked by exact payload/font comparison, complete local table/
 metadata reconstruction, existing validators/deployment checks and core/helper
 regressions. Physical RC acceptance below is prior evidence, not a new game run.
+
+Client-history separation: the `client-source` branch starts at official 3.05 and
+preserves the tested runtime/client/build source exactly. The only follow-up is
+a test-fixture path change plus a byte-identical copy of the authored UI addon
+under test fixtures, so regressions no longer require the old localization tree.
+The rebuilt client/core/full-test targets pass, including 91 focused cases /
+1,576 assertions (language/display/identity/radio/font/wrapping, CSV and MP paths).
+The source assembler checks the fixture against the canonical authored addon and
+includes both branches' matching source. The new executable is **not** byte-identical
+to the old RC; new Git/build identity and paths are recorded, not substituted into
+the historical RC. Original source/RC records and local development assets stay intact.
 
 ## What can be shipped
 

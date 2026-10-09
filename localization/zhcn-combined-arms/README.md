@@ -4,7 +4,7 @@
 point. This directory keeps development history and terminology notes; complete
 CSV/config files described below are now locally reconstructed from the
 Chinese-only master, not shipped in Git. Engine changes/builds remain in the
-separate pinned CWR checkout. Phase 3 is complete; no public installer is released.
+this repository's pinned `client-source` branch. Phase 3 is complete; no public installer is released.
 
 Personal-use Simplified Chinese patch for the complete official **1985 / 冷战危机**
 and **Resistance / 抵抗力量** campaigns, all **24 official standalone missions**

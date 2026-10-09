@@ -1,7 +1,9 @@
 {
-  "repository": "https://github.com/oksklok/CWR.git",
-  "commit": "87078e2247dbf4d946d651238470312995727c80",
+  "repository": "https://github.com/oksklok/cwr-chinese.git",
+  "branch": "client-source",
+  "commit": "db89dd646838e7d2486121151b9266900f072f8d",
+  "baseline": "ffc61838b7e756bec56aafafbf390396e639ac8f",
   "game": "GOG Cold War Assault Remastered 3.05",
   "client": "CWRC",
-  "note": "Separate modified engine source; no CWRR/Vulkan dependency. The existing local RC was built before the documentation commit with matching captured source hashes."
+  "note": "Client-source branch in this repository; CWRC-only source/test changes on official 3.05, no old localization/Vulkan history. Historical local RC/build records remain unchanged; a migration rebuild is a new artifact."
 }

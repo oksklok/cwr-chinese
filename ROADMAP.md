@@ -49,7 +49,7 @@ This is the source of truth for remaining localization work. Follow the phases a
 - [x] Complete bounded clean-install core runtime acceptance: authored MP lobby/briefing/gameplay, radio live switching and no-mod English; see DISTRIBUTION.md for chat-history and test limits.
 - [x] Test the exact local RC wrapper's install/uninstall/reinstall workflow, shortcut launch, user-edit conflict preservation and interruption/retry; exact original restoration verified.
 - [ ] Audit redistribution rights, licenses and package contents.
-- [x] Move the patch source into [oksklok/cwr-chinese](https://github.com/oksklok/cwr-chinese); Chinese-only master and fonts, separate pinned engine source, no release binaries or commercial assets. Public release remains gated below.
+- [x] Move the patch into [oksklok/cwr-chinese](https://github.com/oksklok/cwr-chinese): localization-focused main plus its own pinned client-source branch; no old-fork dependency, release binaries or commercial assets. Public release remains gated below.
 - [ ] Finalize README, credits and known limitations.
 - [ ] Produce a tagged release ZIP.
 - [ ] Test the exact public artifact before giving it to Dad.

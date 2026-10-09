@@ -69,7 +69,8 @@ def main():
     p.add_argument('--build-tools', type=Path, required=True)
     p.add_argument('--helper-sources', type=Path, required=True)
     p.add_argument('--inno', type=Path, required=True, help='Installed Inno Setup compiler directory')
-    p.add_argument('--engine-repo', type=Path, required=True, help='Separate clean client source checkout pinned by engine-source.json')
+    p.add_argument('--engine-repo', type=Path, default=REPO / 'build/client-source',
+                   help='Clean checkout of this repository\'s pinned client-source revision (default: build/client-source)')
     args = p.parse_args()
     engine = args.engine_repo.resolve()
     pin = json.loads((REPO / 'engine-source.json').read_text(encoding='utf-8'))
@@ -77,6 +78,8 @@ def main():
     require(engine_commit == pin['commit'], 'Engine checkout differs from engine-source.json')
     require(not subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=engine).strip(),
             'Engine source has tracked changes; commit and update its pin before packaging')
+    require((engine / 'tests/fixtures/config-replace/display-addon/config.cpp').read_bytes() ==
+            (PATCH / 'ui/config.cpp').read_bytes(), 'Client display test fixture differs from authored patch config')
     out = args.output.resolve()
     require(not out.exists(), 'Choose an absent release directory')
     assemble(out / 'payload')
@@ -125,7 +128,7 @@ def main():
                     copy(d.locate_file(file), out / 'notices/helper' / distribution / Path(str(file)).name)
     python_license = Path(sys.base_prefix) / 'LICENSE.txt'
     copy(python_license, out / 'notices/helper/Python.txt')
-    copy(engine / 'build/local-labels/vcpkg_installed/vcpkg/status', out / 'source/vcpkg-status.txt')
+    copy(args.installed.parent / 'vcpkg/status', out / 'source/vcpkg-status.txt')
     copy(engine / 'build/local-labels/generated/Poseidon/Core/BuildInfo.hpp', out / 'source/BuildInfo.hpp')
     for name in ('clang-local.cmake', 'configure.cmd', 'build.cmd', 'build_ui_tests.cmd'):
         copy(args.build_tools / name, out / 'source/local-build' / name)
@@ -137,6 +140,7 @@ def main():
         'base_commit': engine_commit,
         'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip(),
         'engine_repository': pin['repository'],
+        'engine_branch': pin['branch'],
         'source_sha256': source_hashes,
         'vcpkg_revision': subprocess.check_output(['git', '-C', str(args.vcpkg), 'rev-parse', 'HEAD']).decode().strip(),
         'python': sys.version,
