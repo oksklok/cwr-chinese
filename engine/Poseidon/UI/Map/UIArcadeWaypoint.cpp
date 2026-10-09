@@ -921,7 +921,7 @@ bool ProcessFullName(RString name)
 
 bool ParseCutscene(RString cutscene, bool multiplayer)
 {
-    RString name = GetMissionDirectory() + RString("mission.sqm");
+    RString name = ResolveCampaignTextFile(GetMissionDirectory() + RString("mission.sqm"));
 
     ParamArchiveLoad ar;
     if (!ar.LoadBin(name) && ar.Load(name) != LSOK)

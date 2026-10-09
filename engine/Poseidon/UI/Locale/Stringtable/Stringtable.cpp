@@ -181,11 +181,12 @@ RString ResolveCampaignTextFile(RString filename)
     std::string relative = filename.Data();
     std::replace(relative.begin(), relative.end(), '\\', '/');
     const std::string lower = LowerAscii(relative);
-    // Only campaign text is redirected. Mission scripts, saves, assets and
-    // campaign discovery continue to use their original paths.
+    // Campaign text and definitions with localized display references only.
+    // Scripts, saves, assets and campaign discovery keep their original paths.
     if (lower.rfind("campaigns/", 0) != 0 || relative.find("..") != std::string::npos ||
         !(HasCsvSuffix(relative.c_str()) ||
-          (lower.size() >= 16 && lower.compare(lower.size() - 16, 16, "/description.ext") == 0)))
+          (lower.size() >= 16 && lower.compare(lower.size() - 16, 16, "/description.ext") == 0) ||
+          (lower.size() >= 12 && lower.compare(lower.size() - 12, 12, "/mission.sqm") == 0)))
         return filename;
     struct Search { std::string relative; RString result; } search{relative, filename};
     ModSystem::EnumDirectories([](RStringB dir, void* context) {
