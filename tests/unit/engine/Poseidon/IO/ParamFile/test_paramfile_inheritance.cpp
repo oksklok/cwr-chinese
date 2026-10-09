@@ -39,8 +39,8 @@ TEST_CASE("Chinese display addon preserves stock weapon inheritance", "[paramfil
     base.Parse(input);
     // Non-MSVC builds remap __FILE__ to a relative path. Use the explicit
     // source root so CTest's build-directory working directory is irrelevant.
-    const auto path = std::filesystem::path(TESTS_ROOT_DIR).parent_path() /
-                      "localization/zhcn-combined-arms/ui/config.cpp";
+    const auto path = std::filesystem::path(TESTS_ROOT_DIR) /
+                      "fixtures/config-replace/display-addon/config.cpp";
     REQUIRE(std::filesystem::is_regular_file(path));
     ParamFile addon;
     REQUIRE(addon.Parse(path.string().c_str()) == LSOK);

@@ -2,8 +2,12 @@
 
 This branch starts at official CWR 3.05 (`ffc61838b7e756bec56aafafbf390396e639ac8f`)
 and carries only the CWRC client/build/test changes from historical `87078e2`.
-Engine/client and synthetic regression fixtures are preserved exactly; the old
+Engine/client source is preserved exactly; the old
 Chinese tables, screenshots and Vulkan branch are not imported.
+One inheritance regression now reads the identical authored display addon from
+`tests/fixtures/config-replace/display-addon/config.cpp`, rather than expecting
+the patch's former localization directory in this engine-only branch. All test
+assertions are retained; no commercial config is used as a fixture.
 
 Chinese patch source and release assembly live on this repository's `main`.
 Use its `engine-source.json` to select the client revision. Build `PoseidonGame`,
