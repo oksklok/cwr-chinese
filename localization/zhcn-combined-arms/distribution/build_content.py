@@ -187,7 +187,7 @@ def build_content(game, mod):
         payload = Path(work) / 'payload'
         patch = Path(work) / 'patch'
         assemble(payload)
-        reconstruct(game, payload, patch)
+        manifest = reconstruct(game, payload, patch)
         shutil.copytree(patch / 'mod/bin', mod / 'bin', dirs_exist_ok=True)
         shutil.copytree(patch / 'campaign', mod / 'localization/Campaigns', dirs_exist_ok=True)
         for language, source in [('ChineseSimplified', patch / 'font'), ('ChineseTraditional', patch / 'font/ChineseTraditional')]:
@@ -213,7 +213,8 @@ def build_content(game, mod):
             bank.parent.mkdir(parents=True, exist_ok=True)
             bank.write_bytes(pack(members))
         run_builders(patch, game, mod, check=True)
-    print('PASS: ready-to-use mod built; 217 tables / 3 metadata edits verified; no player preparation')
+    print(f'PASS: ready-to-use mod built; {len(manifest["tables"])} tables / '
+          f'{len(manifest["edits"])} display-reference files verified; no player preparation')
 
 
 def main():

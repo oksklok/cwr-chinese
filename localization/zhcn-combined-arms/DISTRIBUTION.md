@@ -8,7 +8,7 @@ Delete those three entries to remove it; stock assets/executable, saves and
 unrelated mods are untouched. The README uses a distinct name to avoid replacing
 a game's existing README.
 
-All content is ready-made: 217 translated tables, three metadata adaptations,
+All content is ready-made: 217 translated tables, nine display-reference files,
 24 standalone banks, 30 multiplayer banks, 36 templates, terrain and UI overlays,
 ten unchanged fonts, localization client/OpenAL, source and notices. No player-side
 Python, PyInstaller, preparation executable/marker, source inventory validation,
@@ -33,8 +33,10 @@ campaign titles stayed English. These are observed stock limitations, not a
 claim that stock lacks UTF-8 support. Diagnostic forced language is not a usable
 player launch workflow. Existing focused client fixes are retained.
 
-The client redirects only campaign CSV/description lookup, retaining stock
-campaign discovery, mission logic and saves. Other mod loading stays native.
+The client redirects campaign CSV/description and mission-definition lookup,
+retaining stock campaign discovery and saves. Definition edits only replace
+display literals with stringtable references; scripts and mission logic stay
+unchanged. Other mod loading stays native.
 Its window title is simply Poseidon; metadata and notices identify the modified client.
 GPL Section 7 prohibits Bohemia trademark branding of a modified program, so
 the borrowed stock icon and branded executable/startup strings were removed.

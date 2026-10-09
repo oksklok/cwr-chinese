@@ -45,7 +45,7 @@ No trademark icon is bundled or borrowed. CWRC remains an internal codename.
 [client-source branch](https://github.com/oksklok/cwr-chinese/tree/client-source).
 CWRR and cwr-vulkan remain separate. The Chinese-only master remains
 `localization/zhcn-combined-arms/distribution/payload.json` (217 tables /
-11,148 rows and three metadata recipes). Developers build overlays once;
+11,154 rows and nine display-reference recipes). Developers build overlays once;
 players receive the finished files. No translation or font revisions are involved.
 
 Bohemia's [official CWR README](https://github.com/BohemiaInteractive/CWR/blob/main/README.md)
