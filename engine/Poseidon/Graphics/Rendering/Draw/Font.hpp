@@ -79,4 +79,5 @@ class Font: public RefCountWithLinks
 };
 
 bool HasFreeTypeFontMapping(const char* lowName);
+float Text3DAspect(const Font* font);
 } // namespace Poseidon

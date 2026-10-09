@@ -36,6 +36,22 @@
 namespace Poseidon
 {
 
+// CRT and notebook mono text has an additional legacy 3D squeeze. The Chinese
+// face already compensates its font-role width; keep its square proportions.
+// Other faces (including handwriting), 2D controls and stock languages stay as-is.
+float Text3DAspect(const Font* font)
+{
+    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
+    if (chinese && font)
+    {
+        const char* name = font->Name(); // Font::Load normalizes names to lower case.
+        if (strstr(name, "cwrmono") || strstr(name, "couriernewb"))
+            return 1.0f;
+    }
+    return 0.75f;
+}
+
 // The single shipping font set. The cwr* rows are the engine fonts; the trailing
 // rows are legacy RESOURCE.BIN font-name aliases kept so old config references
 // still resolve to the current faces. Hand = Caveat, a single face covering

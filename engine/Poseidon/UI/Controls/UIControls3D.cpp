@@ -50,22 +50,6 @@ extern DrawCoord SceneToScreen(Vector3Par pos);
 #define SCROLL_MIN 2.0
 #define SCROLL_MAX 10.0
 
-// CRT and notebook mono text has an additional legacy 3D squeeze. The Chinese
-// face already compensates its font-role width; keep its square proportions.
-// Other faces (including handwriting), 2D controls and stock languages stay as-is.
-static float Text3DAspect(const Font* font)
-{
-    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
-                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
-    if (chinese && font)
-    {
-        const char* name = font->Name(); // Font::Load normalizes names to lower case.
-        if (strstr(name, "cwrmono") || strstr(name, "couriernewb"))
-            return 1.0f;
-    }
-    return 0.75f;
-}
-
 #define ISSPACE(c) ((c) >= 0 && (c) <= 32)
 
 #define CX(x) (toInt((x) * w) + 0.5)
