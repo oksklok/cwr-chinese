@@ -5,7 +5,10 @@ Windows x64 **Cold War Assault Remastered 3.05** installation. Original game
 and engine: Bohemia Interactive. Unofficial and noncommercial.
 
 Extract `cwr-chinese.zip` beside the original `PoseidonGame.exe`, run `cwr-chinese.exe`,
-and select Simplified or Traditional Chinese in Options > Game > Text language.
+and play in Simplified Chinese immediately. Choose Traditional Chinese or any
+other supported language in Options > Game > Text language; the mod remembers
+your choice separately from the stock game's language. Earlier SC/TC choices
+are retained when no separate mod preference exists.
 Everything is ready to use: no installer, preparation, first-run generation,
 game-data scanning, registry changes or stock-file replacements. The launcher
 adds `@cwr-chinese` without discarding other selected mods and selects English voices.

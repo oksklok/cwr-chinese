@@ -5,10 +5,13 @@ Cold War Assault Remastered 3.05 — Windows 10/11 x64 (GOG / Steam)
    Extract the ZIP beside the original PoseidonGame.exe.
 2. 双击 cwr-chinese.exe，无需安装或准备。
    Double-click cwr-chinese.exe. No setup or preparation needed.
-3. 在 Options > Game > Text language 选择简体中文或繁體中文。
-   Select Simplified or Traditional Chinese in Options > Game > Text language.
-   选择会保存；其他已选模组保留；配音为英语。
-   Your choice is saved; other selected mods stay enabled; voices are English.
+3. 首次启动默认为简体中文，已有的简体或繁體偏好会保留。
+   First launch defaults to Simplified Chinese; earlier SC/TC choices are kept.
+   可在 Options > Game > Text language 选择繁體中文、英语或其他语言。
+   Choose Traditional Chinese, English or another language in that menu.
+   汉化版单独记住语言选择，不改变原版偏好；其他模组保留，配音为英语。
+   The mod remembers your language separately from the original game's choice.
+   Other selected mods stay enabled; voices are English.
 4. 要玩原版游戏，运行原版 PoseidonGame.exe。
    For the normal game, run the original PoseidonGame.exe.
 5. 移除：关闭游戏，删除 @cwr-chinese、cwr-chinese.exe 和本说明。
