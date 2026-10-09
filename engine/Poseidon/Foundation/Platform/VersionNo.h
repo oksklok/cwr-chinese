@@ -6,7 +6,7 @@
 #define APP_NAME				"Galatea"
 #define APP_NAME_SHORT	"Galatea"
 #else
-#define APP_NAME				"CWRC"
+#define APP_NAME				"Arma: Cold War Assault - Remastered"
 #define APP_NAME_SHORT	"CWR"
 #endif
 
@@ -19,7 +19,7 @@
 #define STRPRODUCTVER		APP_VERSION_TEXT "\0" 
 
 #define PRODUCTNAME			APP_NAME "\0"
-#define INTERNALNAME		"CWRC\0"
+#define INTERNALNAME		APP_NAME_SHORT "\0"
 
 
 namespace Poseidon::Foundation

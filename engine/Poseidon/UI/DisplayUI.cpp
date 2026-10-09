@@ -1657,7 +1657,7 @@ void DisplayCustomArcade::InsertGames()
                 RString campaign = info.name;
                 CTreeItem* itemCampaign = root->AddChild();
                 ParamFile cfg;
-                cfg.Parse(GetCampaignDirectory(campaign) + RString("description.ext"));
+                cfg.Parse(ResolveCampaignTextFile(GetCampaignDirectory(campaign) + RString("description.ext")));
                 itemCampaign->text = LocalizeCampaignDisplayName(cfg >> "Campaign");
                 itemCampaign->data = campaign;
                 // int m = (Pars>>"CfgWorlds">>"worlds").GetSize();

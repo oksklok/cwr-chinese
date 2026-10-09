@@ -1,6 +1,7 @@
 // Runtime language switching tests.
 // Covers StringTable::SetLanguage, RelocalizeRegistered, callback registry.
 #include <catch2/catch_test_macros.hpp>
+#include <Poseidon/Core/ModSystem.hpp>
 #include <Poseidon/Foundation/Framework/DebugLog.hpp>
 #include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
 #include <Poseidon/UI/Locale/LanguageRegistry.hpp>
@@ -440,4 +441,46 @@ TEST_CASE("Poseidon::SetLanguage reloads mixed legacy and UTF-8 shards", "[strin
     REQUIRE(std::string(Poseidon::LocalizeString("STR_UTF8_ONLY").Data()) == "современный");
     REQUIRE(std::string(Poseidon::LocalizeString("STR_FINAL_ONLY").Data()) == "Финал");
     REQUIRE(std::string(Poseidon::LocalizeString(id).Data()) == "тридцать");
+}
+
+TEST_CASE("Campaign text resolves enabled mod overrides without redirecting assets", "[stringtable][campaign][mods]")
+{
+    namespace fs = std::filesystem;
+    const auto previousMods = Poseidon::ModSystem::GetModList();
+    const auto previousLanguage = GLanguage;
+    const auto root = fs::temp_directory_path() /
+        ("cwrc-campaign-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    struct Cleanup {
+        fs::path root;
+        RString mods, language;
+        ~Cleanup() { Poseidon::ClearStringtable(); Poseidon::ModSystem::SetModPath(mods); GLanguage = language; fs::remove_all(root); }
+    } cleanup{root, previousMods, previousLanguage};
+    const auto folder = root / "localization/Campaigns/1985/missions/demo.eden";
+    fs::create_directories(folder);
+    std::ofstream(folder / "stringtable.utf8.csv") <<
+        "LANGUAGE,English,French,ChineseSimplified,ChineseTraditional\n"
+        "STR_CAMPAIGN_TEST,Hello,Bonjour,SC,TC\n";
+    std::ofstream(root / "localization/Campaigns/1985/description.ext") << "class Campaign {};";
+    std::ofstream(folder / "mission.sqm") << "must not override";
+    Poseidon::ModSystem::SetModPath(root.string().c_str());
+    const char* path = "Campaigns/1985/missions/demo.eden/stringtable.csv";
+    REQUIRE(fs::equivalent(Poseidon::ResolveCampaignTextFile(path).Data(), folder / "stringtable.utf8.csv"));
+    REQUIRE(fs::equivalent(Poseidon::ResolveCampaignTextFile("Campaigns/1985/description.ext").Data(),
+                          root / "localization/Campaigns/1985/description.ext"));
+    REQUIRE(std::string(Poseidon::ResolveCampaignTextFile("Campaigns/1985/missions/demo.eden/mission.sqm").Data()) ==
+            "Campaigns/1985/missions/demo.eden/mission.sqm");
+    REQUIRE(std::string(Poseidon::ResolveCampaignTextFile("Campaigns/resistance/stringtable.csv").Data()) ==
+            "Campaigns/resistance/stringtable.csv");
+    Poseidon::ClearStringtable();
+    GLanguage = "ChineseSimplified";
+    Poseidon::LoadStringtable("mission", path);
+    REQUIRE(std::string(Poseidon::LocalizeString("STR_CAMPAIGN_TEST").Data()) == "SC");
+    for (const auto& pair : {std::pair{"ChineseTraditional", "TC"}, {"English", "Hello"}, {"French", "Bonjour"}})
+    {
+        REQUIRE(Poseidon::SetLanguage(pair.first));
+        REQUIRE(std::string(Poseidon::LocalizeString("STR_CAMPAIGN_TEST").Data()) == pair.second);
+        REQUIRE(std::string(Poseidon::LookupStringtableCsv(path, "STR_CAMPAIGN_TEST").Data()) == pair.second);
+    }
+    Poseidon::ModSystem::SetModPath("");
+    REQUIRE(std::string(Poseidon::ResolveCampaignTextFile(path).Data()) == path);
 }

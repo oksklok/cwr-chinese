@@ -1,4 +1,5 @@
 #include <Poseidon/IO/Streams/QBStream.hpp>
+#include <Poseidon/Core/ModSystem.hpp>
 #include <Poseidon/Asset/Formats/Common/CsvReader.hpp>
 #include <Poseidon/IO/Filesystem/DirScanner.hpp>
 #include <cctype>
@@ -175,6 +176,32 @@ static std::string ResolvePreferredStringtableVariant(const std::string& filenam
     return filename;
 }
 
+RString ResolveCampaignTextFile(RString filename)
+{
+    std::string relative = filename.Data();
+    std::replace(relative.begin(), relative.end(), '\\', '/');
+    const std::string lower = LowerAscii(relative);
+    // Only campaign text is redirected. Mission scripts, saves, assets and
+    // campaign discovery continue to use their original paths.
+    if (lower.rfind("campaigns/", 0) != 0 || relative.find("..") != std::string::npos ||
+        !(HasCsvSuffix(relative.c_str()) ||
+          (lower.size() >= 16 && lower.compare(lower.size() - 16, 16, "/description.ext") == 0)))
+        return filename;
+    struct Search { std::string relative; RString result; } search{relative, filename};
+    ModSystem::EnumDirectories([](RStringB dir, void* context) {
+        if (dir.GetLength() == 0)
+            return false;
+        auto& search = *static_cast<Search*>(context);
+        const std::string path = std::string(dir.Data()) + "/localization/" + search.relative;
+        const std::string preferred = ResolvePreferredStringtableVariant(path);
+        if (!QIFStreamB::FileExist(preferred.c_str()))
+            return false;
+        search.result = preferred.c_str();
+        return true;
+    }, &search);
+    return search.result;
+}
+
 static std::vector<std::string> ResolveStringtableLoadList(const char* filename)
 {
     std::vector<std::string> files;
@@ -183,7 +210,7 @@ static std::vector<std::string> ResolveStringtableLoadList(const char* filename)
         return files;
     }
 
-    const std::string requested = filename;
+    const std::string requested = ResolveCampaignTextFile(filename).Data();
     const std::string baseFile = ResolvePreferredStringtableVariant(requested);
     if (QIFStreamB::FileExist(baseFile.c_str()))
     {
@@ -700,6 +727,8 @@ RString Localize(RString str)
 
 RString LookupStringtableCsv(RString csvPath, const char* key, const QFBank* bank)
 {
+    if (!bank)
+        csvPath = ResolveCampaignTextFile(csvPath);
     if (csvPath.GetLength() == 0 || !key || !*key)
     {
         return RString();

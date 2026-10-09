@@ -4,6 +4,9 @@
 #include <Poseidon/Graphics/Shared/WindowPlacement.hpp>
 
 #include <SDL3/SDL.h>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 #include <glad/gl.h>
 #include <Poseidon/Dev/Debug/DebugOverlay.hpp>
 
@@ -354,12 +357,34 @@ EngineGL33::EngineGL33(int width, int height, bool windowed, int bpp)
             break;
     }
 
-    _sdlWindow = SDL_CreateWindow("CWRC [GL33]", placement.width, placement.height, flags);
+    _sdlWindow = SDL_CreateWindow("Arma: Cold War Assault - Remastered", placement.width, placement.height, flags);
     if (!_sdlWindow)
     {
         LOG_ERROR(Graphics, "GL33: SDL_CreateWindow failed: {}", SDL_GetError());
         return;
     }
+
+#ifdef _WIN32
+    // Borrow the installed game's artwork at runtime; no proprietary icon is
+    // embedded in the community client. The launcher keeps the game as cwd.
+    HMODULE resources = LoadLibraryExW(L"PoseidonGame.exe", nullptr,
+                                      LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE);
+    if (resources)
+    {
+        EnumResourceNamesW(resources, MAKEINTRESOURCEW(14), [](HMODULE module, LPCWSTR, LPWSTR name, LONG_PTR context) -> BOOL {
+            auto* self = reinterpret_cast<EngineGL33*>(context);
+            self->_stockIconLarge = LoadImageW(module, name, IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), 0);
+            self->_stockIconSmall = LoadImageW(module, name, IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0);
+            return FALSE;
+        }, reinterpret_cast<LONG_PTR>(this));
+        FreeLibrary(resources);
+        HWND hwnd = static_cast<HWND>(SDL_GetPointerProperty(SDL_GetWindowProperties(_sdlWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
+        if (hwnd && _stockIconLarge)
+            SendMessageW(hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(_stockIconLarge));
+        if (hwnd && _stockIconSmall)
+            SendMessageW(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(_stockIconSmall));
+    }
+#endif
 
     if (placement.mode == WindowMode::Borderless)
     {
@@ -491,5 +516,10 @@ EngineGL33::~EngineGL33()
     {
         SDL_DestroyWindow(_sdlWindow);
         _sdlWindow = nullptr;
+#ifdef _WIN32
+        if (_stockIconLarge) DestroyIcon(static_cast<HICON>(_stockIconLarge));
+        if (_stockIconSmall) DestroyIcon(static_cast<HICON>(_stockIconSmall));
+        _stockIconLarge = _stockIconSmall = nullptr;
+#endif
     }
 }

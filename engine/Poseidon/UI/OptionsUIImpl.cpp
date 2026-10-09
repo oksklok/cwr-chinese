@@ -1048,7 +1048,7 @@ void DisplayCampaignLoad::OnChangeCampaign()
 
     CampaignHistory& campaign = _campaigns[_currentCampaign];
     _cfg.Clear();
-    _cfg.Parse(GetCampaignDirectory(campaign.campaignName) + RString("description.ext"));
+    _cfg.Parse(ResolveCampaignTextFile(GetCampaignDirectory(campaign.campaignName) + RString("description.ext")));
 
     C3DStatic* text = dynamic_cast<C3DStatic*>(GetCtrl(IDC_CAMPAIGN_CAMPAIGN));
     if (text)
@@ -1759,7 +1759,7 @@ static void PopulateUnlockedHistory(CampaignHistory& campaign)
     RString name = campaign.campaignName;
     campaign.Clear(name);
 
-    RString filename = GetCampaignDirectory(name) + RString("description.ext");
+    RString filename = ResolveCampaignTextFile(GetCampaignDirectory(name) + RString("description.ext"));
     if (!QIFStreamB::FileExist(filename))
         return;
     ParamFile description;

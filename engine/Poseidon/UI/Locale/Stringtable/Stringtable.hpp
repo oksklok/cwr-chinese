@@ -20,6 +20,10 @@ RString& GetLanguage();
 
 void LoadStringtable(RString type, RString filename, float priority = 0, bool init = true);
 
+// Active mods may provide localization/Campaigns/... tables and description.ext.
+// Returns the original path when there is no override; does not redirect assets.
+RString ResolveCampaignTextFile(RString filename);
+
 int RegisterString(RString name);
 
 RString LocalizeString(int ids);

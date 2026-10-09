@@ -786,7 +786,7 @@ void SetBaseDirectory(bool userMission, RString dir)
         RString filename = BaseDirectory + RString("stringtable.csv");
         LoadStringtable("Campaign", filename, 1, true);
         // campaign description
-        filename = BaseDirectory + RString("description.ext");
+        filename = ResolveCampaignTextFile(BaseDirectory + RString("description.ext"));
         if (QIFStreamB::FileExist(filename))
         {
             ExtParsCampaign.Parse(filename);
