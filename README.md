@@ -45,8 +45,10 @@ and ten fonts are unchanged. See [build instructions](localization/zhcn-combined
 [distribution notes](localization/zhcn-combined-arms/DISTRIBUTION.md) and
 [ROADMAP.md](ROADMAP.md). Installer history remains in Git.
 
-Local ZIP acceptance is in progress; there is no public release yet.
-Final source/license/notice review and public release documentation remain.
+The local ZIP passed representative physical checks on GOG 3.05 and the actual
+Steam 3.05 installation (BuildID 24792092), including removal and stock English
+launch. There is no public release yet. Final source/license/notice review and
+public release documentation remain.
 
 ## Licenses
 

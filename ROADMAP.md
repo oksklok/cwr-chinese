@@ -8,8 +8,8 @@
   assets remain untouched.
 - Complete: portable ZIP workflow and preparation confined to `@CWRC`;
   obsolete installer, backup/recovery machinery and whole-game inventory removed.
-- In progress: physical acceptance of the actual ZIP on GOG and Steam 3.05,
-  including deletion and stock launch.
+- Complete: physical acceptance of the actual ZIP on GOG and Steam 3.05,
+  including deletion of CWRC files and stock English launch.
 - Before public release: final licensing/corresponding-source/notice review
   and public release documentation. No tag, release or public binary upload yet.
 
