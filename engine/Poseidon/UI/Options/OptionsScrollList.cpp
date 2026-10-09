@@ -483,7 +483,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
             {
                 m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY, 0.34f, 0.075f);
                 m_notebook->SetSubControlPos(idcValStep, 0.46f, rowY, 0.44f, 0.075f);
-                m_notebook->SetSubControlPos(idcValBar, 0.81f, rowY, 0.12f, 0.075f);
+                m_notebook->SetSubControlPos(idcValBar, 0.81f, rowY, 0.18f, 0.075f);
             }
         }
     }

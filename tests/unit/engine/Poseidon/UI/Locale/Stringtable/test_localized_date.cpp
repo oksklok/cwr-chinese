@@ -119,4 +119,10 @@ TEST_CASE("FormatLocalizedDate localizes day/month names from the stringtable (#
     // Literal characters in the format are preserved (Czech-style "%a %d. %b").
     FormatLocalizedDate("%a %d. %b", friMay, buffer);
     REQUIRE(std::string(buffer) == "T-Fri 29. T-May");
+
+    // Chinese uses numeric months and no padding; other formats above are unchanged.
+    FormatLocalizedDate("%a，%m月%d日", MakeDate(5, 4, 10), buffer);
+    REQUIRE(std::string(buffer) == "T-Fri，5月10日");
+    FormatLocalizedDate("%a，%m月%d日", wedJan, buffer);
+    REQUIRE(std::string(buffer) == "T-Wed，1月3日");
 }

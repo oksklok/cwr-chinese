@@ -318,7 +318,14 @@ void Font::Load(const char* name)
         auto* mapping = FindFontMapping(baseName);
         if (mapping)
         {
-            auto* renderer = GetOrCreateRenderer(mapping->ttfPath, mapping->syntheticOblique, mapping->syntheticBold);
+            float bold = mapping->syntheticBold;
+            // Notebook ink is already opaque black. Slightly reduce stroke
+            // erosion for Chinese handwriting without changing its face/metrics.
+            if ((strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+                 strcmp(GLanguage.Data(), "ChineseTraditional") == 0) &&
+                strcmp(mapping->ttfPath, "Fonts\\cwr_hand.ttf") == 0)
+                bold += 0.3f;
+            auto* renderer = GetOrCreateRenderer(mapping->ttfPath, mapping->syntheticOblique, bold);
             if (renderer)
             {
                 _isFreeType = true;

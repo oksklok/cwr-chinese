@@ -94,6 +94,10 @@ void FormatLocalizedDate(const char* format, const struct tm& tmDate, char* buff
                     }
                     ptrsrc++;
                     break;
+                case 'm':
+                    ptrdst += sprintf(ptrdst, "%d", tmDate.tm_mon + 1);
+                    ptrsrc++;
+                    break;
                 case 'd':
 #ifdef _WIN32
                     _itoa(tmDate.tm_mday, ptrdst, 10);
