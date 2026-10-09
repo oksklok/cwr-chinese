@@ -632,7 +632,7 @@ int GameApplication::RunAfterArgumentParsing()
 {
     LOG_INFO(Core, "Game starting: version {}", (const char*)GetVersionString());
 
-    constexpr const char* kStartupErrorTitle = "Arma: Cold War Assault - Remastered - Startup Error";
+    constexpr const char* kStartupErrorTitle = "Poseidon localization client - Startup Error";
 
     if (!ReadConfiguration())
     {

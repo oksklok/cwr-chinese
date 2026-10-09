@@ -18,3 +18,16 @@ GL33 is the renderer; this branch has no Vulkan implementation.
 This is a new source-history/build identity, not a claim of a byte-identical
 historical executable. The earlier tested local RC and its build/source hash
 record remain unmodified development evidence, not a rebuilt release artifact.
+
+Stock GOG and Steam 3.05 binaries were physically tested with Chinese config,
+UTF-8 tables and fonts. UTF-8 rendering works, but Chinese registration is lost
+when the stock master config-extra is restored; the normal picker excludes SC/TC.
+Stock also ignores per-language fonts and the campaign text-only override path.
+The existing focused localization fixes remain necessary; no new loader or
+preparation system is added. Ready-made content is built on main, not by players.
+
+The window retains the stock engine's Poseidon identity with a modified-client
+notice, not a CWRC game brand. GPL Section 7 forbids branding the modified program
+with Bohemia trademarks: startup/version strings are neutral and borrowing the
+stock trademark icon has been removed. Game artwork still comes from the installed
+game. No replacement artwork or branding subsystem is provided.

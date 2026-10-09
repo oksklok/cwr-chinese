@@ -316,8 +316,6 @@ class EngineGL33 : public Engine
     bool _pendingExclusiveEnter = false;
 
     SDL_Window* _sdlWindow = nullptr;
-    void* _stockIconLarge = nullptr;
-    void* _stockIconSmall = nullptr;
     SDLEventWindow _eventWindow;
 
     int _bias;
