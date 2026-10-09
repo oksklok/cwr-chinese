@@ -22,8 +22,8 @@ whole master config, rather than merging omitted stock classes back in
 (`Asset/Addon/ConfigParsers.cpp`). Therefore a small partial master config is
 also unsuitable.
 
-`build_labels.py` derives **local-only** mod copies from the owner's untouched
-stock files. It changes exactly 32 master-config and 30 Noe-config `name` values
+`build_labels.py` builds ready-made APL-SA mod copies from stock 3.05 data on
+the developer machine. It changes exactly 32 master-config and 30 Noe-config `name` values
 to `$STR_CWRC_MAP_<world>_<original location ID>` references. The normal ParamFile
 stringtable lookup resolves those references; the existing UTF-8 sibling-shard
 loader loads `mod/bin/stringtable_terrain.utf8.csv`. No engine changes are needed.
@@ -42,11 +42,10 @@ All positions, class/key order, access modes, evaluator variables, other world
 settings and non-name configuration remain stock. Both non-config Noe PBO
 members remain byte-identical. The original files are never written.
 
-**Do not commit, upload or distribute the generated `config.bin` or `Noe.pbo`.**
-They contain commercial data and exist only inside ignored `game-local`.
-Future distribution must generate them locally from the recipient's licensed,
-compatible installation. Only the builder and authored CSV are shipped in this
-repository. This is not an installer or a general localization framework.
+Generated files remain ignored build outputs, but may ship in the ZIP under
+APL-SA: Bohemia's official CWR README licenses retail game data accordingly.
+See ../DISTRIBUTION.md for attribution/terms and the current ready-made workflow.
+Players never run this builder. The manual commands below are development history.
 
 ## Deployment / reversal
 

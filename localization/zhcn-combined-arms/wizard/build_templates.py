@@ -1,4 +1,4 @@
-"""Generate LOCAL-ONLY wizard PBO overlays; never modify/distribute stock assets.
+"""Generate APL-SA wizard PBO overlays without modifying installed stock assets.
 
 Only the existing UTF-8 CSV member is replaced. --check never writes.
 """

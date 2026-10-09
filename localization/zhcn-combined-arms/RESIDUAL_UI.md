@@ -106,8 +106,8 @@ python localization/zhcn-combined-arms/validate_ui.py
 
 The wizard builder verifies 36 recorded stock SHA-256 hashes and all targets
 before writing. It changes only each PBO's main UTF-8 table; commercial members
-are copied byte-for-byte into **ignored, local-only** mod banks. Do not distribute
-those stock-derived PBOs. `--check` writes nothing. A differing existing output is
+are copied byte-for-byte into ready-made APL-SA mod banks (see DISTRIBUTION.md).
+`--check` writes nothing. A differing existing output is
 rejected; after an authored update, remove only the prior generated wizard copies
 before regenerating, never the original stock banks.
 
@@ -132,7 +132,7 @@ python localization/zhcn-combined-arms/validate_multiplayer.py
 The builder preflights all 30 stock tree hashes and existing targets before
 writing `@zhcn-prototype/MPMissions/<original folder>.pbo`. It preserves every
 member byte except the main CSV and manifest-listed display references. These
-are **ignored, local-only, commercial-derived banks: never distribute them**.
+are ready-made APL-SA adaptations; see DISTRIBUTION.md for the current ZIP workflow.
 For an authored update, move only those prior generated copies aside before
 rebuilding. Reverse MP deployment by removing only those 30 generated copies;
 omitting the mod restores stock authored MP text without altering originals.

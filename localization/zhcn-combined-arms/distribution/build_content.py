@@ -1,4 +1,4 @@
-"""Prepare local CWRC overlays. Stock game files are read-only.
+"""Developer-only build of ready-to-use CWRC content. Stock inputs are read-only.
 GPL-3.0-or-later with repository Section 7 terms; Chinese text: APL-SA.
 """
 import argparse
@@ -7,15 +7,12 @@ import hashlib
 import importlib.util
 import io
 import json
-import os
 import shutil
-import struct
-import subprocess
 import sys
 import tempfile
 from pathlib import Path, PurePosixPath
 
-PATCH = Path(sys._MEIPASS) / 'runtime' if getattr(sys, 'frozen', False) else Path(__file__).resolve().parents[1]
+PATCH = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PATCH))
 from validate_campaign import HEADER, stock_columns
 import validate_resistance
@@ -179,59 +176,17 @@ def run_builders(patch, game, mod, check=False):
             sys.argv = saved
 
 
-def verify_game(game):
-    exe = target(game, 'PoseidonGame.exe')
-    require(exe.is_file(), 'Select Remastered containing the original PoseidonGame.exe')
-    data = exe.read_bytes()
-    require(len(data) > 64 and data[:2] == b'MZ', 'Original client is not a Windows executable')
-    offset = struct.unpack_from('<I', data, 60)[0]
-    require(offset + 6 <= len(data) and data[offset:offset+4] == b'PE\0\0'
-            and struct.unpack_from('<H', data, offset+4)[0] == 0x8664,
-            'Windows x64 Remastered 3.05 is required; original 1.96/1.99 data is unsupported')
-    if os.name == 'nt':
-        quoted = str(exe).replace("'", "''")
-        version = subprocess.check_output(['powershell.exe', '-NoProfile', '-Command',
-            f"(Get-Item -LiteralPath '{quoted}').VersionInfo.ProductVersion"], text=True).strip()
-        require(version == '3.05', f'Unsupported Remastered version: {version or "missing"}; expected 3.05')
-
-
-def source_inputs(manifest):
-    """The existing recipes need these inputs, not a storefront-wide inventory."""
-    needed = set()
-    for table in manifest['tables']:
-        for row in table['rows']:
-            ref = row[3]
-            if ref[0] in ('row', 'alias'):
-                needed.add(ref[1][0] if isinstance(ref[1], list) else ref[1])
-            elif ref[0] == 'span':
-                needed.add(ref[1])
-            elif ref[0] == 'terrain':
-                needed.add('AddOns/Noe.pbo' if ref[1] == 'Noe' else 'BIN/CONFIG.BIN')
-    needed.update(edit['source'] for edit in manifest['edits'])
-    needed.update(rel for rel in manifest['sources'] if
-                  (rel.startswith('BIN/') and '.csv' in rel.lower()) or
-                  rel.startswith(('Templates/', 'SPTemplates/', 'MPMissions/')))
-    if any(row[3][0] == 'global' for table in manifest['tables'] for row in table['rows']):
-        needed.update('AddOns/' + name for name in GLOBAL_ADDONS)
-    return {rel: manifest['sources'][rel] for rel in sorted(needed)}
-
-
-def prepare(game, mod):
+def build_content(game, mod):
+    from make_payload import assemble
     game, mod = game.resolve(), mod.resolve()
-    require(mod == game / '@CWRC', 'Extract @CWRC directly into the Remastered game directory')
-    verify_game(game)
-    payload = mod / 'payload'
-    manifest = json.loads((payload / 'payload.json').read_text(encoding='utf-8'))
-    print('Preparing Chinese text from your Remastered 3.05 files...', flush=True)
-    for rel, expected in source_inputs(manifest).items():
-        source = target(game, rel)
-        require(source.is_file(), f'Missing required game file: {rel}')
-        if rel not in {'AddOns/' + name for name in GLOBAL_ADDONS}:
-            require(digest(source.read_bytes()) == expected, f'Incompatible 3.05 source: {rel}')
-    # Scratch data and every final output stay inside CWRC. Re-run preparation
-    # after a failure, or remove @CWRC; there is no stock state to restore.
-    with tempfile.TemporaryDirectory(prefix='prepare-', dir=mod) as work:
-        patch = Path(work)
+    require(not mod.exists(), 'Choose an absent content output directory')
+    require(not mod.is_relative_to(game), 'Build outside the installed game')
+    # Construction and byte-exact checks happen once on the developer machine,
+    # never on a player's first launch. Existing builders remain authoritative.
+    with tempfile.TemporaryDirectory(prefix='cwrc-build-') as work:
+        payload = Path(work) / 'payload'
+        patch = Path(work) / 'patch'
+        assemble(payload)
         reconstruct(game, payload, patch)
         shutil.copytree(patch / 'mod/bin', mod / 'bin', dirs_exist_ok=True)
         shutil.copytree(patch / 'campaign', mod / 'localization/Campaigns', dirs_exist_ok=True)
@@ -258,8 +213,7 @@ def prepare(game, mod):
             bank.parent.mkdir(parents=True, exist_ok=True)
             bank.write_bytes(pack(members))
         run_builders(patch, game, mod, check=True)
-    (mod / 'prepared.txt').write_text('CWRC portable 3.05\n', encoding='utf-8')
-    print('Ready. Original game files were not changed.', flush=True)
+    print('PASS: ready-to-use mod built; 217 tables / 3 metadata edits verified; no player preparation')
 
 
 def main():
@@ -267,16 +221,13 @@ def main():
         sys.stdout.reconfigure(encoding='utf-8', errors='replace', line_buffering=True)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('game', type=Path)
-    parser.add_argument('--if-needed', action='store_true')
+    parser.add_argument('output', type=Path)
     args = parser.parse_args()
-    mod = args.game.resolve() / '@CWRC'
-    if args.if_needed and (mod / 'prepared.txt').is_file():
-        return 0
     try:
-        prepare(args.game, mod)
+        build_content(args.game, args.output)
         return 0
     except (OSError, ValueError, KeyError) as error:
-        print(f'CWRC preparation failed: {error}', flush=True)
+        print(f'CWRC content build failed: {error}', flush=True)
         return 1
 
 

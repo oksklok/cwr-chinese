@@ -1,15 +1,11 @@
-"""Build CWRC.zip from the client, preparation tool and Chinese-only master."""
+"""Build CWRC.zip with ready-to-use mod content and the required localization client."""
 import argparse
-import importlib.metadata
 import json
 import shutil
 import subprocess
-import sys
-import tarfile
 import zipfile
 from pathlib import Path
-from make_payload import assemble
-from prepare import PATCH, require, digest
+from build_content import PATCH, require, digest, build_content
 REPO = PATCH.parents[1]
 
 
@@ -20,8 +16,8 @@ def copy(source, dest):
 
 
 def source_archive(output, engine):
-    # Explicit source-only selection; never include game-local, assets, packages,
-    # stock-language localization CSVs, original icons or generated commercial banks.
+    # Explicit source-only selection; retail-derived APL-SA content is packaged
+    # separately from GPL code, not mixed into the corresponding-source archive.
     selected = {}
     roots = {'engine', 'apps', 'cmake', 'thirdparty', 'tests', 'scripts', 'tools', 'mserver', 'deploy', 'resources'}
     extensions = {'.c', '.cpp', '.cc', '.h', '.hpp', '.inc', '.in', '.cmake', '.txt', '.md', '.json',
@@ -59,7 +55,7 @@ def source_archive(output, engine):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)
-    for name in ('client', 'preparation', 'vcpkg', 'installed', 'build-tools', 'helper-sources'):
+    for name in ('game', 'client', 'vcpkg', 'installed', 'build-tools'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--engine-repo', type=Path, default=REPO / 'build/client-source')
     args = parser.parse_args()
@@ -72,12 +68,12 @@ def main():
     release = args.output.resolve()
     require(not release.exists(), 'Choose an absent output directory')
     out = release / 'files/@CWRC'
-    assemble(out / 'payload')
+    build_content(args.game, out)
     for name in ('PoseidonGame.exe', 'OpenAL32.dll'):
         copy(args.client / name, out / 'client' / name)
-    shutil.copytree(args.preparation, out / 'prepare')
-    for name in ('CWRC.cmd', 'README-CWRC.txt'):
-        copy(Path(__file__).with_name(name), release / 'files' / name)
+    copy(Path(__file__).with_name('CWRC.cmd'), release / 'files/CWRC.cmd')
+    # Keep a CWRC-specific name so extraction cannot overwrite the game's README.
+    copy(Path(__file__).with_name('README-CWRC.txt'), release / 'files/README-CWRC.txt')
     copy(REPO / 'LICENSE', out / 'notices/GPL.txt')
     copy(engine / 'THIRD_PARTY_NOTICES.md', out / 'notices/VENDORED.md')
     copy(Path(__file__).with_name('COMPONENTS.txt'), out / 'notices/COMPONENTS.txt')
@@ -97,27 +93,6 @@ def main():
     shutil.copytree(engine / 'cmake/vcpkg-overlay-ports', out / 'source/vcpkg-overlay-ports')
     subprocess.run(['git', '-C', str(args.vcpkg), 'archive', '--format=zip',
                     '--output=' + str(out / 'source/vcpkg-source.zip'), 'HEAD'], check=True)
-    for file in args.helper_sources.iterdir():
-        require(file.name.endswith(('.tar.gz', '.tar.xz', '.zip')), 'Source archive expected')
-        copy(file, out / 'source/helper-dependencies' / file.name)
-        if file.name.startswith(('openssl-', 'libffi-')):
-            with tarfile.open(file) as archive:
-                for member in archive.getmembers():
-                    if member.isfile() and Path(member.name).name.upper() in ('LICENSE', 'LICENSE.TXT', 'COPYING', 'NOTICE'):
-                        data = archive.extractfile(member).read()
-                        relative = Path(*Path(member.name).parts[1:])
-                        require('..' not in relative.parts, 'Unsafe notice path')
-                        dest = out / 'notices/helper' / file.name.split('-', 1)[0] / relative
-                        dest.parent.mkdir(parents=True, exist_ok=True)
-                        dest.write_bytes(data)
-    for distribution in ('PyInstaller', 'fonttools', 'altgraph', 'packaging', 'pyinstaller-hooks-contrib', 'pywin32-ctypes'):
-        d = importlib.metadata.distribution(distribution)
-        for file in d.files or []:
-            if 'license' in str(file).lower() or Path(str(file)).name.lower() in ('copying.txt', 'copying', 'authors.txt'):
-                if d.locate_file(file).is_file():
-                    copy(d.locate_file(file), out / 'notices/helper' / distribution / Path(str(file)).name)
-    python_license = Path(sys.base_prefix) / 'LICENSE.txt'
-    copy(python_license, out / 'notices/helper/Python.txt')
     copy(args.installed.parent / 'vcpkg/status', out / 'source/vcpkg-status.txt')
     copy(engine / 'build/local-labels/generated/Poseidon/Core/BuildInfo.hpp', out / 'source/BuildInfo.hpp')
     for name in ('clang-local.cmake', 'configure.cmd', 'build.cmd', 'build_ui_tests.cmd'):
@@ -128,18 +103,19 @@ def main():
 
     source_archive(out / 'source/CWRC-source.zip', engine)
     record = {'client_commit': commit,
-              'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip(),
-              'python': sys.version}
+              'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip()}
     (out / 'source/build-record.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
-    # Generated commercial overlays never enter the distributable.
-    forbidden = {'.pbo', '.ext', '.sqm', '.sqs', '.paa', '.pac', '.wrp', '.p3d', '.wav', '.ogg', '.pdb', '.log', '.ico'}
+    # APL-SA allows the ready-made adaptations. Only our client is executable;
+    # no preparation runtime, original executable, debugging files or stock icons.
+    forbidden = {'.pdb', '.log', '.ico', '.py', '.pyc', '.spec'}
     with zipfile.ZipFile(release / 'CWRC.zip', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for file in sorted((release / 'files').rglob('*')):
             if file.is_file():
                 relative = file.relative_to(release / 'files').as_posix()
-                require(file.suffix.lower() not in forbidden, f'Unexpected commercial/generated artifact: {relative}')
-                require(file.suffix.lower() != '.csv' or relative == '@CWRC/payload/mod/bin/stringtable.csv',
-                        f'Reconstructed stock table: {relative}')
+                require(file.suffix.lower() not in forbidden or relative.startswith('@CWRC/source/'),
+                        f'Unexpected runtime artifact: {relative}')
+                require(file.suffix.lower() != '.exe' or relative == '@CWRC/client/PoseidonGame.exe',
+                        f'Unexpected executable: {relative}')
                 archive.write(file, relative)
     archive = release / 'CWRC.zip'
     print(f'{archive}: {archive.stat().st_size} bytes; SHA-256 {digest(archive.read_bytes())}')

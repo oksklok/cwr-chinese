@@ -1,4 +1,4 @@
-"""Generate local-only terrain-label overlays from an untouched GOG 3.05 install.
+"""Generate APL-SA terrain-label overlays from compatible stock 3.05 data.
 
 Only stock name values become $STR references. No commercial config/terrain
 payload is shipped with this script. Run --check to verify without writing.
@@ -329,7 +329,7 @@ def main():
     print(f'PASS: {master_count + noe_count} built-in labels; Everon 18, Malden 14, Nogova 30; Kolgujev 0 stock labels')
     print('PASS: exact stock round-trip, only name values changed, positions/IDs/other properties and terrain payloads preserved')
     print('PASS: all five font cmaps; eight stock language columns keep stock labels; stock input hashes unchanged')
-    print('PASS: deployment equality' if args.check else 'Generated three LOCAL-ONLY mod files; do not distribute config.bin or Noe.pbo')
+    print('PASS: deployment equality' if args.check else 'Generated three ready-to-use APL-SA terrain overlays')
 
 
 if __name__ == '__main__':

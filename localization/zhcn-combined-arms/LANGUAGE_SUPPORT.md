@@ -54,8 +54,9 @@ The existing settings writer persists `textLanguage="ChineseSimplified"`; keep
 The README's current manual deployment copies all tables, campaign display
 metadata and `mod/bin/config-extra.cpp`, puts fonts in the language subdirectory,
 and runs the existing terrain/wizard/MP/UI builders. Validators check deployment
-equality and all eight stock columns; builders still create ignored local-only
-stock-derived overlays, never redistribute commercial assets.
+equality and all eight stock columns. The current distribution instead runs
+these builders before packaging and ships ready-made APL-SA overlays; see
+DISTRIBUTION.md. The manual migration instructions below are historical.
 
 For an older English-column installation, close the game first. Verify and retire
 the previous **five flat** `@zhcn-prototype/Fonts/cwr_*.ttf` copies; leaving them

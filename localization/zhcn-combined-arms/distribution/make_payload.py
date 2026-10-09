@@ -2,7 +2,7 @@
 import argparse
 import json
 from pathlib import Path
-from prepare import PATCH, digest, require
+from build_content import PATCH, digest, require
 
 def payload_file(file):
     data = file.read_bytes()

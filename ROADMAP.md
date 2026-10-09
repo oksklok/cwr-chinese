@@ -1,16 +1,15 @@
 # CWRC roadmap
 
-- Complete: Simplified and Taiwan Traditional Chinese translations, fonts,
-  original-language fallback, English voices and existing content coverage.
-- Complete: preserve selected mods when adding CWRC; localized standalone
-  mission-picker titles.
-- Complete: campaign text lookup through enabled mod files; original campaign
-  assets remain untouched.
-- Complete: portable ZIP workflow and preparation confined to `@CWRC`;
-  obsolete installer, backup/recovery machinery and whole-game inventory removed.
-- Complete: physical acceptance of the actual ZIP on GOG and Steam 3.05,
-  including deletion of CWRC files and stock English launch.
-- Before public release: final licensing/corresponding-source/notice review
-  and public release documentation. No tag, release or public binary upload yet.
+- Complete: SC/Taiwan TC translations, fonts, original-language fallback,
+  English voices and existing content coverage; keep them stable.
+- Complete: physical stock GOG/Steam 3.05 probe. UTF-8 works, but normal Chinese
+  selection, SC/TC font switching and campaign text overrides need the client.
+- Complete: ready-made mod content built with existing builders; no player-side
+  preparation, installer, scanning, backup/recovery system or stock replacements.
+- Complete: retain other selected mods and original campaign/save paths.
+- In progress: physical acceptance of the exact replacement ZIP on GOG/Steam,
+  followed by deletion and stock English launch.
+- Before public release: final corresponding-source/license/notice review and
+  public release documentation. No tag, public release or binary upload yet.
 
-Keep completed translations/fonts stable. CWRR and cwr-vulkan remain separate.
+CWRR and cwr-vulkan remain separate. Installer/preparation history stays in Git.

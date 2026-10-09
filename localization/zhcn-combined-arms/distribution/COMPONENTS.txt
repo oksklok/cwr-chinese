@@ -3,25 +3,34 @@ CWRC -- unofficial Chinese localization and modified client
 Original engine and game: Bohemia Interactive.
 Requires a legitimate, compatible Windows x64 Remastered 3.05 installation.
 Not affiliated with, endorsed by, or an official release of Bohemia Interactive.
-No original commercial executable or game data is included in this download.
+No original game executable is included. Ready-made adapted game data is
+included under APL-SA, separately from the engine code and fonts.
 
 CODE: GPL-3.0-or-later with the additional Section 7 terms in GPL.txt.
-Includes our modified engine/client, preparation utility and builders.
+Includes our modified engine/client and developer-side builders.
 These are modified versions, not the original program. Matching source and
 build instructions are included under source/. Third-party exceptions retain
 their individual licenses, supplied under notices/third-party/.
 
-CHINESE CONTENT: Arma Public License Share Alike (APL-SA).
+GAME DATA AND CHINESE ADAPTATIONS: Arma Public License Share Alike (APL-SA).
 The original material is by Bohemia Interactive; CWRC contributors authored
 the Simplified Chinese retranslation and reviewed Traditional Chinese adaptation,
 display metadata and reference recipes. No historical Chinese localization is
 a source for the shipped wording. Attribution, noncommercial/game-use and
 share-alike conditions apply to these adaptations, not to GPL code.
-Full terms: https://www.bohemia.net/en/licenses/arma-public-license-share-alike
+The retail game data is designated APL-SA by Bohemia's official CWR README:
+https://github.com/BohemiaInteractive/CWR/blob/main/README.md
+Copyright original game data: Bohemia Interactive a.s. All rights reserved
+except as licensed under APL-SA. Included derivatives alter localization
+tables, display references and terrain labels; mission logic/assets are retained.
+These ready-made adaptations, including unchanged material within mission and
+terrain banks, are distributed under APL-SA, not GPL. No warranty is provided.
+Full terms: https://old.bohemia.net/community/licenses/arma-public-license-share-alike
 
 FONTS: SIL Open Font License 1.1, separately from code and Chinese content.
 Ten renamed modified faces with preserved Latin components; all contributor
-notices and full OFL are included in payload/font/. Do not sell fonts alone,
+notices and full OFL are included in Fonts/ChineseSimplified and
+Fonts/ChineseTraditional. Do not sell fonts alone,
 claim endorsement or use reserved font names for modified fonts.
 
 OPENAL: OpenAL Soft 1.24.3, LGPL-2.0-or-later, dynamically loaded and replaceable.
@@ -30,8 +39,8 @@ under source/. Replacing this DLL with a compatible modified build is permitted.
 No contractual restriction on modification/reverse engineering for debugging
 such library modifications is imposed by CWRC.
 
-The preparation utility bundles Python, fontTools and a PyInstaller bootloader.
-Their notices/licenses are included. Microsoft runtime DLLs are NOT bundled;
+No preparation utility, Python runtime or PyInstaller bootloader is included.
+Microsoft runtime DLLs are NOT bundled;
 install Microsoft's official x64 Visual C++ 2022 redistributable if needed.
 
 NO WARRANTY. Provided AS IS; use at your own risk. See each component license.

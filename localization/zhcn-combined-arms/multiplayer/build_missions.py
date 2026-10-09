@@ -1,6 +1,6 @@
-"""Pack LOCAL-ONLY authored MP overlays from stock loose GOG 3.05 missions.
+"""Pack APL-SA authored MP overlays from compatible stock 3.05 missions.
 
-Never distribute these commercial-derived PBOs. --check is read-only.
+Ready-made adaptations may ship under APL-SA; see DISTRIBUTION.md. --check is read-only.
 """
 import argparse
 import hashlib
@@ -86,7 +86,7 @@ def main():
         for target, data in outputs.items():
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
-    print(f'PASS: {len(outputs)} local-only authored MP overlays; stock hashes, payload round-trip, deployment equality')
+    print(f'PASS: {len(outputs)} authored MP overlays; stock hashes, payload round-trip, deployment equality')
 
 
 if __name__ == '__main__':
