@@ -502,6 +502,8 @@ void AppConfig::ParseCommandLine(int argc, char** argv)
         showOption(configGroup->add_option("--lang", _language,
                                            "Language override (English, French, German, Czech, Polish, Russian, etc.)"),
                    CliHelpVisibility::Basic);
+        showOption(configGroup->add_option("--voice", _voiceLanguage, "Voice language override (independent of text)"),
+                   CliHelpVisibility::Basic);
         showOption(configGroup->add_flag("--encryption-required", _requireEncryptedAddons,
                                          "Require addon banks to declare encryption metadata"),
                    serverRole ? CliHelpVisibility::Basic : CliHelpVisibility::Full);

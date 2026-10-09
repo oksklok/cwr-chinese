@@ -160,6 +160,7 @@ public:
 
     /// Language override (from --lang CLI parameter)
     const std::string& GetLanguage() const { return _language; }
+    const std::string& GetVoiceLanguage() const { return _voiceLanguage; }
 
     /// Require addon banks to declare encryption metadata
     bool RequireEncryptedAddons() const { return _requireEncryptedAddons; }
@@ -402,6 +403,7 @@ private:
     RString _modsDir;     // resolved --mods-dir base ("" if unset)
     RString _workshopDir; // resolved --workshop-dir base ("" if unset)
     std::string _language;
+    std::string _voiceLanguage;
     bool _requireEncryptedAddons = false;
     bool _oldPaths = false;
 

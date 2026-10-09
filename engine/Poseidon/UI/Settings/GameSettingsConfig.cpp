@@ -267,6 +267,10 @@ void LoadGameSettings()
         cfg.voiceLanguage = normalized;
     }
 
+    const std::string& cliVoice = AppConfig::Instance().GetVoiceLanguage();
+    if (!cliVoice.empty())
+        cfg.voiceLanguage = CfgLib::NormalizeSupportedLanguage(cliVoice);
+
     ApplyToRuntime(cfg);
     LOG_DEBUG(Config, "GameSettings: text='{}' voice='{}' blood={} viewDistance={} respectMissionViewDistance={}",
               cfg.textLanguage, cfg.voiceLanguage, cfg.blood, cfg.preferredViewDistance,
