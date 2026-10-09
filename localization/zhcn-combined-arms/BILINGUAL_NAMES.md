@@ -1,5 +1,10 @@
 # Selective bilingual-name retirement
 
+**Superseded on 2026-10-10:** SC/TC prose now uses Chinese-only geographic names,
+including islands and unlabelled places. The terrain-coverage exceptions below
+describe the earlier review, not current policy. Terrain labels and internal
+map/link identifiers are unchanged.
+
 The installed GOG Remastered 3.05 Chinese terrain overlay is now the navigation
 reference for covered towns. The source of truth is the actual **62-entry**
 [locally reconstructed `stringtable_terrain.utf8.csv`](distribution/payload.json), not merely

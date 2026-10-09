@@ -15,7 +15,10 @@
   neutral original icon and plain Poseidon title; exact ZIP tested on GOG/Steam.
 - Complete: top-level extraction via Remastered/, Chinese 3D mono proportions,
   slightly darker journal ink, numeric Chinese dates and Bomberman link spacing.
-  Binding cells use the available right margin and retain hover scrolling.
+  Binding cells have separate action/primary/secondary regions and retain hover scrolling.
+- Complete: Chinese campaign-book serif proportions, original gold-star icons,
+  briefing fragment/link spacing across supported missions, and Chinese-only
+  geographic prose; stock-language HTML and terrain labels remain unchanged.
 - Complete: physical acceptance of the exact ready-made ZIP on GOG/Steam,
   including saved SC/TC selection, other mod coexistence, deletion and stock
   English launch. No first-run content is generated.

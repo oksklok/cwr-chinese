@@ -15,7 +15,7 @@ python localization/zhcn-combined-arms/distribution/build_release.py game-local/
 not System32. Only msvcp140.dll, vcruntime140.dll and vcruntime140_1.dll are copied.
 PE imports of the client/OpenAL and these DLLs require no further non-OS runtime.
 Windows 10/11 supplies UCRT. See MICROSOFT-RUNTIME.txt for redistribution terms.
-The client and launcher share the original neutral icon in client-source's
+The client and launcher share the original gold-star icon in client-source's
 `apps/cwr/Game/localization.ico`; `make_icon.py` reproduces it without external tools.
 
 Choose an absent output directory outside the game. Existing builders construct

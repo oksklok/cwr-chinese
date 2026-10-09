@@ -10,7 +10,7 @@ Stock assets/executable, saves and
 unrelated mods are untouched. The README uses a distinct name to avoid replacing
 a game's existing README.
 
-All content is ready-made: 217 translated tables, eleven display-reference/Chinese HTML files,
+All content is ready-made: 217 translated tables, 139 display-reference/Chinese HTML files,
 24 standalone banks, 30 multiplayer banks, 36 templates, terrain and UI overlays,
 ten unchanged fonts, localization client/OpenAL, source and notices. No player-side
 Python, PyInstaller, preparation executable/marker, source inventory validation,
@@ -35,7 +35,7 @@ campaign titles stayed English. These are observed stock limitations, not a
 claim that stock lacks UTF-8 support. Diagnostic forced language is not a usable
 player launch workflow. Existing focused client fixes are retained.
 
-The client redirects campaign CSV/description and mission-definition lookup,
+The client redirects campaign CSV/description, Chinese briefing HTML and mission-definition lookup,
 retaining stock campaign discovery and saves. Definition edits only replace
 display literals with stringtable references; scripts and mission logic stay
 unchanged. Other mod loading stays native.
@@ -62,9 +62,40 @@ and future updates are outside scope. Three Microsoft x64 VC++ 2022 runtime DLLs
 are included beside the client under Microsoft's redistribution terms; Windows
 supplies UCRT. No VC++ installation step is needed. The native launcher is built
 with a static CRT, forwards optional arguments and has no console window.
-Both executables use an original neutral book icon, not proprietary artwork.
+Both executables use an original gold five-pointed star icon, not proprietary artwork.
 
-## Bounded usability pass — 2026-10-10
+## Briefing and presentation polish — 2026-10-10
+
+One focused briefing review covered both campaigns, all 24 standalone missions
+and 30 authored multiplayer missions. Finite Chinese-only HTML variants cover
+20 Resistance, 24 standalone and 21 multiplayer briefings (130 SC/TC files).
+The client permits these two Chinese briefing filenames through its existing
+campaign-text lookup; original HTML and other-language behavior stay unchanged.
+Fragment corrections include Heavy Metal's rendezvous sentence, Shadow Killer's
+fuel-station objective, and missing endings in Ambush/Tank Platoon/Clean Sweep.
+185 bilingual rows changed in total, including 138 geographic-name rows. Chinese
+prose no longer appends Latin island/unlabelled-place names. Terrain labels,
+links/targets, keys, stock columns, mission logic, voices and font files are unchanged.
+
+Keyboard rows now separate action/primary/secondary geometry and click targets,
+with bounded hover scrolling before the scrollbar. Font size was not reduced.
+Only Chinese campaign-book serif text loses the extra 0.75 horizontal squeeze;
+English, the book perspective, font style and already-corrected screens are unchanged.
+The existing icon generator now makes a gold star shared by both executables.
+
+GOG physical checks covered SC/TC/English Heavy Metal and Shadow Killer briefing
+text, CWC Combined Arms and Resistance Contact, Chinese-only island prose,
+campaign-book typography, both binding edits and long-name hover scrolling.
+Tested marker links: Heavy Metal join; Shadow Killer pumpa/Konvoj1/End1;
+Combined Arms Regina; Contact Start/Kon1. All four missions reached gameplay.
+Captures: `game-local/public-captures/*polish*`. Steam gameplay was not repeated
+in this bounded pass; previous GOG/Steam distribution acceptance is recorded below.
+
+Passed: 81 UI/font/wrap/scroll cases (4,568 assertions), 56 stringtable/date cases
+(264 assertions), four packaging tests, three stock-CSV tests, and existing
+content reconstruction/deployment checks. No new audit tool or player machinery.
+
+## Earlier bounded usability pass — 2026-10-10
 
 `game-local/cwr-chinese-visual/cwr-chinese.zip`: **132,297,921 bytes**;
 SHA-256 `e521ac03e7d10e3214c426cf17e7fde7422b14ba69de6aae67b6dca3a289682f`.

@@ -100,7 +100,7 @@ Combined Arms mirror needed no edits and remains byte-identical to its campaign 
 - Compact letter-based formations/calls stay joined: A小队、Y坦克排、N编队、
   A一号、F代码. Dates, quantities, calibres, directions and ordinary numbered
   labels stay joined: 1985年、5吨、7.62毫米、第3步兵营、12点钟方向、结局5说明.
-  Distinct clock times use 行动于 10:30 开始; bilingual names stay 艾弗隆（Everon）.
+  Distinct clock times use 行动于 10:30 开始; geographic names use Chinese only.
 - Tokens keep their internal spelling/spacing. Chinese punctuation stays attached.
   Generic name/model placeholders receive separators in templates such as
   装填 %s and 将 %s 放入 %s; numeric placeholders in ordinary Chinese quantities
@@ -200,9 +200,8 @@ Independently established conventions and technical fixes retained:
 
 - Consistent main-character names (阿姆斯特朗、加斯托夫斯基、哈默、尼科尔斯、
   贝尔霍夫、福利、科兹洛夫斯基、布莱克、古巴、安吉丽娜) and radio callsigns
-  (熊爸爸、黑熊、白狼). Geographic names now use consistent Chinese names,
-  with Chinese-only names for towns covered by the same island's terrain overlay.
-  Unlabelled places and island names retain useful Latin navigation references.
+  (熊爸爸、黑熊、白狼). Geographic names use consistent Chinese-only names,
+  including islands and places without built-in terrain labels.
 - Corrected visible spellings to Kolgujev, Houdan, Chapoi and Riviere; script-facing
   identifiers, marker names and link attributes are preserved, not renamed.
 - 弹匣 is consistent; M60 machine gun and M60 tank remain distinct.
@@ -216,13 +215,10 @@ Independently established conventions and technical fixes retained:
 
 ### Geographic-name policy
 
-Towns confirmed in the same island's 62-entry terrain shard now use Chinese-only
-names throughout briefings, objectives, diary/intel, visible labels, debriefings
-and destination replies. This includes Status Quo's town destinations. Unlabelled
-places (Lolisse, Nová Ves and Kiusk) and island names (Everon, Malden, Kolgujev and
-Nogova) retain useful `中文名（Latin Name）` navigation references; short titles
-and routine dialogue can still use Chinese. Do not infer coverage from this
-glossary alone: use the actual terrain shard and mission island. Case variants
+All SC/TC player-facing geographic prose uses Chinese-only names, including
+islands and places without built-in town labels (Lolisse, Nová Ves and Kiusk).
+The former terrain-coverage exception is retired. Existing terrain labels,
+internal IDs, marker/link targets and coordinates remain unchanged. Case variants
 share one mapping; `St Pierre`,
 `St Pierre's` and the legacy typo `St. Piere` resolve to `Saint Pierre`.
 
@@ -418,8 +414,8 @@ in [FRESH_CWC.md](FRESH_CWC.md).
 - Chinese built-in terrain labels require generating the local overlays from
   the exact supported GOG 3.05 assets; other versions, third-party terrains and
   config-replacement mods are unverified. Places absent from stock terrain
-  definitions do not gain invented map labels. Bilingual navigation references
-  remain for unlabelled places and islands. Some minor non-geographic names/callsigns,
+  definitions do not gain invented map labels. Prose still uses Chinese-only
+  geographic names. Some minor non-geographic names/callsigns,
   random NPC-name pools, key labels such as `Backspace`, and baked-in English logo/
   cover artwork are intentionally unchanged.
 - Fifteen stock speech-definition references have no caption in either source

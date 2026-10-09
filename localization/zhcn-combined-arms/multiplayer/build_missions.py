@@ -38,6 +38,11 @@ def overlay_payloads(game, name, digest):
     edits = json.loads((ROOT / 'text-references.json').read_text(encoding='utf-8')).get(name, {})
     result = dict(files)
     result['stringtable.utf8.csv'] = (ROOT / 'MPMissions' / name / 'stringtable.utf8.csv').read_bytes()
+    for language in ('ChineseSimplified', 'ChineseTraditional'):
+        filename = f'briefing.{language}.utf8.html'
+        translated = ROOT / 'MPMissions' / name / filename
+        if translated.is_file():
+            result[filename] = translated.read_bytes()
     for filename, replacements in edits.items():
         data = files[filename]
         for replacement in replacements:

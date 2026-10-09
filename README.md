@@ -37,7 +37,7 @@ no general filesystem/merger/preparation system is added.
 Campaign tables/descriptions reside in `@cwr-chinese/localization/Campaigns`; the client
 redirects only those text lookups, preserving stock campaign paths and logic.
 Other content uses existing mod loaders. The original executable stays intact.
-The window title is simply `Poseidon`, with an original neutral book icon.
+The window title is simply `Poseidon`, with an original gold five-pointed star icon.
 Modified-program identification remains in executable metadata and notices.
 No trademark icon is bundled or borrowed. CWRC remains an internal codename.
 
