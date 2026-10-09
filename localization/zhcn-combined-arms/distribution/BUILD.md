@@ -1,59 +1,35 @@
-# Local Windows release candidate
+# Build the portable CWRC ZIP
 
-Build only on Windows x64. No game assets are release inputs. End users need
-neither Python nor development tools; these instructions are for builders.
-Patch and client are separate branches of `oksklok/cwr-chinese`. Check out the
-exact `client-source` revision in root `engine-source.json` (for example using
-the worktree command in the root README); do not build from the old fork or CWRR.
-Client CMake commands below run in that checkout, helper/installer commands in
-the localization-focused `main` checkout. No old GitHub repository is required.
+Use Windows x64 and the client-source commit pinned by `engine-source.json`.
+Build PoseidonGame and relevant native tests using that branch's CMake setup.
+The local build uses clang-cl, RelWithDebInfo, GL33, and
+`CWR_HAS_VULKAN=OFF`. Source/dependency build inputs accompany the ZIP.
 
-1. Build `PoseidonGame`, `PoseidonCoreTests` and `PoseidonTests` with the repository
-   CMake/vcpkg setup. The tested configuration is RelWithDebInfo, clang-cl,
-   MSVC v14.44.35207 CRT, static vcpkg dependencies except replaceable OpenAL.
-   Keep `CWR_HAS_VULKAN` disabled. The archive includes the actual local triplet,
-   chainload toolchain and configure/build commands for reference; replace their
-   local compiler paths with your installation. Use the recorded vcpkg revision
-   and dependency source hashes, not a moving baseline. No GOG data is needed to
-   compile the client. The GOG files are used only for local acceptance testing.
-2. In a private Python 3.14 environment, install `PyInstaller==6.22.0` and
-   `fonttools==4.66.1`. Freeze the helper:
+Preparation uses Python 3.14, fontTools and PyInstaller. Inno Setup is no
+longer used. From the repository root, with the build environment active:
 
-   ```powershell
-   python -m PyInstaller --clean --noconfirm --distpath game-local/cwrc-freeze --workpath game-local/cwrc-freeze-build localization/zhcn-combined-arms/distribution/cwrc-helper.spec
-   ```
+```powershell
+python -m PyInstaller --noconfirm --distpath game-local/portable-freeze --workpath game-local/portable-freeze-build localization/zhcn-combined-arms/distribution/cwrc-prepare.spec
+python localization/zhcn-combined-arms/distribution/build_release.py game-local/portable-release --client build/client-source/dist/local-labels --preparation game-local/portable-freeze/cwrc-prepare --engine-repo build/client-source --vcpkg PATH_TO_VCPKG --installed PATH_TO_VCPKG_INSTALLED_TRIPLET --build-tools PATH_TO_LOCAL_TOOLCHAIN_FILES --helper-sources PATH_TO_PYTHON_DEPENDENCY_SOURCE_ARCHIVES
+```
 
-3. Assemble safe payload/client/helper/source/notices with `build_release.py`.
-   `--engine-repo` points to the clean pinned client-source checkout; its default
-   is `build/client-source` under this repository's main checkout.
-   Supply the built client, frozen helper, vcpkg checkout/installed directory,
-   compiler-wrapper directory, Inno Setup directory and downloaded helper source archives. It rejects
-   an existing output directory and never reads the commercial game tree.
-4. Compile `CWRC.iss` with Inno Setup 6.7.3, supplying absolute `/DPackageDir`
-   and `/DOutputDir` paths. Setup installs per-user; choose a writable legitimate
-   Remastered folder. The normal Windows uninstaller runs exact restoration
-   before removing wrapper components. Conflicts abort cleanup and retain backups.
-5. Test THAT installer in a disposable compatible Remastered 3.05 copy, including
-   extra content/mods; test an actual Steam installation when available. Audit
-   installed package hashes against `package-manifest.json` and reject any PBO,
-   stock-language table, original executable, backup or developer artifact.
+Choose an absent release directory. The assembler includes source, licenses
+and build inputs, checks the client pin, and excludes commercial game assets.
+It emits `CWRC.zip` and prints its size and SHA-256.
 
-`source/CWRC-source.zip` contains `client-source/` (the pinned engine) and
-`patch-source/` (this repository); run client builds in the former and helper
-builds in the latter. The source build record records both revisions and file
-hashes. Matching source includes every client/helper build input and the four builders,
-but not commercial terrain/mission files or full stock-language localization
-tables. Chinese content is provided by `payload/payload.json`; locally reconstruct
-the tested tables from a legitimate installation rather than shipping stock text.
-Dependency source archives and exact vcpkg port patches are supplied alongside it.
-Unused tool/demo resource scripts are included so root CMake configuration works;
-their original icons are deliberately absent. Build the three specified client/test
-targets, not all unrelated tools. External/commercial test fixtures are not shipped.
-OpenAL is dynamically loaded: rebuild the included 1.24.3 source with its included
-vcpkg port and three patches, then replace `crwc-client/OpenAL32.dll` for debugging
-library modifications. Use `LIBTYPE=SHARED`, bundled fmt disabled, WASAPI/DirectSound
-enabled, examples/utilities disabled; the captured OpenAL CMake cache records all
-actual flags. No reverse-engineering restriction is imposed for this purpose.
+For development reconstruction only:
 
-This is not a public-release approval. Independently inspect notices, matching
-source/build completeness, neutral branding and the exact artifact before release.
+```powershell
+python localization/zhcn-combined-arms/distribution/make_payload.py PATH_TO_GAME/@CWRC/payload
+python localization/zhcn-combined-arms/distribution/prepare.py PATH_TO_GAME
+```
+
+Preparation reuses exact table/metadata recipes and four existing builders,
+including their deployment checks. It writes only inside `@CWRC`.
+Delete `@CWRC/prepared.txt` to run preparation again on next launch.
+No original-file restoration is needed.
+
+Run `test_stock_csv.py` and native stringtable, language, mods, wrapping and
+radio tests. The historical full localization validators additionally need
+their ignored commercial fixtures; their absence is not a passing result.
+Do not distribute reconstructed CSVs, campaigns, configs or mission PBOs.

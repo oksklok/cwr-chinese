@@ -13,11 +13,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('game', type=Path)
     parser.add_argument('--check', action='store_true')
+    parser.add_argument('--mod-dir', type=Path)
     args = parser.parse_args()
     game = args.game.resolve()
     if not (game / 'PoseidonGame.exe').is_file():
         raise ValueError('Not a Remastered game directory')
-    target = game / '@zhcn-prototype/AddOns/cwrc_ui.pbo'
+    target = (args.mod_dir or game / '@zhcn-prototype') / 'AddOns/cwrc_ui.pbo'
     expected = payload()
     if target.exists():
         if target.read_bytes() != expected:

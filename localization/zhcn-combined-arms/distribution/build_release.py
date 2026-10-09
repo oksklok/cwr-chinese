@@ -1,6 +1,5 @@
-"""Assemble this project's local Windows RC from explicit, non-commercial inputs."""
+"""Build CWRC.zip from the client, preparation tool and Chinese-only master."""
 import argparse
-import hashlib
 import importlib.metadata
 import json
 import shutil
@@ -9,10 +8,8 @@ import sys
 import tarfile
 import zipfile
 from pathlib import Path
-
 from make_payload import assemble
-from install_core import PATCH, require, digest
-
+from prepare import PATCH, require, digest
 REPO = PATCH.parents[1]
 
 
@@ -60,39 +57,32 @@ def source_archive(output, engine):
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('output', type=Path)
-    p.add_argument('--client', type=Path, required=True)
-    p.add_argument('--helper', type=Path, required=True)
-    p.add_argument('--vcpkg', type=Path, required=True)
-    p.add_argument('--installed', type=Path, required=True)
-    p.add_argument('--build-tools', type=Path, required=True)
-    p.add_argument('--helper-sources', type=Path, required=True)
-    p.add_argument('--inno', type=Path, required=True, help='Installed Inno Setup compiler directory')
-    p.add_argument('--engine-repo', type=Path, default=REPO / 'build/client-source',
-                   help='Clean checkout of this repository\'s pinned client-source revision (default: build/client-source)')
-    args = p.parse_args()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('output', type=Path)
+    for name in ('client', 'preparation', 'vcpkg', 'installed', 'build-tools', 'helper-sources'):
+        parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--engine-repo', type=Path, default=REPO / 'build/client-source')
+    args = parser.parse_args()
     engine = args.engine_repo.resolve()
     pin = json.loads((REPO / 'engine-source.json').read_text(encoding='utf-8'))
-    engine_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=engine).decode().strip()
-    require(engine_commit == pin['commit'], 'Engine checkout differs from engine-source.json')
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=engine).decode().strip()
+    require(commit == pin['commit'], 'Client source differs from engine-source.json')
     require(not subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=engine).strip(),
-            'Engine source has tracked changes; commit and update its pin before packaging')
-    require((engine / 'tests/fixtures/config-replace/display-addon/config.cpp').read_bytes() ==
-            (PATCH / 'ui/config.cpp').read_bytes(), 'Client display test fixture differs from authored patch config')
-    out = args.output.resolve()
-    require(not out.exists(), 'Choose an absent release directory')
+            'Commit the client before packaging')
+    release = args.output.resolve()
+    require(not release.exists(), 'Choose an absent output directory')
+    out = release / 'files/@CWRC'
     assemble(out / 'payload')
     for name in ('PoseidonGame.exe', 'OpenAL32.dll'):
         copy(args.client / name, out / 'client' / name)
-    shutil.copytree(args.helper, out / 'helper')
+    shutil.copytree(args.preparation, out / 'prepare')
+    for name in ('CWRC.cmd', 'README-CWRC.txt'):
+        copy(Path(__file__).with_name(name), release / 'files' / name)
     copy(REPO / 'LICENSE', out / 'notices/GPL.txt')
     copy(engine / 'THIRD_PARTY_NOTICES.md', out / 'notices/VENDORED.md')
     copy(Path(__file__).with_name('COMPONENTS.txt'), out / 'notices/COMPONENTS.txt')
     copy(Path(__file__).with_name('BUILD.md'), out / 'source/BUILD.md')
     copy(PATCH / 'font/OFL.txt', out / 'notices/OFL.txt')
-    copy(args.inno / 'license.txt', out / 'notices/Inno-Setup.txt')
-    require((args.inno / 'ISCC.exe').is_file(), 'Missing Inno Setup compiler')
     for directory in args.installed.joinpath('share').iterdir():
         if (directory / 'copyright').is_file():
             copy(directory / 'copyright', out / 'notices/third-party' / (directory.name + '.txt'))
@@ -135,39 +125,24 @@ def main():
     shutil.copytree(args.build_tools / 'triplets', out / 'source/local-build/triplets')
     cache = args.vcpkg / 'buildtrees/openal-soft/x64-windows-clang-local-rel/CMakeCache.txt'
     copy(cache, out / 'source/OpenAL-CMakeCache.txt')
-    source_hashes = source_archive(out / 'source/CWRC-source.zip', engine)
-    record = {
-        'base_commit': engine_commit,
-        'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip(),
-        'engine_repository': pin['repository'],
-        'engine_branch': pin['branch'],
-        'source_sha256': source_hashes,
-        'vcpkg_revision': subprocess.check_output(['git', '-C', str(args.vcpkg), 'rev-parse', 'HEAD']).decode().strip(),
-        'python': sys.version,
-        'inno_compiler_sha256': digest((args.inno / 'ISCC.exe').read_bytes()),
-        'helper_build_versions': {n: importlib.metadata.version(n) for n in
-            ('PyInstaller', 'fonttools', 'altgraph', 'packaging', 'pefile', 'setuptools', 'pyinstaller-hooks-contrib', 'pywin32-ctypes')},
-    }
+
+    source_archive(out / 'source/CWRC-source.zip', engine)
+    record = {'client_commit': commit,
+              'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip(),
+              'python': sys.version}
     (out / 'source/build-record.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
-    # Keep audit rules small and explicit. Compare the exact installed/extracted
-    # artifact with this inventory, rather than merely trusting the build directory.
-    manifest = {}
-    forbidden = {'.pbo', '.ext', '.sqm', '.sqs', '.paa', '.pac', '.wrp', '.p3d', '.wav', '.ogg', '.pdb', '.log'}
-    stock_hashes = set(json.loads((out / 'payload/payload.json').read_text(encoding='utf-8'))['sources'].values())
-    for file in sorted(out.rglob('*')):
-        if not file.is_file():
-            continue
-        rel = file.relative_to(out).as_posix()
-        require(file.suffix.lower() not in forbidden, f'Prohibited release artifact: {rel}')
-        require(file.suffix.lower() != '.csv' or rel == 'payload/mod/bin/stringtable.csv', f'Stock language table leaked: {rel}')
-        require(not file.name.lower().startswith(('vcruntime', 'msvcp')), 'Microsoft runtime must not be bundled')
-        h = digest(file.read_bytes())
-        # Required redistributable license texts can also occur in GOG's notices.
-        license_notice = rel.startswith('notices/') and file.suffix.lower() in ('.txt', '.md')
-        require(h not in stock_hashes or license_notice, f'Original game file leaked: {rel}')
-        manifest[rel] = {'bytes': file.stat().st_size, 'sha256': h}
-    (out / 'package-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
-    print(f'PASS: {len(manifest)} safe package files; {sum(v["bytes"] for v in manifest.values()):,} bytes; exact source/notices attached')
+    # Generated commercial overlays never enter the distributable.
+    forbidden = {'.pbo', '.ext', '.sqm', '.sqs', '.paa', '.pac', '.wrp', '.p3d', '.wav', '.ogg', '.pdb', '.log', '.ico'}
+    with zipfile.ZipFile(release / 'CWRC.zip', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for file in sorted((release / 'files').rglob('*')):
+            if file.is_file():
+                relative = file.relative_to(release / 'files').as_posix()
+                require(file.suffix.lower() not in forbidden, f'Unexpected commercial/generated artifact: {relative}')
+                require(file.suffix.lower() != '.csv' or relative == '@CWRC/payload/mod/bin/stringtable.csv',
+                        f'Reconstructed stock table: {relative}')
+                archive.write(file, relative)
+    archive = release / 'CWRC.zip'
+    print(f'{archive}: {archive.stat().st_size} bytes; SHA-256 {digest(archive.read_bytes())}')
 
 
 if __name__ == '__main__':

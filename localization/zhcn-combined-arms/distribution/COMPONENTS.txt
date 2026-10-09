@@ -6,7 +6,7 @@ Not affiliated with, endorsed by, or an official release of Bohemia Interactive.
 No original commercial executable or game data is included in this download.
 
 CODE: GPL-3.0-or-later with the additional Section 7 terms in GPL.txt.
-Includes our modified engine/client, helper, builders and installer script.
+Includes our modified engine/client, preparation utility and builders.
 These are modified versions, not the original program. Matching source and
 build instructions are included under source/. Third-party exceptions retain
 their individual licenses, supplied under notices/third-party/.
@@ -30,12 +30,9 @@ under source/. Replacing this DLL with a compatible modified build is permitted.
 No contractual restriction on modification/reverse engineering for debugging
 such library modifications is imposed by CWRC.
 
-The helper privately bundles Python, fontTools and a PyInstaller bootloader.
+The preparation utility bundles Python, fontTools and a PyInstaller bootloader.
 Their notices/licenses are included. Microsoft runtime DLLs are NOT bundled;
-install Microsoft's official x64 redistributable when Setup requests it.
-The Windows wrapper uses unmodified Inno Setup 6.7.3 by Jordan Russell and
-Martijn Laan; its license and original binary attribution are retained.
-https://jrsoftware.org/
+install Microsoft's official x64 Visual C++ 2022 redistributable if needed.
 
 NO WARRANTY. Provided AS IS; use at your own risk. See each component license.
 This is a LOCAL release candidate, not yet approved for public distribution.

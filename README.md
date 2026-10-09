@@ -1,138 +1,58 @@
-# CWRC Chinese localization
+# CWRC Chinese translation mod
 
-Unofficial **简体中文 / 繁體中文（台灣）** localization for a legitimate Windows x64
-Cold War Assault Remastered **3.05** installation. Original game and engine:
-Bohemia Interactive. Not affiliated with or endorsed by Bohemia Interactive.
+Free community **简体中文 / 繁體中文（臺灣）** translation for a legitimate
+Windows x64 **Cold War Assault Remastered 3.05** installation. Original game
+and engine: Bohemia Interactive. Unofficial and noncommercial.
 
-This repository is the source of truth for the Chinese patch. Its
-[`client-source` branch](https://github.com/oksklok/cwr-chinese/tree/client-source)
-contains the required engine/client source, pinned by
-[engine-source.json](engine-source.json). It starts at official 3.05 and contains
-only CWRC source/test changes. CWRR/Vulkan is a separate repository.
-The old CWR localization directory is retained as development history; do not
-edit both copies. No engine history, commercial assets or release binaries are
-imported into `main`; neither branch depends on the old GitHub fork.
+CWRC is distributed as a ZIP. Extract beside the original `PoseidonGame.exe`
+and run `CWRC.cmd`. On first launch a small preparation utility reads the
+required game data and builds local overlays **only inside `@CWRC`**.
+Choose ChineseSimplified or ChineseTraditional in Options > Game > Language.
+The launcher adds CWRC to the existing mod selection and selects English voices.
+Remove CWRC by closing the game and deleting `@CWRC`, `CWRC.cmd` and
+`README-CWRC.txt`. Original game files are never replaced.
 
-## Status
+SC/TC translations and fonts are complete: CWC and Resistance campaigns,
+24 standalone missions, 30 authored multiplayer missions, 36 wizard templates,
+shared UI/editor/encyclopedia, terrain labels and generated display names.
+Original language columns and fallback remain available.
 
-Simplified and Taiwan Traditional Chinese text, language selection and fonts are
-complete. Coverage includes CWC, Resistance, 24 standalone missions, 30 authored
-multiplayer missions, 36 wizard templates, shared UI/editor/encyclopedia text,
-terrain labels and generated display names. English voices and all eight stock
-languages are preserved.
+## Implementation
 
-The installer accepts compatible Windows x64 3.05 data without requiring a
-pristine installation or a particular storefront. Standalone missions, authored
-MP, wizard templates, shared bin data and Chinese fonts load through the mod.
-Campaign tables/metadata retain exact backups: the engine's loose-file precedence
-prevents campaign PBOs from overriding them reliably. Unrelated assets, extra
-missions, profiles, saves and other mods are preserved.
+The modified client reads campaign tables and descriptions from enabled mods'
+`localization/Campaigns/...` folders. All other campaign paths retain their
+existing behavior. The 117 tables and two descriptions are generated inside
+CWRC, with no loose-file replacements, backup system or installer.
 
-CWRC's shortcut adds its mod to the saved MODS selection. The MODS screen saves
-selected folders; explicit `--mod "@other;@another" --add-mod @zhcn-prototype`
-also retains that list. Missing selected mods produce a clear launch error.
-The new **local RC2** is undergoing exact-installer acceptance; the historical
-RC1 passed install/launch/uninstall/reinstall/recovery and user-edit checks.
-It is not a public release: final corresponding-source/license/notice review,
-public documentation and final artifact testing remain. See [ROADMAP.md](ROADMAP.md)
-and [distribution findings](localization/zhcn-combined-arms/DISTRIBUTION.md).
-No download is published by this repository split.
+Preparation reuses the Chinese-only master and existing builders. It checks
+582 consumed sources, retaining hashes where reconstruction depends on exact
+bytes. It ignores unrelated assets, extra missions and other mods. Generated
+commercial overlays must never be redistributed; share the original ZIP only.
 
-## Source layout
-
-- `localization/zhcn-combined-arms/distribution/payload.json`: canonical
-  Chinese-only master, 217 tables / 11,148 row records, plus stock-reference and
-  display-repair recipes. It contains no eight-column stock-language tables.
-- The same directory contains the existing restoration core, frozen-helper
-  entry point, Inno Setup wrapper and release assembler.
-- `font/`, `terrain/`, `wizard/`, `multiplayer/`, `ui/`: ten finished fonts,
-  notices, authored configuration and existing local-only overlay builders.
-- Existing validators and notes are retained. Full CSVs/configs/PBOs are
-  reconstructed locally from the user's verified game, never checked in.
-  The retained prototype directory/mod names are deliberate compatibility seams.
+The window retains the original game's identity. Its Windows icon is loaded
+from the installed executable at runtime; proprietary artwork is not bundled.
 
 ## Development
 
-Use a checkout of this repository's pinned `client-source` branch to build the client:
+The [client-source branch](https://github.com/oksklok/cwr-chinese/tree/client-source)
+contains the modified official 3.05 engine. [engine-source.json](engine-source.json)
+pins the required commit. CWRR and cwr-vulkan are separate projects.
 
-```powershell
-git worktree add --detach build/client-source 4a568d7de6a5720d2fe8feef12d18bd3010c2d51
-```
+The Chinese-only master is
+`localization/zhcn-combined-arms/distribution/payload.json`:
+217 tables / 11,148 rows, plus three metadata recipes. Completed translations
+and ten fonts are unchanged. See [build instructions](localization/zhcn-combined-arms/distribution/BUILD.md),
+[distribution notes](localization/zhcn-combined-arms/DISTRIBUTION.md) and
+[ROADMAP.md](ROADMAP.md). Installer history remains in Git.
 
-If already present, use that checkout rather than creating another. The worktree
-is backed by this repository's `.git`, never the old CWR repository. Supply it via
-`build_release.py --engine-repo PATH`; the assembler includes matching source
-from both repositories. See [build instructions](localization/zhcn-combined-arms/distribution/BUILD.md).
-Builders need Python and fontTools; players will not need development tools.
+Local ZIP acceptance is in progress; there is no public release yet.
+Final source/license/notice review and public release documentation remain.
 
-Assemble the unchanged safe payload (choose an absent output):
-
-```powershell
-python localization/zhcn-combined-arms/distribution/make_payload.py assemble game-local/payload
-```
-
-Reconstruct against a legitimate, compatible Remastered 3.05 installation:
-
-```powershell
-python localization/zhcn-combined-arms/distribution/install_core.py reconstruct "C:\path\to\Remastered" --payload game-local/payload --output game-local/reconstructed
-```
-
-Only required source files are checked; generated tables and metadata must
-still match their recorded hashes. An older CWRC layout/client must be removed
-with its existing uninstaller before installing RC2; keep its original backups.
-Reconstruction does not install or modify the game. Keep generated output ignored.
-Never hand-edit stock-language cells or weaken expected hashes to hide differences.
-The inherited `make_payload.py export` is a legacy developer operation requiring
-the original CWR inventories/full working tables, not the workflow for this
-Chinese-only checkout. Authoring changes must be verified through local
-reconstruction before updating the master hashes.
-
-Run the existing core/helper tests from `distribution/`, and `test_stock_csv.py`
-from the patch directory. For the five full historical validators, reconstruct
-locally first, copy the four builder scripts into their corresponding reconstructed
-subdirectories, and set these process-scoped variables:
-
-```powershell
-$env:CWRC_TRANSLATION_ROOT = (Resolve-Path game-local/reconstructed).Path
-$env:CWRC_VALIDATION_REPO = (Resolve-Path .).Path
-```
-
-The second variable points to this checkout's ignored `game-local/Remastered`
-test game and `game-local/localization-backup` inventories. Their recorded file
-hashes are unchanged; only absolute inventory paths were relocated. Nothing is copied
-into Git. Run `validate_campaign.py`,
-`validate_resistance.py`, `validate_standalone.py`, `validate_multiplayer.py`, and
-`validate_ui.py`; the four deployment checks use `install_core.run_builders` with
-the reconstructed root and `check=True`. Without the required local fixtures these
-are not fixture-free tests; absence is not a passing result.
-
-Local retained assets: the unchanged historical RC and its SHA-256 record are
-under `game-local/cwrc-release-candidate/`; its exact matching source/build record
-remains under `game-local/cwrc-rc1-package-release/`. The compiler tools are under
-`game-local/.tools/build-tools/`, dependencies under
-`build/legacy-cwrc/local-labels/vcpkg_installed/`, and old build/client outputs under
-`build/legacy-cwrc/` and `dist/legacy-cwrc/`. These are private ignored assets,
-not release inputs unless explicitly selected. Active client builds use
-`build/client-source/build/local-labels/`. No old CWR folder is required.
-Relocation checks passed: fresh client/core/full-test rebuild, 91 focused native
-cases / 1,576 assertions, 25 core/helper and 3 CSV Python tests, all five localization
-validators and four overlay checks. Both Chinese main menus rendered from the new
-game path; initialization checks exited 0. Menu smoke tests were bounded and
-terminated explicitly when the unfocused menu paused its timeout, not recorded as
-natural exits. These checks do not constitute a new installer acceptance run.
-
-## Licensing and attribution
+## Licenses
 
 Code: [GPL-3.0-or-later with inherited Section 7 terms](LICENSE).
-Chinese game-text adaptations/display recipes: **APL-SA**, original material
-by Bohemia Interactive, Chinese translations/adaptations by CWRC contributors.
-[APL-SA terms](https://www.bohemia.net/en/licenses/arma-public-license-share-alike)
-are separate from the GPL code license. Fonts: **OFL-1.1**, with contributor
-notices under both font directories. See
-[component declarations](localization/zhcn-combined-arms/distribution/COMPONENTS.txt).
-No historical Chinese localization supplies the shipped CWC wording.
-
-The separate client/dependency bundle must include exact matching source and
-notices, including replaceable OpenAL and its patched source. An engine Git link
-alone is not the binary compliance bundle. Profiles, saves, unrelated mods and
-original assets must be preserved during installation/removal.
+Chinese adaptations: [APL-SA](https://www.bohemia.net/en/licenses/arma-public-license-share-alike),
+original material by Bohemia Interactive, adaptations by CWRC contributors.
+Fonts: OFL-1.1 with contributor notices. These licenses are separate.
+The ZIP includes matching source and dependency notices, including source for
+the replaceable OpenAL DLL. See [component declarations](localization/zhcn-combined-arms/distribution/COMPONENTS.txt).

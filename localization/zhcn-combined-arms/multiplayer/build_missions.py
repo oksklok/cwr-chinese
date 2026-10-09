@@ -67,12 +67,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('game', type=Path)
     parser.add_argument('--check', action='store_true')
+    parser.add_argument('--mod-dir', type=Path)
     args = parser.parse_args()
     game = args.game.resolve()
+    mod = args.mod_dir or game / '@zhcn-prototype'
     outputs = {}
     for name, digest in json.loads((ROOT / 'stock-hashes.json').read_text()).items():
         data = pack(overlay_payloads(game, name, digest))
-        target = game / '@zhcn-prototype/MPMissions' / (name + '.pbo')
+        target = mod / 'MPMissions' / (name + '.pbo')
         if args.check:
             if target.read_bytes() != data:
                 raise ValueError(('MP deployment mismatch', name))
