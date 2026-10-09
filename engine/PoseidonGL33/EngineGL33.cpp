@@ -4,6 +4,9 @@
 #include <Poseidon/Graphics/Shared/WindowPlacement.hpp>
 
 #include <SDL3/SDL.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <glad/gl.h>
 #include <Poseidon/Dev/Debug/DebugOverlay.hpp>
 
@@ -354,12 +357,25 @@ EngineGL33::EngineGL33(int width, int height, bool windowed, int bpp)
             break;
     }
 
-    _sdlWindow = SDL_CreateWindow("Poseidon [GL33] - modified localization client", placement.width, placement.height, flags);
+    _sdlWindow = SDL_CreateWindow("Poseidon", placement.width, placement.height, flags);
     if (!_sdlWindow)
     {
         LOG_ERROR(Graphics, "GL33: SDL_CreateWindow failed: {}", SDL_GetError());
         return;
     }
+
+#ifdef _WIN32
+    // Use this executable's original neutral artwork for both window and taskbar.
+    const auto hwnd = static_cast<HWND>(SDL_GetPointerProperty(
+        SDL_GetWindowProperties(_sdlWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
+    for (const auto kind : {ICON_SMALL, ICON_BIG})
+    {
+        const auto icon = LoadImageW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(1), IMAGE_ICON,
+            GetSystemMetrics(kind == ICON_SMALL ? SM_CXSMICON : SM_CXICON),
+            GetSystemMetrics(kind == ICON_SMALL ? SM_CYSMICON : SM_CYICON), LR_SHARED);
+        if (hwnd && icon) SendMessageW(hwnd, WM_SETICON, kind, reinterpret_cast<LPARAM>(icon));
+    }
+#endif
 
     if (placement.mode == WindowMode::Borderless)
     {

@@ -60,7 +60,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-// Use the neutral Windows application icon, not the original game trademark.
+// Original neutral open-book artwork; not a Bohemia trademark.
+1 ICON "localization.ico"
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
