@@ -1,0 +1,159 @@
+{
+  "1-16_Cooperative.Noe": {
+    "description.ext": [
+      [
+        "onLoadMission=Nogovo",
+        "onLoadMission=\"$STR_CWRC_MP_LOAD_NOE\"",
+        "STR_CWRC_MP_LOAD_NOE"
+      ]
+    ]
+  },
+  "2-11_T_HoldCastle.Noe": {
+    "description.ext": [
+      [
+        "\"Time to hold\"",
+        "\"$STR_CWRC_MP_HOLD_TIME\"",
+        "STR_CWRC_MP_HOLD_TIME"
+      ],
+      [
+        "\"30 s\"",
+        "\"$STR_CWRC_MP_HOLD_30\"",
+        "STR_CWRC_MP_HOLD_30"
+      ],
+      [
+        "\"60 s\"",
+        "\"$STR_CWRC_MP_HOLD_60\"",
+        "STR_CWRC_MP_HOLD_60"
+      ],
+      [
+        "\"90 s\"",
+        "\"$STR_CWRC_MP_HOLD_90\"",
+        "STR_CWRC_MP_HOLD_90"
+      ],
+      [
+        "\"120 s\"",
+        "\"$STR_CWRC_MP_HOLD_120\"",
+        "STR_CWRC_MP_HOLD_120"
+      ],
+      [
+        "\"240 s\"",
+        "\"$STR_CWRC_MP_HOLD_240\"",
+        "STR_CWRC_MP_HOLD_240"
+      ],
+      [
+        "\"300 s\"",
+        "\"$STR_CWRC_MP_HOLD_300\"",
+        "STR_CWRC_MP_HOLD_300"
+      ]
+    ]
+  },
+  "2-8_T_RealPaintball.intro": {
+    "intro.sqs": [
+      [
+        "cuttext [\"START\",",
+        "cuttext [localize \"STR_CWRC_MP_START\",",
+        "STR_CWRC_MP_START"
+      ]
+    ],
+    "soldier.sqs": [
+      [
+        "Hint \"Umrel\";",
+        "Hint localize \"STR_CWRC_MP_DEAD\";",
+        "STR_CWRC_MP_DEAD"
+      ],
+      [
+        "Hint \"Umrel zas\"",
+        "Hint localize \"STR_CWRC_MP_DEAD_AGAIN\"",
+        "STR_CWRC_MP_DEAD_AGAIN"
+      ]
+    ]
+  },
+  "2-12_T_SectorControl.eden": {
+    "mission.sqm": [
+      [
+        "text=\"Sector 1\";",
+        "text=\"@STR_CWRC_MP_SECTOR_1\";",
+        "STR_CWRC_MP_SECTOR_1"
+      ],
+      [
+        "text=\"Sector 2\";",
+        "text=\"@STR_CWRC_MP_SECTOR_2\";",
+        "STR_CWRC_MP_SECTOR_2"
+      ],
+      [
+        "text=\"Sector 3\";",
+        "text=\"@STR_CWRC_MP_SECTOR_3\";",
+        "STR_CWRC_MP_SECTOR_3"
+      ],
+      [
+        "text=\"Sector 4\";",
+        "text=\"@STR_CWRC_MP_SECTOR_4\";",
+        "STR_CWRC_MP_SECTOR_4"
+      ],
+      [
+        "text=\"Sector 5\";",
+        "text=\"@STR_CWRC_MP_SECTOR_5\";",
+        "STR_CWRC_MP_SECTOR_5"
+      ],
+      [
+        "text=\"West Start\";",
+        "text=\"@STR_CWRC_MP_WEST_START\";",
+        "STR_CWRC_MP_WEST_START"
+      ],
+      [
+        "text=\"East Start\";",
+        "text=\"@STR_CWRC_MP_EAST_START\";",
+        "STR_CWRC_MP_EAST_START"
+      ]
+    ]
+  },
+  "2-12_T_SECTORCONTROL.NOE": {
+    "mission.sqm": [
+      [
+        "text=\"Sector 1\";",
+        "text=\"@STR_CWRC_MP_SECTOR_1\";",
+        "STR_CWRC_MP_SECTOR_1"
+      ],
+      [
+        "text=\"Sector 2\";",
+        "text=\"@STR_CWRC_MP_SECTOR_2\";",
+        "STR_CWRC_MP_SECTOR_2"
+      ],
+      [
+        "text=\"Sector 3\";",
+        "text=\"@STR_CWRC_MP_SECTOR_3\";",
+        "STR_CWRC_MP_SECTOR_3"
+      ],
+      [
+        "text=\"Sector 4\";",
+        "text=\"@STR_CWRC_MP_SECTOR_4\";",
+        "STR_CWRC_MP_SECTOR_4"
+      ],
+      [
+        "text=\"Sector 5\";",
+        "text=\"@STR_CWRC_MP_SECTOR_5\";",
+        "STR_CWRC_MP_SECTOR_5"
+      ],
+      [
+        "text=\"West Start\";",
+        "text=\"@STR_CWRC_MP_WEST_START\";",
+        "STR_CWRC_MP_WEST_START"
+      ],
+      [
+        "text=\"East Start\";",
+        "text=\"@STR_CWRC_MP_EAST_START\";",
+        "STR_CWRC_MP_EAST_START"
+      ],
+      [
+        "text=\"Respawn East\";",
+        "text=\"@STR_CWRC_MP_RESPAWN_EAST\";",
+        "STR_CWRC_MP_RESPAWN_EAST"
+      ],
+      [
+        "text=\"Respawn West\";",
+        "text=\"@STR_CWRC_MP_RESPAWN_WEST\";",
+        "STR_CWRC_MP_RESPAWN_WEST"
+      ]
+    ]
+  }
+}

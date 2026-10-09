@@ -1,0 +1,13 @@
+* text=auto eol=lf
+*.ttf -text
+LICENSE -text
+localization/zhcn-combined-arms/distribution/payload.json -text
+localization/zhcn-combined-arms/mod/bin/config-extra.cpp -text
+localization/zhcn-combined-arms/mod/bin/stringtable.csv -text
+localization/zhcn-combined-arms/ui/config.cpp -text
+localization/zhcn-combined-arms/wizard/stock-hashes.json -text
+localization/zhcn-combined-arms/multiplayer/stock-hashes.json -text
+localization/zhcn-combined-arms/multiplayer/text-references.json -text
+localization/zhcn-combined-arms/font/OFL.txt -text
+localization/zhcn-combined-arms/font/NOTICE.md -text
+localization/zhcn-combined-arms/font/ChineseTraditional/NOTICE.md -text

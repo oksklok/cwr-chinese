@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/oksklok/CWR.git",
+  "commit": "87078e2247dbf4d946d651238470312995727c80",
+  "game": "GOG Cold War Assault Remastered 3.05",
+  "client": "CWRC",
+  "note": "Separate modified engine source; no CWRR/Vulkan dependency. The existing local RC was built before the documentation commit with matching captured source hashes."
+}

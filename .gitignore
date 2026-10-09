@@ -1,0 +1,12 @@
+/game-local/
+/build/
+/dist/
+/release/
+__pycache__/
+*.py[cod]
+.venv/
+*.pbo
+*.exe
+*.dll
+*.pdb
+*.log

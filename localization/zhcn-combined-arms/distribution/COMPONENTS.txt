@@ -1,0 +1,41 @@
+CWRC -- unofficial Chinese localization and modified client
+
+Original engine and game: Bohemia Interactive.
+Compatible only with a legitimate GOG Remastered 3.05 installation.
+Not affiliated with, endorsed by, or an official release of Bohemia Interactive.
+No original commercial executable or game data is included in this download.
+
+CODE: GPL-3.0-or-later with the additional Section 7 terms in GPL.txt.
+Includes our modified engine/client, helper, builders and installer script.
+These are modified versions, not the original program. Matching source and
+build instructions are included under source/. Third-party exceptions retain
+their individual licenses, supplied under notices/third-party/.
+
+CHINESE CONTENT: Arma Public License Share Alike (APL-SA).
+The original material is by Bohemia Interactive; CWRC contributors authored
+the Simplified Chinese retranslation and reviewed Traditional Chinese adaptation,
+display metadata and reference recipes. No historical Chinese localization is
+a source for the shipped wording. Attribution, noncommercial/game-use and
+share-alike conditions apply to these adaptations, not to GPL code.
+Full terms: https://www.bohemia.net/en/licenses/arma-public-license-share-alike
+
+FONTS: SIL Open Font License 1.1, separately from code and Chinese content.
+Ten renamed modified faces with preserved Latin components; all contributor
+notices and full OFL are included in payload/font/. Do not sell fonts alone,
+claim endorsement or use reserved font names for modified fonts.
+
+OPENAL: OpenAL Soft 1.24.3, LGPL-2.0-or-later, dynamically loaded and replaceable.
+Complete source, vcpkg port, applied patches and build instructions are supplied
+under source/. Replacing this DLL with a compatible modified build is permitted.
+No contractual restriction on modification/reverse engineering for debugging
+such library modifications is imposed by CWRC.
+
+The helper privately bundles Python, fontTools and a PyInstaller bootloader.
+Their notices/licenses are included. Microsoft runtime DLLs are NOT bundled;
+install Microsoft's official x64 redistributable when Setup requests it.
+The Windows wrapper uses unmodified Inno Setup 6.7.3 by Jordan Russell and
+Martijn Laan; its license and original binary attribution are retained.
+https://jrsoftware.org/
+
+NO WARRANTY. Provided AS IS; use at your own risk. See each component license.
+This is a LOCAL release candidate, not yet approved for public distribution.
