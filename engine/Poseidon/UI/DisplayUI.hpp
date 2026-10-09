@@ -296,6 +296,7 @@ RString FormatModsGuidance(RString text, float measuredFraction, DWORD elapsedMs
 
 struct ModRow
 {
+    RString mountPath; // Actual installed folder, including game-local/CLI mods.
     bool checked = false;
     RString modId;
     RString folderName;

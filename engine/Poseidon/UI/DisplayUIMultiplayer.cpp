@@ -776,6 +776,11 @@ RString CModsList::BuildModPath(const char* localRoot, const char* workshopRoot)
         const std::string& root = (_modRows[i].source == ModRowSource::Workshop) ? workshop : local;
         if (!out.empty())
             out += ';';
+        if (_modRows[i].mountPath.GetLength() > 0)
+        {
+            out += (const char*)_modRows[i].mountPath;
+            continue;
+        }
         out += root;
         // Insert a separator if the root didn't already end with one (GamePaths dirs
         // end with '/', but an absolute --mods-dir / --workshop-dir does not).

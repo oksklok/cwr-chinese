@@ -3,6 +3,7 @@
 #include <Poseidon/Core/BuildInfo.hpp>
 #include <Poseidon/Core/Config/EngineConfig.hpp>
 #include <Poseidon/Core/ModCollection.hpp>
+#include <Poseidon/Core/ModSelection.hpp>
 #include <Poseidon/Core/ModSystem.hpp>
 #include <Poseidon/Core/Version.hpp>
 #include <Poseidon/Audio/AudioFactory.hpp>
@@ -479,7 +480,10 @@ void AppConfig::ParseCommandLine(int argc, char** argv)
         auto* configGroup = app.add_option_group("Configuration", "Config files and mods");
 
         std::string modPathsStr;
-        configGroup->add_option("--mod", modPathsStr, "Mod directory paths (semicolon-separated; legacy alias: -mod)");
+        auto* modOption = configGroup->add_option("--mod", modPathsStr, "Mod directory paths (semicolon-separated; legacy alias: -mod)");
+        std::string addModStr;
+        configGroup->add_option("--add-mod", addModStr,
+                                "Append a mod to --mod or the saved MODS selection");
 
         // Optional base directory for relative --mod names. Lets mods be referenced
         // by name (e.g. --mods-dir packages/mods --mod @fixturemod) so test/CI
@@ -896,6 +900,24 @@ void AppConfig::ParseCommandLine(int argc, char** argv)
                 if (p.empty())
                     p = std::filesystem::absolute(workshopDirStr, wec);
                 _workshopDir = RString(p.string().c_str());
+            }
+            if (!addModStr.empty())
+            {
+                if (modOption->count() == 0)
+                {
+                    const auto paths = Foundation::GamePaths::Resolve("CWR", "ColdWarAssault", "Cold War Assault",
+                        _oldPaths, _workingDirectory.empty() ? std::filesystem::current_path().string().c_str()
+                                                          : _workingDirectory.c_str());
+                    for (const auto& mod : LoadModSelection(paths.userDir + "mods.cfg"))
+                    {
+                        // Reinstalling CWRC in a different game folder must not
+                        // retain its old absolute folder as a second copy.
+                        if (stricmp(std::filesystem::path(mod).filename().string().c_str(),
+                                    std::filesystem::path(addModStr).filename().string().c_str()) != 0)
+                            modPathsStr += (modPathsStr.empty() ? "" : ";") + mod;
+                    }
+                }
+                modPathsStr += (modPathsStr.empty() ? "" : ";") + addModStr;
             }
             if (!modPathsStr.empty())
             {

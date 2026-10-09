@@ -6,6 +6,7 @@
 using namespace Poseidon;
 #include <Poseidon/Core/Config/EngineConfig.hpp>
 #include <Poseidon/Core/Config/UserConfig.hpp>
+#include <Poseidon/Core/ModSelection.hpp>
 #include <Poseidon/UI/Map/UIMap.hpp>
 #include <Poseidon/UI/Locale/MissionHtmlLocalization.hpp>
 
@@ -1298,6 +1299,7 @@ static AutoArray<ModRow> ScanModRows()
             if (!seen.insert(LowerStr(sm.modId)).second)
                 continue;
             ModRow r;
+            r.mountPath = (std::filesystem::path(root) / sm.folderName).string().c_str();
             r.modId = sm.modId.c_str();
             r.folderName = sm.folderName.c_str();
             r.name = sm.name.c_str();
@@ -1314,6 +1316,9 @@ static AutoArray<ModRow> ScanModRows()
     };
     scan(LocalModsRoot(), ModRowSource::Local);
     scan(WorkshopModsRoot(), ModRowSource::Workshop);
+    scan(std::filesystem::current_path().string(), ModRowSource::Local);
+    for (const auto& mod : ActiveModsFromMountPath((const char*)ModSystem::GetModList()).All())
+        scan(std::filesystem::path(mod.path).parent_path().string(), ModRowSource::Local);
     return rows;
 }
 
@@ -1558,6 +1563,14 @@ void DisplayMods::OnButtonClicked(int idc)
         }
 
         RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
+        std::vector<std::string> selection;
+        for (const auto& mod : ActiveModsFromMountPath((const char*)modPath).All())
+            selection.push_back(mod.path);
+        if (!SaveModSelection(Foundation::GamePaths::Instance().UserDir() + "mods.cfg", selection))
+        {
+            LOG_WARN(Core, "Could not save the MODS selection");
+            return;
+        }
         if (_stagedInstalls.empty())
             GApp->RequestRemountWithMods((const char*)modPath);
         else
@@ -1830,6 +1843,14 @@ void DisplayMods::OnChildDestroyed(int idd, int exit)
         {
             MarkCheckedDownloadsReady(list, true);
             RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
+            std::vector<std::string> selection;
+            for (const auto& mod : ActiveModsFromMountPath((const char*)modPath).All())
+                selection.push_back(mod.path);
+            if (!SaveModSelection(Foundation::GamePaths::Instance().UserDir() + "mods.cfg", selection))
+            {
+                LOG_WARN(Core, "Could not save the MODS selection");
+                return;
+            }
             GApp->RequestRemountWithMods((const char*)modPath, std::move(_stagedInstalls));
         }
     }
@@ -2005,6 +2026,7 @@ void DisplayMods::MergeWorkshopMods(const std::vector<MasterServerServiceModCata
             r.state = ModRowState::Downloaded;
         if (existing >= 0)
         {
+            r.mountPath = rows[existing].mountPath;
             r.checked = rows[existing].checked;
             if (rows[existing].state == ModRowState::Active)
                 r.state = ModRowState::Active;
