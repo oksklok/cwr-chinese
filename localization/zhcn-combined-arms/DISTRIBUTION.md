@@ -64,6 +64,39 @@ supplies UCRT. No VC++ installation step is needed. The native launcher is built
 with a static CRT, forwards optional arguments and has no console window.
 Both executables use an original neutral book icon, not proprietary artwork.
 
+## Bounded usability pass — 2026-10-10
+
+`game-local/cwr-chinese-visual/cwr-chinese.zip`: **132,297,921 bytes**;
+SHA-256 `e521ac03e7d10e3214c426cf17e7fde7422b14ba69de6aae67b6dca3a289682f`.
+Packaged main `8127f13`, client `08a7cb6`. The previous mission-QA ZIP is preserved.
+
+The ZIP now puts its three player-facing entries under `Remastered/`. Extract
+into the parent game directory on both GOG and Steam. No launcher changes.
+Chinese mono text no longer receives the extra 0.75 3D horizontal squeeze,
+including the mission book's HTML overview. Font files, heights, title/serif
+proportions and stock-language typography are unchanged. Chinese handwriting
+keeps its face and metrics with 0.3 px less synthetic stroke erosion; ink was
+already opaque black. Settings labels/hints retain scrolling with Chinese-sized
+budgets. Binding values gain unused right margin; long names still scroll on hover.
+Numeric `%m` enables Chinese dates. Two Chinese-only Bomberman HTML variants
+remove 14 literal link-adjacent spaces; original HTML, targets and text remain.
+
+GOG before/after inspection covered settings, mission book, MODS, LAN browser,
+handwriting, bindings and editor dates. SC/TC showed `周五，5月10日` /
+`週五，5月10日`; English remained `Fri, May 10`. English settings/briefing
+comparison passed. Bomberman SC/TC spacing and Start/Dot_6/Kon marker links passed.
+The final ZIP was extracted into both top-level game directories and launched
+through the native launcher with isolated test profiles. Steam reached the Chinese
+Bomberman briefing and gameplay with English voices; its three marker links passed.
+GOG retained the separately enabled personal mod. Both stock executable hashes
+remain unchanged. Test mod extractions remain present: the execution layer blocked
+cleanup commands, so removal was not re-tested in this pass. No stock files changed.
+
+Build/content/deployment checks passed (217 tables, 24 standalone, 30 multiplayer,
+36 templates and terrain/UI overlays), as did 80 focused UI/font/wrap/scroll tests
+(4,552 assertions), 56 stringtable/date tests (261 assertions), four ZIP tests and
+three stock-CSV tests. No mission/geographic-name/audio changes or wider UI audit.
+
 ## Mission display-text QA — 2026-10-10
 
 `game-local/cwr-chinese-mission-qa/cwr-chinese.zip`: **132,286,462 bytes**;
