@@ -26,9 +26,14 @@ For content-only developer checks:
 ```powershell
 python localization/zhcn-combined-arms/distribution/build_content.py PATH_TO_REMASTERED game-local/content-check
 python -m unittest discover -s localization/zhcn-combined-arms -p test_stock_csv.py
+python -m unittest discover -s localization/zhcn-combined-arms/distribution -p test_build_release.py
 ```
 
 Run the existing native language/stringtable/mod/wrapping/radio tests. Historical
 full localization validators require ignored retail fixtures; absence is not a
 passing result. Physically test the actual ZIP on both available storefront
 installations using isolated profiles. Do not publish/tag a release yet.
+
+Before ZIP creation, staging rejects the original executable (compared with the
+developer's stock build input) and vcruntime*/msvcp* runtime files. These are
+developer packaging checks, not player-side installation checks.

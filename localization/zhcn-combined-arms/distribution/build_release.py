@@ -52,6 +52,26 @@ def source_archive(output, engine):
     return {rel: digest(p.read_bytes()) for rel, p in selected.items()}
 
 
+def package_zip(files, output, stock_executable):
+    # Check the complete staging tree before creating an archive. APL-SA game
+    # data is permitted; the original executable and Microsoft runtimes are not.
+    entries = sorted(file for file in files.rglob('*') if file.is_file())
+    stock_hash = digest(stock_executable.read_bytes())
+    forbidden = {'.pdb', '.log', '.ico', '.py', '.pyc', '.spec'}
+    for file in entries:
+        relative = file.relative_to(files).as_posix()
+        require(not file.name.lower().startswith(('vcruntime', 'msvcp')),
+                f'Microsoft runtime must not be bundled: {relative}')
+        require(file.suffix.lower() not in forbidden or relative.startswith('@CWRC/source/'),
+                f'Unexpected runtime artifact: {relative}')
+        if file.suffix.lower() == '.exe':
+            require(relative == '@CWRC/client/PoseidonGame.exe', f'Unexpected executable: {relative}')
+            require(digest(file.read_bytes()) != stock_hash, f'Original game executable leaked: {relative}')
+    with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for file in entries:
+            archive.write(file, file.relative_to(files).as_posix())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)
@@ -105,18 +125,7 @@ def main():
     record = {'client_commit': commit,
               'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip()}
     (out / 'source/build-record.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
-    # APL-SA allows the ready-made adaptations. Only our client is executable;
-    # no preparation runtime, original executable, debugging files or stock icons.
-    forbidden = {'.pdb', '.log', '.ico', '.py', '.pyc', '.spec'}
-    with zipfile.ZipFile(release / 'CWRC.zip', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
-        for file in sorted((release / 'files').rglob('*')):
-            if file.is_file():
-                relative = file.relative_to(release / 'files').as_posix()
-                require(file.suffix.lower() not in forbidden or relative.startswith('@CWRC/source/'),
-                        f'Unexpected runtime artifact: {relative}')
-                require(file.suffix.lower() != '.exe' or relative == '@CWRC/client/PoseidonGame.exe',
-                        f'Unexpected executable: {relative}')
-                archive.write(file, relative)
+    package_zip(release / 'files', release / 'CWRC.zip', args.game / 'PoseidonGame.exe')
     archive = release / 'CWRC.zip'
     print(f'{archive}: {archive.stat().st_size} bytes; SHA-256 {digest(archive.read_bytes())}')
 
