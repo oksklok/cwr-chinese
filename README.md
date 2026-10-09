@@ -54,3 +54,8 @@ See [build instructions](localization/zhcn-combined-arms/distribution/BUILD.md),
 and [ROADMAP.md](ROADMAP.md). This remains local development: no tag, public
 release or binary upload. Final source/notice review and public release notes
 remain before publication.
+
+The exact ready-made ZIP passed representative GOG and actual Steam 3.05 checks:
+both campaigns, standalone and local multiplayer, language selection/persistence,
+English/French fallback, another enabled mod, deletion and stock English launch.
+This is not a full campaign playthrough or remote multiplayer qualification.

@@ -2,7 +2,8 @@
 
 Complete text-table coverage for the installed GOG Remastered **3.05** Single
 Missions menu, checked on 2026-10-07. Both campaigns remain frozen. This is a
-local-only language patch, not an installer. Current selectable language and
+historical development report, not current deployment instructions. Use the
+ready-made ZIP described in [DISTRIBUTION.md](DISTRIBUTION.md). Selectable language and
 stock-column restoration are documented in [LANGUAGE_SUPPORT.md](LANGUAGE_SUPPORT.md).
 
 ## Installed inventory and coverage

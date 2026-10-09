@@ -7,8 +7,9 @@
 - Complete: ready-made mod content built with existing builders; no player-side
   preparation, installer, scanning, backup/recovery system or stock replacements.
 - Complete: retain other selected mods and original campaign/save paths.
-- In progress: physical acceptance of the exact replacement ZIP on GOG/Steam,
-  followed by deletion and stock English launch.
+- Complete: physical acceptance of the exact ready-made ZIP on GOG/Steam,
+  including saved SC/TC selection, other mod coexistence, deletion and stock
+  English launch. No first-run content is generated.
 - Before public release: final corresponding-source/license/notice review and
   public release documentation. No tag, public release or binary upload yet.
 
