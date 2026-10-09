@@ -938,7 +938,7 @@ void C3DHTML::OnDraw(float alpha)
                 }
                 Vector3 p = l + (row.height - size) * down + field.indent * right;
                 Vector3 u = -size * down;
-                Vector3 r = Text3DAspect(font) * u.Size() * right.Normalized();
+                Vector3 r = Text3DAspect(font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * u.Size() * right.Normalized();
                 GEngine->DrawText3D(p, u, r, ClipAll, font, color, DisableSun, text);
                 if (field.tableWidth > 0)
                 {
@@ -976,6 +976,6 @@ int C3DHTML::FindField(float x, float y)
 
 float C3DHTML::GetTextWidth(float size, Font* font, const char* text) const
 {
-    Vector3 dir = Text3DAspect(font) * size * _right.Normalized();
+    Vector3 dir = Text3DAspect(font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * size * _right.Normalized();
     return GEngine->GetText3DWidth(dir, font, text).Size();
 }

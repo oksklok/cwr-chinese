@@ -181,10 +181,13 @@ RString ResolveCampaignTextFile(RString filename)
     std::string relative = filename.Data();
     std::replace(relative.begin(), relative.end(), '\\', '/');
     const std::string lower = LowerAscii(relative);
+    const std::string leaf = lower.substr(lower.find_last_of('/') + 1);
+    const bool chineseBriefing = leaf == "briefing.chinesesimplified.utf8.html" ||
+                                 leaf == "briefing.chinesetraditional.utf8.html";
     // Campaign text and definitions with localized display references only.
     // Scripts, saves, assets and campaign discovery keep their original paths.
     if (lower.rfind("campaigns/", 0) != 0 || relative.find("..") != std::string::npos ||
-        !(HasCsvSuffix(relative.c_str()) ||
+        !(HasCsvSuffix(relative.c_str()) || chineseBriefing ||
           (lower.size() >= 16 && lower.compare(lower.size() - 16, 16, "/description.ext") == 0) ||
           (lower.size() >= 12 && lower.compare(lower.size() - 12, 12, "/mission.sqm") == 0)))
         return filename;

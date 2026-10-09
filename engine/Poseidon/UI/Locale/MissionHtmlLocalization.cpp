@@ -267,7 +267,7 @@ RString FindLocalizedMissionHtmlFile(RString directory, RString stem)
     };
     for (const char* suffix : candidates)
     {
-        const RString name = prefix + GLanguage + RString(suffix);
+        const RString name = ResolveCampaignTextFile(prefix + GLanguage + RString(suffix));
         if (QIFStreamB::FileExist(name))
             return name;
     }

@@ -2,6 +2,7 @@
 #include <catch2/catch_approx.hpp>
 #include <Poseidon/Graphics/Rendering/Draw/FontData.hpp>
 #include <Poseidon/Graphics/Rendering/Draw/Font.hpp>
+#include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
 #include "test_fixtures.hpp"
 
 #include <filesystem>
@@ -11,6 +12,25 @@
 using Poseidon::HasFreeTypeFontMapping;
 
 using Poseidon::BucketFTPixelSize;
+
+TEST_CASE("Chinese serif aspect correction is confined to the campaign book", "[font][UI]")
+{
+    const auto language = GLanguage;
+    Font serif, mono, hand;
+    serif.Load("garamond64");
+    mono.Load("couriernewb64");
+    hand.Load("audreyshand24");
+    for (const char* value : {"ChineseSimplified", "ChineseTraditional", "English", "French"})
+    {
+        GLanguage = value;
+        const bool chinese = std::string(value).find("Chinese") == 0;
+        CHECK(Poseidon::Text3DAspect(&serif) == 0.75f);
+        CHECK(Poseidon::Text3DAspect(&serif, true) == (chinese ? 1.0f : 0.75f));
+        CHECK(Poseidon::Text3DAspect(&mono) == (chinese ? 1.0f : 0.75f));
+        CHECK(Poseidon::Text3DAspect(&hand, true) == 0.75f);
+    }
+    GLanguage = language;
+}
 
 // BucketFTPixelSize picks the atlas rasterization pixel size from an ideal
 // (screen-matched) target. Rounds to the nearest multiple of 4 and clamps to

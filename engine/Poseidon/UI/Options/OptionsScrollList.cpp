@@ -230,6 +230,8 @@ int OptionsScrollList::RowLabelInnerChars(int row) const
                          strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
     if (kind == KindBinding && m_provider.BindingUsesChevronUi(row))
         return chinese ? 4 : kBindingLabelInnerChars;
+    if (kind == KindBinding)
+        return chinese ? 5 : 14;
     return chinese ? 6 : kLabelInnerChars;
 }
 
@@ -260,6 +262,13 @@ bool OptionsScrollList::FocusedStepperValueNeedsMarquee() const
     return Utf8Length(val) > kInnerChars;
 }
 
+int OptionsScrollList::BindingValueInnerChars() const
+{
+    // Both keyboard cells have the same width; retain square Chinese glyphs.
+    return strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
+           strcmp(GLanguage.Data(), "ChineseTraditional") == 0 ? 4 : 8;
+}
+
 bool OptionsScrollList::FocusedBindingCellNeedsMarquee() const
 {
     if (m_rowFocus < 0 || m_rowFocus >= m_provider.RowCount())
@@ -268,7 +277,10 @@ bool OptionsScrollList::FocusedBindingCellNeedsMarquee() const
         return false;
     const char* primary = m_provider.BindingPrimary(m_rowFocus);
     const char* alt = m_provider.BindingAlt(m_rowFocus);
-    return (primary && Utf8Length(primary) > kInnerChars) || (alt && Utf8Length(alt) > kBindingAltInnerChars);
+    if (m_provider.BindingUsesChevronUi(m_rowFocus))
+        return (primary && Utf8Length(primary) > kInnerChars) || (alt && Utf8Length(alt) > kBindingAltInnerChars);
+    const int budget = BindingValueInnerChars();
+    return (primary && Utf8Length(primary) > budget) || (alt && Utf8Length(alt) > budget);
 }
 
 // Control-update helpers.
@@ -482,6 +494,13 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
                 m_notebook->SetSubControlPos(idcValStep, 0.36f, rowY, 0.22f, 0.075f);
                 m_notebook->SetSubControlPos(idcValBar, 0.64f, rowY, 0.22f, 0.075f);
             }
+            else if (isBinding)
+            {
+                // Separate label, primary and secondary regions, before the scrollbar.
+                m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY, 0.32f, 0.075f);
+                m_notebook->SetSubControlPos(idcValStep, 0.40f, rowY, 0.25f, 0.075f);
+                m_notebook->SetSubControlPos(idcValBar, 0.69f, rowY, 0.25f, 0.075f);
+            }
             else
             {
                 m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY, 0.34f, 0.075f);
@@ -514,8 +533,9 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         const DWORD marqueeElapsed = GlobalTickCount() - m_marqueeStartMs;
         char primaryBuf[80];
         char altBuf[80];
-        FormatCell(primaryDisplay, kInnerChars, focused, marqueeElapsed, primaryBuf, sizeof(primaryBuf));
-        FormatCell(altDisplay, kBindingAltInnerChars, focused, marqueeElapsed, altBuf, sizeof(altBuf));
+        const int budget = BindingValueInnerChars();
+        FormatCell(primaryDisplay, bindingChevronUi ? kInnerChars : budget, focused, marqueeElapsed, primaryBuf, sizeof(primaryBuf));
+        FormatCell(altDisplay, bindingChevronUi ? kBindingAltInnerChars : budget, focused, marqueeElapsed, altBuf, sizeof(altBuf));
         SetRowValue(idcValStep, primaryBuf, primaryDisplay);
         SetRowValue(idcValBar, altBuf, altDisplay);
 
@@ -540,12 +560,14 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         SetLabelColor(idcValBar, altColor);
 
         // Reposition click overlays so they cover only their cell:
-        //   primary cell → Hover (idc 5N3) at x=0.34..0.65
-        //   alt cell     → BarClick (idc 5N7) at x=0.65..0.95
+        // Keyboard hit regions match the visible cells, not the old overlapping layout.
         float rowY = SlotTrackY(slot) - 0.0285f; // back to row top
         if (m_notebook)
         {
-            m_notebook->SetSubControlPos(idcBarClick, 0.65f, rowY, 0.30f, 0.075f);
+            m_notebook->SetSubControlPos(idcHover, bindingChevronUi ? 0.02f : 0.04f, rowY,
+                                        bindingChevronUi ? 0.96f : 0.61f, 0.075f);
+            m_notebook->SetSubControlPos(idcBarClick, bindingChevronUi ? 0.65f : 0.69f, rowY,
+                                        bindingChevronUi ? 0.30f : 0.25f, 0.075f);
             if (bindingChevronUi)
             {
                 float prevX = (m_bindingSlot == 0) ? 0.30f : 0.58f;
@@ -554,8 +576,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
                 m_notebook->SetSubControlPos(idcNext, nextX, rowY, 0.06f, 0.075f);
             }
         }
-        // Hover stays at full row width but logically dispatches to
-        // primary unless the click landed in the alt zone (x>=0.65).
+        // Hover selects primary; the separate BarClick region selects secondary.
         // The dispatch decision happens in OnButtonClicked based on
         // whether the click came in via Hover (5N3) or BarClick (5N7).
         return;
@@ -565,6 +586,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
     if (m_notebook)
     {
         float rowY = SlotTrackY(slot) - 0.0285f;
+        m_notebook->SetSubControlPos(idcHover, 0.02f, rowY, 0.96f, 0.075f);
         m_notebook->SetSubControlPos(idcBarClick, 0.40f, rowY, 0.40f, 0.075f);
     }
 

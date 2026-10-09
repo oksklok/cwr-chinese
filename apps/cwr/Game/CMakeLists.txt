@@ -9,6 +9,8 @@ set(GAME_SOURCES
 
 if(WIN32)
     list(APPEND GAME_SOURCES resource.rc)
+    set_property(SOURCE resource.rc APPEND PROPERTY OBJECT_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/localization.ico")
     add_executable(PoseidonGame WIN32 ${GAME_SOURCES})
 else()
     add_executable(PoseidonGame ${GAME_SOURCES})

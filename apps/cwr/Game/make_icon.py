@@ -1,34 +1,55 @@
-"""Rebuild the original, neutral open-book icon (no game artwork)."""
+"""Rebuild our original gold star icon (no game artwork)."""
+import math
 import struct
 from pathlib import Path
 
 
+def star(radius):
+    return [(.5 + (radius if i % 2 == 0 else radius * .44) * math.cos(-math.pi/2 + i*math.pi/5),
+             .52 + (radius if i % 2 == 0 else radius * .44) * math.sin(-math.pi/2 + i*math.pi/5))
+            for i in range(10)]
+
+
+def inside(x, y, polygon):
+    result = False
+    for i, (ax, ay) in enumerate(polygon):
+        bx, by = polygon[i - 1]
+        if (ay > y) != (by > y) and x < (bx-ax)*(y-ay)/(by-ay)+ax:
+            result = not result
+    return result
+
+
 def bitmap(size):
     pixels = bytearray()
+    alpha = []
+    outline, fill = star(.48), star(.435)
     for y in reversed(range(size)):
         for x in range(size):
-            u, v = (x + .5) / size, (y + .5) / size
-            color = (0, 0, 0, 0)
-            if .10 <= u < .90 and .15 <= v < .85:
-                color = (64, 85, 103, 255)
-            if (.16 <= u < .47 or .53 <= u < .84) and .21 <= v < .77:
-                color = (242, 238, 221, 255)
-            if (.21 <= u < .42 or .58 <= u < .79) and any(a <= v < a + .045 for a in (.34, .47, .60)):
-                color = (116, 144, 157, 255)
-            r, g, b, a = color
+            samples = []
+            for sy in range(4):
+                for sx in range(4):
+                    u, v = (x + (sx+.5)/4)/size, (y + (sy+.5)/4)/size
+                    if inside(u, v, outline):
+                        # Warm gold, restrained edge, transparent silhouette.
+                        samples.append((255-int(28*v), 239-int(82*v), 132-int(108*v))
+                                       if inside(u, v, fill) else (129, 79, 12))
+            a = round(255 * len(samples)/16)
+            r, g, b = (tuple(round(sum(c[i] for c in samples)/len(samples)) for i in range(3))
+                       if samples else (0, 0, 0))
+            alpha.append(a)
             pixels.extend((b, g, r, a))
     mask = bytearray()
-    for y in reversed(range(size)):
+    for y in range(size):
         row = bytearray(((size + 31) // 32) * 4)
         for x in range(size):
-            if not (.10 <= (x + .5) / size < .90 and .15 <= (y + .5) / size < .85):
+            if alpha[y*size+x] == 0:
                 row[x // 8] |= 128 >> (x % 8)
         mask.extend(row)
     return struct.pack('<IIIHHIIIIII', 40, size, size * 2, 1, 32, 0, len(pixels), 0, 0, 0, 0) + pixels + mask
 
 
 if __name__ == '__main__':
-    sizes = (16, 32, 48, 256)
+    sizes = (16, 24, 32, 48, 256)
     images = [bitmap(size) for size in sizes]
     offset = 6 + 16 * len(sizes)
     directory = bytearray(struct.pack('<HHH', 0, 1, len(sizes)))

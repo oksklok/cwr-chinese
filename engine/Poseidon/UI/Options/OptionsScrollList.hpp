@@ -331,6 +331,7 @@ private:
 	bool RowLabelNeedsMarquee(int row) const;
 	bool FocusedStepperValueNeedsMarquee() const;
 	bool FocusedBindingCellNeedsMarquee() const;
+	int BindingValueInnerChars() const;
 
 	void SetSliderBar(int fillIdc, int percent,
 	                  float trackX, float trackY, float trackH, float trackWidth);

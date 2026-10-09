@@ -463,8 +463,19 @@ TEST_CASE("Campaign text resolves enabled mod overrides without redirecting asse
     std::ofstream(root / "localization/Campaigns/1985/description.ext") << "class Campaign {};";
     std::ofstream(folder / "mission.sqm") << "class Mission {};";
     std::ofstream(folder / "init.sqs") << "must not override";
+    std::ofstream(folder / "briefing.ChineseSimplified.utf8.html") << "SC briefing";
+    std::ofstream(folder / "briefing.ChineseTraditional.utf8.html") << "TC briefing";
+    std::ofstream(folder / "briefing.utf8.html") << "must not override stock languages";
     Poseidon::ModSystem::SetModPath(root.string().c_str());
     const char* path = "Campaigns/1985/missions/demo.eden/stringtable.csv";
+    for (const auto* language : {"ChineseSimplified", "ChineseTraditional"})
+    {
+        const auto name = std::string("briefing.") + language + ".utf8.html";
+        REQUIRE(fs::equivalent(Poseidon::ResolveCampaignTextFile(
+            (std::string("Campaigns/1985/missions/demo.eden/") + name).c_str()).Data(), folder / name));
+    }
+    REQUIRE(std::string(Poseidon::ResolveCampaignTextFile("Campaigns/1985/missions/demo.eden/briefing.utf8.html").Data()) ==
+            "Campaigns/1985/missions/demo.eden/briefing.utf8.html");
     REQUIRE(fs::equivalent(Poseidon::ResolveCampaignTextFile(path).Data(), folder / "stringtable.utf8.csv"));
     REQUIRE(fs::equivalent(Poseidon::ResolveCampaignTextFile("Campaigns/1985/description.ext").Data(),
                           root / "localization/Campaigns/1985/description.ext"));

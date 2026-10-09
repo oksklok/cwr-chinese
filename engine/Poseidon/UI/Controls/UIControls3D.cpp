@@ -261,7 +261,7 @@ void C3DStatic::FormatText()
 
     Vector3 down = (1.0 / _maxLines) * _down;
     Vector3 up = -down;
-    Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
 
     float lineWidth = _right.Size();
 
@@ -354,7 +354,7 @@ void C3DStatic::OnDraw(float alpha)
             if (_text.GetLength() > 0)
             {
                 Vector3 up = -_hCoef * _down;
-                Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+                Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
 
                 Vector3 width = GEngine->GetText3DWidth(right, _font, _text);
                 Vector3 borderH = -up;
@@ -457,7 +457,7 @@ float C3DStatic::MeasureTextWidth(RString text) const
 {
     if (_down.SquareSize() <= 0.0f)
         return 0.0f;
-    const Vector3 right = Text3DAspect(_font) * _down.Size() * _right.Normalized();
+    const Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * _down.Size() * _right.Normalized();
     return GEngine->GetText3DWidth(right, _font, text).Size();
 }
 
@@ -473,7 +473,7 @@ void C3DStatic::DrawText(const char* text, Vector3Par top, Vector3Par down, Pack
     // formatting
     Vector3 pos = top;
     Vector3 up = -down;
-    Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
 
     Vector3 offset = VZero;
     Vector3 width = GEngine->GetText3DWidth(right, _font, _text);
@@ -683,7 +683,7 @@ Vector3 C3DEdit::PosToDir(RString text, int pos) const
         down = _down;
     }
     Vector3 up = -_size * down;
-    Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
     Vector3 border = 0.02 * _right;
 
     Vector3 dir;
@@ -733,7 +733,7 @@ int C3DEdit::XToPos(RString text, float x) const
         down = _down;
     }
     Vector3 up = -_size * down;
-    Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
     Vector3 border = 0.02 * _right;
 
     Vector3 dir;
@@ -823,7 +823,7 @@ void C3DEdit::EnsureVisible(int pos)
     else
     {
         Vector3 up = -_size * _down;
-        Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+        Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
         Vector3 border = 0.02 * _right;
 
         saturateMin(_firstVisible, _blockEnd);
@@ -860,7 +860,7 @@ void C3DEdit::DrawText(const char* text, int offset, Vector3Par top, Vector3Par 
     // formatting
     Vector3 position = top + 0.5 * (1.0 - _size) * down;
     Vector3 up = -_size * down;
-    Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
     Vector3 border = 0.02 * _right;
     float rightSize = (_right - 2.0 * border).Size();
     float x2c = rightSize / right.Size();
@@ -945,7 +945,7 @@ void C3DEdit::FormatText()
 
     Vector3 down = (1.0 / _maxLines) * _down;
     Vector3 up = -_size * down;
-    Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
     Vector3 border = 0.02 * _right;
 
     float lineWidth = (_right - 2.0 * border).Size();
@@ -1063,7 +1063,7 @@ float C3DActiveText::MeasureTextWidth(RString text) const
 {
     if (_down.SquareSize() <= 0.0f)
         return 0.0f;
-    const Vector3 right = Text3DAspect(_font) * _down.Size() * _right.Normalized();
+    const Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * _down.Size() * _right.Normalized();
     return GEngine->GetText3DWidth(right, _font, text).Size();
 }
 
@@ -1186,7 +1186,7 @@ void C3DActiveText::OnDraw(float alpha)
         default:
         {
             Vector3 up = -_down;
-            Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+            Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
 
             Vector3 offset = VZero;
             Vector3 width = GEngine->GetText3DWidth(right, _font, _text);
@@ -2139,7 +2139,7 @@ C3DTableRow C3DListBox::BeginRow(Vector3Par position, Vector3Par down, int i, fl
     row.pos = curPos + top * down;
     row.up = -size * down;
     row.dir = dir;
-    row.right = Text3DAspect(_font) * row.up.Size() * dir;
+    row.right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * row.up.Size() * dir;
     row.invRightSize = 1.0 / row.right.Size();
     row.rightSBSize = rightSBSize;
     row.border = border;
@@ -2159,7 +2159,7 @@ float C3DListBox::MeasureTextWidth(RString text, float rowTextSize) const
     if (_rows <= 0.0f || _down.SquareSize() <= 0.0f)
         return 0.0f;
     const Vector3 up = -(rowTextSize / _rows) * _down;
-    const Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    const Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
     return GEngine->GetText3DWidth(right, _font, text).Size();
 }
 
@@ -2288,7 +2288,7 @@ void C3DListBox::DrawItem(Vector3Par position, Vector3Par down, int i, float alp
     float top = 0.5 * (1.0 - _size);
     Vector3 pos = curPos + top * down + border;
     Vector3 up = -_size * down;
-    Vector3 right = Text3DAspect(_font) * up.Size() * _right.Normalized();
+    Vector3 right = Text3DAspect(_font, _parent && _parent->IDD() == IDD_CAMPAIGN_LOAD) * up.Size() * _right.Normalized();
     float x2c = (rightSBSize - 2.0 * border.Size()) / right.Size();
     constexpr float descenderMargin = 0.25f;
     float y1ct = 0;
