@@ -63,6 +63,27 @@ std::string GameSettingsPath()
     return dir + "game.cfg";
 }
 
+bool HasChineseLocalization()
+{
+    // These languages are registered by the translation mod, not the stock game.
+    return CfgLib::IsSupportedLanguage("ChineseSimplified") &&
+           CfgLib::IsSupportedLanguage("ChineseTraditional");
+}
+
+std::string ChineseLanguagePath()
+{
+    return GamePaths::Instance().UserDir() + "cwr-chinese-language.cfg";
+}
+
+void SaveChineseLanguage(const std::string& language)
+{
+    ParamFile cfg;
+    cfg.Add("textLanguage", RString(language.c_str()));
+    const auto path = ChineseLanguagePath();
+    if (!WriteSettingsFile(path, cfg))
+        LOG_WARN(Config, "GameSettings: failed to write '{}'", path);
+}
+
 std::string JoinPath(std::string dir, const char* filename)
 {
     if (!dir.empty() && dir.back() != '/' && dir.back() != '\\')
@@ -257,8 +278,22 @@ void LoadGameSettings()
     else if (cfg.Normalize(env))
         LOG_INFO(Config, "GameSettings: normalized invalid fields (not persisted)");
 
-    // The `--lang` command-line override wins over the persisted / auto-detected
-    // game.cfg language. Applied at runtime only (not written back to game.cfg).
+    if (HasChineseLocalization())
+    {
+        GameSettingsConfig chinese;
+        if (chinese.Load(ChineseLanguagePath()) && !chinese.textLanguage.empty())
+            cfg.textLanguage = CfgLib::NormalizeSupportedLanguage(chinese.textLanguage, "ChineseSimplified");
+        else
+        {
+            // Keep earlier CWRC Chinese selections, but never inherit a stock
+            // language as the first-run mod preference. Leave game.cfg intact.
+            if (cfg.textLanguage != "ChineseSimplified" && cfg.textLanguage != "ChineseTraditional")
+                cfg.textLanguage = "ChineseSimplified";
+            SaveChineseLanguage(cfg.textLanguage);
+        }
+    }
+
+    // Explicit CLI overrides still win at runtime; the launcher does not set --lang.
     const std::string& cliLang = AppConfig::Instance().GetLanguage();
     if (!cliLang.empty())
     {
@@ -282,8 +317,13 @@ void SaveGameSettings()
     const std::string path = GameSettingsPath();
     GameSettingsConfig cfg;
     cfg.Load(path);
-    cfg.textLanguage = CfgLib::NormalizeSupportedLanguage((const char*)GLanguage);
-    cfg.voiceLanguage = CfgLib::NormalizeSupportedLanguage(GetSelectedVoiceLanguage(), cfg.textLanguage);
+    if (HasChineseLocalization())
+        SaveChineseLanguage(CfgLib::NormalizeSupportedLanguage((const char*)GLanguage));
+    else
+    {
+        cfg.textLanguage = CfgLib::NormalizeSupportedLanguage((const char*)GLanguage);
+        cfg.voiceLanguage = CfgLib::NormalizeSupportedLanguage(GetSelectedVoiceLanguage(), cfg.textLanguage);
+    }
     cfg.blood = ENGINE_CONFIG.blood;
     cfg.preferredViewDistance = GetSelectedPreferredViewDistance();
     cfg.respectMissionViewDistance = GetRespectMissionViewDistance();

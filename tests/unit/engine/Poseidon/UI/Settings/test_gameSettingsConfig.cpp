@@ -4,6 +4,7 @@
 #include <Poseidon/UI/Settings/GameSettingsConfig.hpp>
 #include <Poseidon/IO/Filesystem/Utf8Paths.hpp>
 #include <Poseidon/UI/Locale/LanguageRegistry.hpp>
+#include <Poseidon/UI/Locale/Stringtable/Stringtable.hpp>
 #include <Poseidon/IO/ParamFile/ParamFile.hpp>
 #include <Poseidon/IO/Streams/QBStream.hpp>
 
@@ -77,6 +78,74 @@ TEST_CASE("GameSettingsConfig: configured Chinese text persists independently of
         CHECK(restored.textLanguage == language);
         CHECK(restored.voiceLanguage == "English");
         std::filesystem::remove_all(std::filesystem::path(path).parent_path());
+    }
+}
+
+TEST_CASE("Chinese mod language is independent of stock settings and remembers stock-language choices",
+          "[Settings][GameSettings][cwrc-language]")
+{
+    const auto dir = Poseidon::Foundation::GamePaths::Instance().UserDir();
+    const auto stockPath = dir + "game.cfg";
+    const auto modPath = dir + "cwr-chinese-language.cfg";
+    struct Guard
+    {
+        std::string stock, mod;
+        ~Guard()
+        {
+            CfgLib::LanguageRegistry::Instance().ResetToDefaults();
+            Poseidon::SetLanguage("English");
+            std::filesystem::remove(stock);
+            std::filesystem::remove(mod);
+        }
+    } guard{stockPath, modPath};
+    const char* config = "class CfgLanguages { languages[]={\"English\",\"French\","
+                         "\"ChineseSimplified\",\"ChineseTraditional\"}; };";
+    ParamFile file;
+    QIStream input(config, strlen(config));
+    file.Parse(input);
+    REQUIRE(file.FindEntry("CfgLanguages"));
+
+    for (const char* previous : {"English", "French", "ChineseSimplified", "ChineseTraditional"})
+    {
+        INFO("Previous shared preference: " << previous);
+        CfgLib::LanguageRegistry::Instance().LoadFromConfig(*file.FindEntry("CfgLanguages"));
+        std::filesystem::remove(modPath);
+        GameSettingsConfig stock;
+        stock.textLanguage = previous;
+        stock.voiceLanguage = "French";
+        stock.activeProfile = "ExistingPlayer";
+        REQUIRE(stock.Save(stockPath));
+
+        Poseidon::LoadGameSettings();
+        const std::string expected = std::string(previous) == "ChineseTraditional"
+                                       ? "ChineseTraditional" : "ChineseSimplified";
+        CHECK(std::string((const char*)GLanguage) == expected);
+        GameSettingsConfig savedMod;
+        REQUIRE(savedMod.Load(modPath));
+        CHECK(savedMod.textLanguage == expected);
+
+        for (const char* chosen : {"ChineseTraditional", "English", "French"})
+        {
+            Poseidon::SetLanguage(chosen);
+            Poseidon::SetSelectedVoiceLanguage("English");
+            Poseidon::SaveGameSettings();
+            Poseidon::SaveActiveProfile("ExistingPlayer");
+            Poseidon::SetLanguage("ChineseSimplified");
+            Poseidon::LoadGameSettings();
+            CHECK(std::string((const char*)GLanguage) == chosen);
+            REQUIRE(stock.Load(stockPath));
+            CHECK(stock.textLanguage == previous);
+            CHECK(stock.voiceLanguage == "French");
+            CHECK(stock.activeProfile == "ExistingPlayer");
+        }
+
+        // Without the mod's registered languages, its preference must be ignored.
+        CfgLib::LanguageRegistry::Instance().ResetToDefaults();
+        if (std::string(previous) == "English" || std::string(previous) == "French")
+        {
+            Poseidon::LoadGameSettings();
+            CHECK(std::string((const char*)GLanguage) == previous);
+        }
     }
 }
 
