@@ -84,6 +84,25 @@ def validate_record(game, record):
 def state_files(state, record):
     """Validate all state contents before retiring or deleting anything."""
     known = {'receipt.json', 'pending.json'}
+    # A hard termination can leave atomic_json's exclusively-created staging
+    # file. Recognize only bytes (including a truncated prefix) of the precise
+    # next journal/receipt; never treat arbitrary state files as disposable.
+    updates = []
+    if record.get('status') == 'installing':
+        written = record['written']
+        order = list(record['files'])
+        require(written == order[:len(written)], 'Invalid recovery write order')
+        updates.append(('pending.tmp', dict(record, written=order[:len(written) + 1])))
+        updates.append(('receipt.tmp', {**{k: record[k] for k in ('schema', 'package', 'files')},
+                                        'status': 'installed'}))
+    else:
+        updates.append(('receipt.tmp', dict(record, status='restore-conflicts')))
+    for name, update in updates:
+        path = target(state, name)
+        if path.is_file():
+            expected = (json.dumps(update, indent=2, ensure_ascii=False) + '\n').encode('utf-8')
+            require(expected.startswith(path.read_bytes()), f'Preserved unrecognized state file: {name}')
+            known.add(name)
     known.update('backup/' + rel for rel, item in record['files'].items() if item['original'] is not None)
     actual = {p.relative_to(state).as_posix() for p in state.rglob('*') if p.is_file() or reparse(p)}
     require(not actual - known, f'Preserved unrecognized state files: {sorted(actual - known)}')

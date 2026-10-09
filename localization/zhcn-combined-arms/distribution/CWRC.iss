@@ -8,7 +8,7 @@
 [Setup]
 AppId={{C7E3DA19-B196-4273-9F58-16B31D6A764C}
 AppName=CWRC
-AppVersion=3.05-rc3
+AppVersion=3.05-rc4
 AppPublisher=CWRC contributors
 AppComments=Unofficial Chinese localization and modified client. Original engine by Bohemia Interactive.
 DefaultDirName={localappdata}\Programs\CWRC
@@ -20,7 +20,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputDir={#OutputDir}
-OutputBaseFilename=CWRC-3.05-rc3-setup
+OutputBaseFilename=CWRC-3.05-rc4-setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

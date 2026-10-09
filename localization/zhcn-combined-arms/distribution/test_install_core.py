@@ -420,6 +420,32 @@ class InstallCoreTests(unittest.TestCase):
             core.atomic_json(path, {'new': 'journal'})
         self.assertEqual(path.with_suffix('.tmp').read_bytes(), b'user conflict')
 
+    def test_hard_interruption_recognizes_only_expected_journal_staging_bytes(self):
+        self.install()
+        receipt_path = self.game / core.STATE / 'receipt.json'
+        receipt = json.loads(receipt_path.read_text())
+        pending = {**{k: receipt[k] for k in ('schema', 'package')}, 'status': 'installing',
+                   'files': receipt['files'], 'written': list(receipt['files'])[:1]}
+        receipt_path.unlink()
+        core.atomic_json(self.game / core.STATE / 'pending.json', pending)
+        staging = self.game / core.STATE / 'pending.tmp'
+        next_record = dict(pending, written=list(pending['files'])[:2])
+        expected = (json.dumps(next_record, indent=2, ensure_ascii=False) + '\n').encode()
+        for data in (expected, expected[:len(expected) // 2], b''):
+            staging.write_bytes(data)
+            self.assertIn('pending.tmp', core.state_files(staging.parent, pending))
+        staging.write_bytes(b'player note')
+        with self.assertRaisesRegex(ValueError, 'Preserved unrecognized state file'):
+            core.state_files(staging.parent, pending)
+        staging.write_bytes(expected)
+        # Recover all outputs for this fixture, which was fully installed above.
+        pending['written'] = list(pending['files'])
+        staging.unlink()
+        core.atomic_json(staging.parent / 'pending.json', pending)
+        staging.write_bytes((json.dumps(pending, indent=2) + '\n').encode())
+        core.recover(self.game)
+        self.assertFalse((self.game / core.STATE).exists())
+
     def test_reconstruction_preserves_order_stock_columns_and_comments(self):
         source = 'MPMissions/test.eden/stringtable.utf8.csv'
         stock = [core.HEADER[:9] + ['COMMENT'],
