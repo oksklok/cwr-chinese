@@ -14,8 +14,12 @@ CWRC source/test changes, pinned in root `engine-source.json`; the old GitHub fo
 is no longer a source dependency. `build_release.py --engine-repo` includes
 matching client and patch sources in distinct source-archive roots.
 
-The local RC reported below predates the split and stays in the original CWR
-checkout. It was not rebuilt, uploaded or re-labelled as a new tested artifact.
+The local RC reported below predates the split and is retained under this
+checkout's ignored `game-local/cwrc-release-candidate/`, with its SHA-256 record.
+Its matching source/build record and test installations moved alongside it;
+the installer and build-record bytes are unchanged. It was not rebuilt, uploaded
+or re-labelled as a new tested artifact. Build tools/dependencies and validation
+backups are now local to this checkout; the old CWR folder is not required.
 The split was checked by exact payload/font comparison, complete local table/
 metadata reconstruction, existing validators/deployment checks and core/helper
 regressions. Physical RC acceptance below is prior evidence, not a new game run.

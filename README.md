@@ -82,16 +82,32 @@ subdirectories, and set these process-scoped variables:
 
 ```powershell
 $env:CWRC_TRANSLATION_ROOT = (Resolve-Path game-local/reconstructed).Path
-$env:CWRC_VALIDATION_REPO = 'C:\Users\KyouKyou\Downloads\CWR'
+$env:CWRC_VALIDATION_REPO = (Resolve-Path .).Path
 ```
 
-The second variable points only to the preserved **local** deployed test game and
-original backup inventories, not a source/GitHub dependency. Nothing is copied
+The second variable points to this checkout's ignored `game-local/Remastered`
+test game and `game-local/localization-backup` inventories. Their recorded file
+hashes are unchanged; only absolute inventory paths were relocated. Nothing is copied
 into Git. Run `validate_campaign.py`,
 `validate_resistance.py`, `validate_standalone.py`, `validate_multiplayer.py`, and
 `validate_ui.py`; the four deployment checks use `install_core.run_builders` with
 the reconstructed root and `check=True`. Without the required local fixtures these
 are not fixture-free tests; absence is not a passing result.
+
+Local retained assets: the unchanged historical RC and its SHA-256 record are
+under `game-local/cwrc-release-candidate/`; its exact matching source/build record
+remains under `game-local/cwrc-rc1-package-release/`. The compiler tools are under
+`game-local/.tools/build-tools/`, dependencies under
+`build/legacy-cwrc/local-labels/vcpkg_installed/`, and old build/client outputs under
+`build/legacy-cwrc/` and `dist/legacy-cwrc/`. These are private ignored assets,
+not release inputs unless explicitly selected. Active client builds use
+`build/client-source/build/local-labels/`. No old CWR folder is required.
+Relocation checks passed: fresh client/core/full-test rebuild, 91 focused native
+cases / 1,576 assertions, 25 core/helper and 3 CSV Python tests, all five localization
+validators and four overlay checks. Both Chinese main menus rendered from the new
+game path; initialization checks exited 0. Menu smoke tests were bounded and
+terminated explicitly when the unfocused menu paused its timeout, not recorded as
+natural exits. These checks do not constitute a new installer acceptance run.
 
 ## Licensing and attribution
 
