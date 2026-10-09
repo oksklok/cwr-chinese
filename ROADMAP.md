@@ -9,6 +9,8 @@
 - Complete: retain other selected mods and original campaign/save paths.
 - Complete: first mod launch defaults to Simplified Chinese; one separate user
   language preference remembers all choices without changing stock languages.
+- Complete: bounded mission display-text QA across both campaigns, 24 standalone
+  and 30 authored multiplayer missions; waypoint/marker/caption omissions fixed.
 - Complete: ASCII public names, native x64 launcher, app-local VC++ runtime,
   neutral original icon and plain Poseidon title; exact ZIP tested on GOG/Steam.
 - Complete: physical acceptance of the exact ready-made ZIP on GOG/Steam,

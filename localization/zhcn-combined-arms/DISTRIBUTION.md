@@ -62,6 +62,42 @@ supplies UCRT. No VC++ installation step is needed. The native launcher is built
 with a static CRT, forwards optional arguments and has no console window.
 Both executables use an original neutral book icon, not proprietary artwork.
 
+## Mission display-text QA — 2026-10-10
+
+`game-local/cwr-chinese-mission-qa/cwr-chinese.zip`: **132,286,462 bytes**;
+SHA-256 `3eb03843160d20fb225683394b0f954c88378da9fd9d609796dd34fecf8e57cf`.
+Packaged main `443c916`, client `c4bd5a9`. Previous working ZIPs are preserved.
+
+One bounded pass inspected 875 mission definition/script files across both
+official campaigns, all 24 standalone and all 30 authored multiplayer missions.
+Fixed Lone Wolf's destroy/leave waypoints, Sniper Team's two literal enemy-base
+markers, Ambush's location card, Camel Attack/Bridge loading captions, CWC
+Status Quo's Pub marker and Combined Arms' conditional WORKING MESSAGE.
+Reused existing keys for Sniper Team/Camel Attack; six new bilingual rows retain
+the exact stock literals in other languages. Unused Resistance prototype
+scripts, cheat-only debug hints, identifiers and already-localized MP references
+were excluded. No further live omissions were found in this bounded pass.
+
+Also corrected only the generic Get In waypoint to 登乘, eight Shadow Killer SC
+radio lines in each of SP/MP to 剑鱼 (TC already 劍魚), and the three MODS catalog/
+source labels to 在线模组 / 線上模組. Narrative boarding text is unchanged.
+Campaign definition lookup reuses the existing localization overlay search;
+two mission.sqm derivatives change only display references, not mission logic.
+
+Exact ZIP physically checked on disposable GOG 3.05 with an isolated profile:
+Lone Wolf waypoint, Sniper Team warning marker and Ambush post-intro loading
+card in SC/TC/English; Status Quo's Pub marker in TC/English; MODS catalog in SC;
+Combined Arms briefing and playable start. Campaign selection used the existing
+unlock helper only in the disposable profile. Captures: `game-local/public-captures/qa-*`
+and numbered `*_qa-*`. Not a full playthrough or a Steam gameplay retest.
+
+Passed: client build; 95 focused client cases / 1,575 assertions; 56 stringtable
+core cases / 259 assertions; three CSV and four packaging tests; all four content
+builders and their deployment checks. Reconstructed 217 tables / nine reference
+files; 11,154 bilingual rows, exactly 20 corrected rows and six additions, all
+existing stock-language columns preserved; all ten unchanged fonts cover the text.
+No remaining in-scope blocker. No public release or tag.
+
 ## First-launch language update — 2026-10-09
 
 `game-local/cwr-chinese-language/cwr-chinese.zip`: **132,258,450 bytes**;
