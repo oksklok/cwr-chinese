@@ -1,4 +1,4 @@
-CWRC -- unofficial Chinese localization and modified client
+cwr-chinese -- unofficial Chinese localization and modified client
 
 Original engine and game: Bohemia Interactive.
 Requires a legitimate, compatible Windows x64 Remastered 3.05 installation.
@@ -7,7 +7,8 @@ No original game executable is included. Ready-made adapted game data is
 included under APL-SA, separately from the engine code and fonts.
 
 CODE: GPL-3.0-or-later with the additional Section 7 terms in GPL.txt.
-Includes our modified engine/client and developer-side builders.
+Includes our modified engine/client, native launcher, original neutral icon
+and developer-side builders.
 These are modified versions, not the original program. Matching source and
 build instructions are included under source/. Third-party exceptions retain
 their individual licenses, supplied under notices/third-party/.
@@ -40,8 +41,8 @@ No contractual restriction on modification/reverse engineering for debugging
 such library modifications is imposed by CWRC.
 
 No preparation utility, Python runtime or PyInstaller bootloader is included.
-Microsoft runtime DLLs are NOT bundled;
-install Microsoft's official x64 Visual C++ 2022 redistributable if needed.
+Three Microsoft x64 VC++ runtime DLLs are included application-locally, under
+separate Microsoft terms; see MICROSOFT-RUNTIME.txt. No runtime installer is used.
 
 NO WARRANTY. Provided AS IS; use at your own risk. See each component license.
 This is a LOCAL release candidate, not yet approved for public distribution.

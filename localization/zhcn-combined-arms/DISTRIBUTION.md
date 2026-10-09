@@ -1,8 +1,8 @@
 # Ready-to-use distribution
 
-CWRC is a free community translation mod for Windows x64 Remastered 3.05.
-`CWRC.zip` contains `@CWRC/`, `CWRC.cmd` and `README-CWRC.txt`.
-Extract into Remastered and run CWRC.cmd, which enables the mod while preserving
+This is a free community translation mod for Windows 10/11 x64 Remastered 3.05.
+`cwr-chinese.zip` contains `@cwr-chinese/`, `cwr-chinese.exe` and `README-cwr-chinese.txt`.
+Extract into Remastered and run cwr-chinese.exe, which enables the mod while preserving
 other selected mods. Select SC/TC in the game's normal text-language menu.
 Delete those three entries to remove it; stock assets/executable, saves and
 unrelated mods are untouched. The README uses a distinct name to avoid replacing
@@ -35,7 +35,7 @@ player launch workflow. Existing focused client fixes are retained.
 
 The client redirects only campaign CSV/description lookup, retaining stock
 campaign discovery, mission logic and saves. Other mod loading stays native.
-It retains the stock engine's Poseidon window identity with a modified notice.
+Its window title is simply Poseidon; metadata and notices identify the modified client.
 GPL Section 7 prohibits Bohemia trademark branding of a modified program, so
 the borrowed stock icon and branded executable/startup strings were removed.
 
@@ -54,9 +54,13 @@ See distribution/COMPONENTS.txt for attribution, license links and disclaimers.
 
 Only Windows x64 Remastered 3.05 is targeted. No storefront/hash lock is imposed
 on players. Conflicting configuration/total-conversion mods, original 1.96/1.99
-and future updates are outside scope. Microsoft x64 VC++ 2022 runtime is required.
+and future updates are outside scope. Three Microsoft x64 VC++ 2022 runtime DLLs
+are included beside the client under Microsoft's redistribution terms; Windows
+supplies UCRT. No VC++ installation step is needed. The native launcher is built
+with a static CRT, forwards optional arguments and has no console window.
+Both executables use an original neutral book icon, not proprietary artwork.
 
-## Exact ZIP acceptance — 2026-10-09
+## Previous ready-made ZIP acceptance — 2026-10-09
 
 Artifact: `game-local/cwrc-ready/CWRC.zip`, **131,907,425 bytes**.
 SHA-256: `527d97204c3d841ffce3176777bc5334adb241372dece74cfa57aa771d3b0500`.

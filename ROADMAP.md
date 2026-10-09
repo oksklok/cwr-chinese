@@ -1,4 +1,4 @@
-# CWRC roadmap
+# Chinese translation mod roadmap
 
 - Complete: SC/Taiwan TC translations, fonts, original-language fallback,
   English voices and existing content coverage; keep them stable.
@@ -7,6 +7,8 @@
 - Complete: ready-made mod content built with existing builders; no player-side
   preparation, installer, scanning, backup/recovery system or stock replacements.
 - Complete: retain other selected mods and original campaign/save paths.
+- Implemented: ASCII public names, tiny native x64 launcher, app-local VC++
+  runtime, neutral original icon and the plain Poseidon window title.
 - Complete: physical acceptance of the exact ready-made ZIP on GOG/Steam,
   including saved SC/TC selection, other mod coexistence, deletion and stock
   English launch. No first-run content is generated.

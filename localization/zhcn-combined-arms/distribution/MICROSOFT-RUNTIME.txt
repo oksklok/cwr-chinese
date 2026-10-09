@@ -1,0 +1,26 @@
+Microsoft Visual C++ Runtime, x64, 14.44.35112
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Unmodified msvcp140.dll, vcruntime140.dll and vcruntime140_1.dll from
+Visual Studio Community 2022 VC/Redist/MSVC/14.44.35112/x64/Microsoft.VC143.CRT.
+Application-local deployment beside the modified client; Windows 10/11 supplies
+the Universal CRT. No system installation or registration is performed.
+
+These Microsoft components are separate from the mod's GPL code, APL-SA game
+adaptations and OFL fonts. They are not relicensed under those licenses.
+Redistribution is under the Distributable Code terms of Visual Studio 2022:
+https://visualstudio.microsoft.com/license-terms/vs2022-ga-community/
+https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution
+https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files
+
+Use or further distribution of these Microsoft DLLs is subject to the Microsoft
+terms above. They may be redistributed unmodified only as part of this program,
+with these notices and terms retained for recipients. Do not work around their
+technical limitations or reverse engineer, decompile or disassemble them except
+as permitted by applicable law or applicable third-party licensing terms.
+Microsoft reserves all other rights. The DLLs are provided AS IS, without
+warranties, subject to non-excludable rights under applicable law. These terms
+apply only to the Microsoft DLLs, not to the mod's open-source components.
+
+The original neutral open-book icon and launcher are authored for this mod;
+neither contains Microsoft or Bohemia artwork. The launcher uses a static CRT.

@@ -1,4 +1,4 @@
-"""Build CWRC.zip with ready-to-use mod content and the required localization client."""
+"""Build cwr-chinese.zip with ready-made mod content and the localization client."""
 import argparse
 import json
 import shutil
@@ -7,6 +7,7 @@ import zipfile
 from pathlib import Path
 from build_content import PATCH, require, digest, build_content
 REPO = PATCH.parents[1]
+MSVC_RUNTIME = ('msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll')
 
 
 def copy(source, dest):
@@ -35,7 +36,7 @@ def source_archive(output, engine):
                 if len(parts) == 1:
                     if p.name not in ('LICENSE', 'CMakeLists.txt', 'CMakePresets.json', 'vcpkg.json', 'README.md', 'THIRD_PARTY_NOTICES.md'):
                         continue
-                elif parts[0] not in roots or p.suffix not in extensions:
+                elif parts[0] not in roots or (p.suffix not in extensions and rel != 'apps/cwr/Game/localization.ico'):
                     continue  # Old engine localization is historical, not the patch source.
             else:
                 if len(parts) == 1:
@@ -52,20 +53,24 @@ def source_archive(output, engine):
     return {rel: digest(p.read_bytes()) for rel, p in selected.items()}
 
 
-def package_zip(files, output, stock_executable):
+def package_zip(files, output, stock_executable, vc_redist):
     # Check the complete staging tree before creating an archive. APL-SA game
-    # data is permitted; the original executable and Microsoft runtimes are not.
+    # data and the three selected Microsoft redistributables are permitted.
     entries = sorted(file for file in files.rglob('*') if file.is_file())
     stock_hash = digest(stock_executable.read_bytes())
+    runtime_hashes = {f'@cwr-chinese/client/{name}': digest((vc_redist / name).read_bytes())
+                      for name in MSVC_RUNTIME}
     forbidden = {'.pdb', '.log', '.ico', '.py', '.pyc', '.spec'}
     for file in entries:
         relative = file.relative_to(files).as_posix()
-        require(not file.name.lower().startswith(('vcruntime', 'msvcp')),
-                f'Microsoft runtime must not be bundled: {relative}')
-        require(file.suffix.lower() not in forbidden or relative.startswith('@CWRC/source/'),
+        if file.name.lower().startswith(('vcruntime', 'msvcp')):
+            require(relative in runtime_hashes and digest(file.read_bytes()) == runtime_hashes[relative],
+                    f'Unexpected or stale Microsoft runtime: {relative}')
+        require(file.suffix.lower() not in forbidden or relative.startswith('@cwr-chinese/source/'),
                 f'Unexpected runtime artifact: {relative}')
         if file.suffix.lower() == '.exe':
-            require(relative == '@CWRC/client/PoseidonGame.exe', f'Unexpected executable: {relative}')
+            require(relative in ('@cwr-chinese/client/PoseidonGame.exe', 'cwr-chinese.exe'),
+                    f'Unexpected executable: {relative}')
             require(digest(file.read_bytes()) != stock_hash, f'Original game executable leaked: {relative}')
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for file in entries:
@@ -75,7 +80,7 @@ def package_zip(files, output, stock_executable):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)
-    for name in ('game', 'client', 'vcpkg', 'installed', 'build-tools'):
+    for name in ('game', 'client', 'launcher', 'vc-redist', 'vcpkg', 'installed', 'build-tools'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--engine-repo', type=Path, default=REPO / 'build/client-source')
     args = parser.parse_args()
@@ -87,13 +92,15 @@ def main():
             'Commit the client before packaging')
     release = args.output.resolve()
     require(not release.exists(), 'Choose an absent output directory')
-    out = release / 'files/@CWRC'
+    out = release / 'files/@cwr-chinese'
     build_content(args.game, out)
     for name in ('PoseidonGame.exe', 'OpenAL32.dll'):
         copy(args.client / name, out / 'client' / name)
-    copy(Path(__file__).with_name('CWRC.cmd'), release / 'files/CWRC.cmd')
-    # Keep a CWRC-specific name so extraction cannot overwrite the game's README.
-    copy(Path(__file__).with_name('README-CWRC.txt'), release / 'files/README-CWRC.txt')
+    for name in MSVC_RUNTIME:
+        copy(args.vc_redist / name, out / 'client' / name)
+    copy(args.launcher, release / 'files/cwr-chinese.exe')
+    copy(Path(__file__).with_name('README-cwr-chinese.txt'), release / 'files/README-cwr-chinese.txt')
+    copy(Path(__file__).with_name('MICROSOFT-RUNTIME.txt'), out / 'notices/MICROSOFT-RUNTIME.txt')
     copy(REPO / 'LICENSE', out / 'notices/GPL.txt')
     copy(engine / 'THIRD_PARTY_NOTICES.md', out / 'notices/VENDORED.md')
     copy(Path(__file__).with_name('COMPONENTS.txt'), out / 'notices/COMPONENTS.txt')
@@ -121,12 +128,12 @@ def main():
     cache = args.vcpkg / 'buildtrees/openal-soft/x64-windows-clang-local-rel/CMakeCache.txt'
     copy(cache, out / 'source/OpenAL-CMakeCache.txt')
 
-    source_archive(out / 'source/CWRC-source.zip', engine)
+    source_archive(out / 'source/cwr-chinese-source.zip', engine)
     record = {'client_commit': commit,
               'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip()}
     (out / 'source/build-record.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
-    package_zip(release / 'files', release / 'CWRC.zip', args.game / 'PoseidonGame.exe')
-    archive = release / 'CWRC.zip'
+    archive = release / 'cwr-chinese.zip'
+    package_zip(release / 'files', archive, args.game / 'PoseidonGame.exe', args.vc_redist)
     print(f'{archive}: {archive.stat().st_size} bytes; SHA-256 {digest(archive.read_bytes())}')
 
 

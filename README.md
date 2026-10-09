@@ -1,16 +1,18 @@
-# CWRC Chinese translation mod
+# Chinese translation mod for Cold War Assault Remastered
 
 Free community **简体中文 / 繁體中文（臺灣）** translation for a legitimate
 Windows x64 **Cold War Assault Remastered 3.05** installation. Original game
 and engine: Bohemia Interactive. Unofficial and noncommercial.
 
-Extract `CWRC.zip` beside the original `PoseidonGame.exe`, run `CWRC.cmd`,
+Extract `cwr-chinese.zip` beside the original `PoseidonGame.exe`, run `cwr-chinese.exe`,
 and select Simplified or Traditional Chinese in Options > Game > Text language.
 Everything is ready to use: no installer, preparation, first-run generation,
 game-data scanning, registry changes or stock-file replacements. The launcher
-adds CWRC without discarding other selected mods and selects English voices.
-Remove it by deleting `@CWRC`, `CWRC.cmd` and `README-CWRC.txt`.
+adds `@cwr-chinese` without discarding other selected mods and selects English voices.
+Remove it by deleting `@cwr-chinese`, `cwr-chinese.exe` and `README-cwr-chinese.txt`.
 Profiles and saves remain managed by the game.
+Run the original executable for the normal game. On Windows 10/11 x64, the
+included app-local Visual C++ DLLs need no separate runtime installation.
 
 Coverage is unchanged: CWC and Resistance campaigns, 24 standalone missions,
 30 authored multiplayer missions, 36 wizard templates, UI/editor/encyclopedia,
@@ -27,11 +29,12 @@ Traditional text shows missing glyphs. Native campaign text overlays leave
 stock titles untranslated. The existing focused localization client is retained;
 no general filesystem/merger/preparation system is added.
 
-Campaign tables/descriptions reside in `@CWRC/localization/Campaigns`; the client
+Campaign tables/descriptions reside in `@cwr-chinese/localization/Campaigns`; the client
 redirects only those text lookups, preserving stock campaign paths and logic.
 Other content uses existing mod loaders. The original executable stays intact.
-The window keeps the stock engine's Poseidon identity with a modified-client
-notice, not a CWRC game brand. No trademark icon is bundled or borrowed.
+The window title is simply `Poseidon`, with an original neutral book icon.
+Modified-program identification remains in executable metadata and notices.
+No trademark icon is bundled or borrowed. CWRC remains an internal codename.
 
 ## Development and licenses
 
