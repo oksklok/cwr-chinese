@@ -100,5 +100,3 @@ notices and rebuilt client metadata may differ.
 The root [README](../../README.md) is the player/developer entry point.
 Font provenance and reproduction are in [font/NOTICE.md](../font/NOTICE.md)
 and [font/ChineseTraditional/NOTICE.md](../font/ChineseTraditional/NOTICE.md).
-Final corresponding-source/license/notice review is a separate pre-release
-step. Do not tag or publish as part of this cleanup.

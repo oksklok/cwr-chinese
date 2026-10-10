@@ -4,7 +4,7 @@
 
 由社区制作的免费非官方汉化补丁，提供简体中文和繁体中文（台湾）。汉化范围包括 Cold War Crisis 和 Resistance 战役、单人及多人任务、任务向导模板、菜单、编辑器、百科和地图地名。配音保留英语。
 
-适用于 GOG 或 Steam 版 **Cold War Assault Remastered 3.05**，支持 **Windows 10/11 x64**。项目正在准备 1.0，目前尚未正式发布。
+适用于 GOG 或 Steam 版 **Cold War Assault Remastered 3.05**，支持 **Windows 10/11 x64**。
 
 ## 安装与语言选择
 

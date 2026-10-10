@@ -4,7 +4,7 @@
 
 A free, unofficial community translation with Simplified Chinese and Traditional Chinese (Taiwan) text. It covers the Cold War Crisis and Resistance campaigns, standalone and multiplayer missions, mission wizard templates, menus, editor, encyclopedia and map labels. Voices remain in English.
 
-Supports **Cold War Assault Remastered 3.05** on **Windows 10/11 x64**, from GOG or Steam. The project is preparing for 1.0; no release has been published yet.
+Supports **Cold War Assault Remastered 3.05** on **Windows 10/11 x64**, from GOG or Steam.
 
 ## Install and choose a language
 
