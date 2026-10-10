@@ -40,7 +40,7 @@ def source_archive(output, engine):
             parts = Path(rel).parts
             if base == engine:
                 if len(parts) == 1:
-                    if p.name not in ('LICENSE', 'CMakeLists.txt', 'CMakePresets.json', 'vcpkg.json', 'README.md', 'THIRD_PARTY_NOTICES.md'):
+                    if p.name not in ('LICENSE', 'CMakeLists.txt', 'CMakePresets.json', 'vcpkg.json', 'README.md', 'CREDITS.md', 'THIRD_PARTY_NOTICES.md'):
                         continue
                 elif parts[0] not in roots or (p.suffix not in extensions and rel != 'apps/cwr/Game/localization.ico'):
                     continue  # Old engine localization is historical, not the patch source.

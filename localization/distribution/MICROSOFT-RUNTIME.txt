@@ -22,5 +22,5 @@ Microsoft reserves all other rights. The DLLs are provided AS IS, without
 warranties, subject to non-excludable rights under applicable law. These terms
 apply only to the Microsoft DLLs, not to the mod's open-source components.
 
-The original neutral open-book icon and launcher are authored for this mod;
+The original neutral gold-star icon and launcher are authored for this mod;
 neither contains Microsoft or Bohemia artwork. The launcher uses a static CRT.

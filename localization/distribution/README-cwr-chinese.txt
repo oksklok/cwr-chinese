@@ -32,7 +32,7 @@ Cold War Assault Remastered 中文翻譯模組
 2. 執行 Remastered/cwr-chinese.exe。
 
 切換語言：在「選項 > 遊戲 > 文字語言」（Options > Game > Text language）
-中選擇「繁體中文」或「简体中文」。語音保留英語配音。
+中選擇「繁體中文」或「简体中文」。保留英文配音。
 
 移除：關閉遊戲後，刪除 Remastered 內的 @cwr-chinese、cwr-chinese.exe
 與 README-cwr-chinese.txt。

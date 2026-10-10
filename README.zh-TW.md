@@ -2,7 +2,7 @@
 
 # Cold War Assault Remastered 中文翻譯模組
 
-這是社群製作的免費非官方中文翻譯模組，提供繁體中文（台灣）與簡體中文。翻譯涵蓋 Cold War Crisis 與 Resistance 戰役、單人及多人任務、任務精靈範本、選單、編輯器、百科與地圖地名。語音保留英語配音。
+這是社群製作的免費非官方中文翻譯模組，提供繁體中文（台灣）與簡體中文。翻譯涵蓋 Cold War Crisis 與 Resistance 戰役、單人及多人任務、任務精靈範本、選單、編輯器、百科與地圖地名。保留英文配音。
 
 適用於 GOG 或 Steam 版 **Cold War Assault Remastered 3.05**，支援 **Windows 10/11 x64**。目前正在準備 1.0，尚未正式發布。
 

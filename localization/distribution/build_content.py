@@ -197,6 +197,10 @@ def build_content(game, mod):
             for font in source.glob('*.ttf'):
                 shutil.copyfile(font, dest / font.name)
             shutil.copyfile(source / 'NOTICE.md', dest / 'NOTICE.md')
+            if language == 'ChineseTraditional':
+                notice = (dest / 'NOTICE.md').read_text(encoding='utf-8')
+                notice = notice.replace('../OFL.txt', 'OFL.txt').replace('../NOTICE.md', '../ChineseSimplified/NOTICE.md')
+                (dest / 'NOTICE.md').write_text(notice, encoding='utf-8')
             shutil.copyfile(patch / 'font/OFL.txt', dest / 'OFL.txt')
         run_builders(patch, game, mod)
         sys.path.insert(0, str(PATCH / 'multiplayer'))

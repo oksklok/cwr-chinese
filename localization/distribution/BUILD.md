@@ -50,6 +50,37 @@ build inputs and notices. OpenAL remains a replaceable DLL. Packaging rejects
 the stock executable, stray development artifacts and unapproved/stale Microsoft
 runtime DLLs. The command prints the ZIP's size and SHA-256.
 
+## Rebuilding from the bundled source
+
+Extract `source/cwr-chinese-source.zip` to get `client-source/` and
+`patch-source/`. `source/build-record.json` records both commits; the supplied
+`BuildInfo.hpp` records the executable's version. No retail data is needed to
+compile the client; it is needed to assemble or run the localization.
+
+Use clang-cl 21, CMake/Ninja and the Windows SDK in an x64 VS 2022 developer
+shell. Put LLVM in `source/local-build/llvm/`, as expected by the bundled
+`clang-local.cmake`. The included `vcpkg-source.zip` is the build's vcpkg tree
+at `2750401336fb7c95f6619657a46a7e798661341c`; use a Git checkout of that revision
+in `source/local-build/vcpkg/` so vcpkg can resolve the client's manifest baseline
+(`170bd3bfb152a1795b67b5c2190ab7d899fc9971`) and versioned ports. Run its
+`bootstrap-vcpkg.bat`, and copy the bundled `source/dependencies/*.tar.gz` into
+its `downloads/`. Git history and build tools may require network access.
+
+From the extracted `client-source/`, with `$tools` set to the absolute
+`source/local-build/` path and LLVM, CMake and Ninja on `PATH`:
+
+```powershell
+cmake -S . -B build/local-labels -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCWR_HAS_VULKAN=OFF "-DCMAKE_TOOLCHAIN_FILE=$tools/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-clang-local "-DVCPKG_OVERLAY_TRIPLETS=$tools/triplets" -DVCPKG_OVERLAY_PORTS=cmake/vcpkg-overlay-ports "-DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=$tools/clang-local.cmake"
+cmake --build build/local-labels --target PoseidonGame --parallel 6
+```
+
+The overlay builds OpenAL Soft 1.24.3 from the supplied archive and three
+patches; `OpenAL-CMakeCache.txt` records the original configuration. Dated
+comments added to the patches during the notice review are the only differences
+from the source used for the bundled DLL. A compatible rebuilt `OpenAL32.dll`
+can replace `@cwr-chinese/client/OpenAL32.dll`. The other vcpkg dependencies
+retain their source archives, port recipes, installed versions and notices.
+
 Developer checks:
 
 ```powershell
