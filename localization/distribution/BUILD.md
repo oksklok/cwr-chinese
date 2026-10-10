@@ -24,15 +24,13 @@ then assemble into an absent directory outside the installed game:
 
 ```powershell
 ./localization/distribution/build_launcher.ps1 -Output build/launcher -EngineRepo build/client-source
-python localization/distribution/build_release.py PATH_TO_NEW_OUTPUT --game PATH_TO_REMASTERED --client build/client-source/dist/local-labels --launcher build/launcher/cwr-chinese.exe --vc-redist PATH_TO_VC_REDIST_X64_CRT --engine-repo build/client-source --vcpkg PATH_TO_VCPKG --installed PATH_TO_INSTALLED_TRIPLET --build-tools PATH_TO_LOCAL_TOOLCHAIN_FILES
+python localization/distribution/build_release.py PATH_TO_NEW_OUTPUT --game PATH_TO_REMASTERED --client build/client-source/dist/local-labels --launcher build/launcher/cwr-chinese.exe --engine-repo build/client-source --vcpkg PATH_TO_VCPKG --installed PATH_TO_INSTALLED_TRIPLET --build-tools PATH_TO_LOCAL_TOOLCHAIN_FILES
 ```
 
 `--build-tools` contains `clang-local.cmake`, `configure.cmd`, `build.cmd`,
 `build_ui_tests.cmd` and `triplets/` from the actual build.
-`--vc-redist` is Visual Studio's
-`VC/Redist/MSVC/14.44.35112/x64/Microsoft.VC143.CRT`, not System32.
-Only msvcp140.dll, vcruntime140.dll and vcruntime140_1.dll are bundled.
-Windows 10/11 supplies UCRT; see [MICROSOFT-RUNTIME.txt](MICROSOFT-RUNTIME.txt).
+The client uses the system-installed Microsoft Visual C++ runtime; no Microsoft
+runtime DLLs or installer are bundled. See [MICROSOFT-RUNTIME.txt](MICROSOFT-RUNTIME.txt).
 The launcher uses the client branch's `apps/cwr/Game/localization.ico`;
 `make_icon.py` there reproduces the original gold-star icon.
 
@@ -47,8 +45,8 @@ an explicit `--mod-dir`; players never run these tools.
 The resulting `cwr-chinese.zip` contains a top-level `Remastered/` directory,
 the launcher, ready-made `@cwr-chinese`, matching source, dependency sources,
 build inputs and notices. OpenAL remains a replaceable DLL. Packaging rejects
-the stock executable, stray development artifacts and unapproved/stale Microsoft
-runtime DLLs. The command prints the ZIP's size and SHA-256.
+the stock executable and stray development artifacts. The command prints the
+ZIP's size and SHA-256.
 
 ## Rebuilding from the bundled source
 

@@ -12,6 +12,9 @@ Cold War Assault Remastered 汉化补丁
 切换语言：在“选项 > 游戏 > 文字语言”（Options > Game > Text language）
 中选择“简体中文”或“繁體中文”。配音保留英语。
 
+如果游戏因缺少运行库而无法启动，请安装或更新微软官方的 Visual C++ 运行库（x64）：
+https://aka.ms/vs/17/release/vc_redist.x64.exe
+
 卸载：关闭游戏，删除 Remastered 内的 @cwr-chinese、cwr-chinese.exe
 和 README-cwr-chinese.txt。
 
@@ -34,6 +37,9 @@ Cold War Assault Remastered 中文翻譯模組
 切換語言：在「選項 > 遊戲 > 文字語言」（Options > Game > Text language）
 中選擇「繁體中文」或「简体中文」。保留英文配音。
 
+若遊戲因缺少執行階段元件而無法啟動，請安裝或更新微軟官方的 Visual C++ 可轉散發套件（x64）：
+https://aka.ms/vs/17/release/vc_redist.x64.exe
+
 移除：關閉遊戲後，刪除 Remastered 內的 @cwr-chinese、cwr-chinese.exe
 與 README-cwr-chinese.txt。
 
@@ -55,6 +61,10 @@ Install
 
 Language: in Options > Game > Text language, choose 简体中文 (Simplified Chinese)
 or 繁體中文 (Traditional Chinese). Voices remain in English.
+
+If the game fails to start because of missing runtime dependencies, install or
+update the official Microsoft Visual C++ Redistributable (x64):
+https://aka.ms/vs/17/release/vc_redist.x64.exe
 
 Uninstall: close the game, then delete @cwr-chinese, cwr-chinese.exe and
 README-cwr-chinese.txt from Remastered.

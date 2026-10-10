@@ -41,8 +41,8 @@ No contractual restriction on modification/reverse engineering for debugging
 such library modifications is imposed by CWRC.
 
 No preparation utility, Python runtime or PyInstaller bootloader is included.
-Three Microsoft x64 VC++ runtime DLLs are included application-locally, under
-separate Microsoft terms; see MICROSOFT-RUNTIME.txt. No runtime installer is used.
+The client uses the system-installed Microsoft Visual C++ runtime. No Microsoft
+runtime DLLs or installer are bundled; see MICROSOFT-RUNTIME.txt.
 
 NO WARRANTY. Provided AS IS; use at your own risk. See each component license.
 This is a LOCAL release candidate, not yet approved for public distribution.

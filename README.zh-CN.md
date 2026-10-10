@@ -13,6 +13,8 @@
 
 在 **选项 > 游戏 > 文字语言**（Options > Game > Text language）中选择 **简体中文** 或 **繁體中文**。
 
+如果游戏因缺少运行库而无法启动，请安装或更新微软官方的 [Visual C++ 运行库（x64）](https://aka.ms/vs/17/release/vc_redist.x64.exe)。
+
 ## 卸载
 
 关闭游戏，删除 `Remastered` 文件夹内的 `@cwr-chinese`、`cwr-chinese.exe` 和 `README-cwr-chinese.txt`。

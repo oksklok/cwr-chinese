@@ -13,6 +13,8 @@ Supports **Cold War Assault Remastered 3.05** on **Windows 10/11 x64**, from GOG
 
 In **Options > Game > Text language**, select **简体中文** or **繁體中文**.
 
+If the game fails to start because of missing runtime dependencies, install or update the official [Microsoft Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+
 ## Uninstall
 
 Close the game, then delete `@cwr-chinese`, `cwr-chinese.exe` and `README-cwr-chinese.txt` from `Remastered`.

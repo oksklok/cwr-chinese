@@ -1,26 +1,18 @@
-Microsoft Visual C++ Runtime, x64, file version 14.44.35211.0
+Microsoft Visual C++ runtime
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Unmodified msvcp140.dll, vcruntime140.dll and vcruntime140_1.dll from
-Visual Studio Community 2022 VC/Redist/MSVC/14.44.35112/x64/Microsoft.VC143.CRT.
-Application-local deployment beside the modified client; Windows 10/11 supplies
-the Universal CRT. No system installation or registration is performed.
+The modified client uses the system-installed Microsoft Visual C++ runtime.
+No Microsoft runtime DLLs or installer are included in this package.
+If missing runtime dependencies prevent startup, install or update the official
+Microsoft Visual C++ Redistributable (x64):
+https://aka.ms/vs/17/release/vc_redist.x64.exe
 
-These Microsoft components are separate from the mod's GPL code, APL-SA game
-adaptations and OFL fonts. They are not relicensed under those licenses.
-Redistribution is under the Distributable Code terms of Visual Studio 2022:
+The native launcher uses a static CRT. Microsoft runtime code retains its
+Microsoft copyright and is not relicensed under the mod's GPL, APL-SA or OFL
+licenses. Applicable Visual Studio 2022 Distributable Code terms:
 https://visualstudio.microsoft.com/license-terms/vs2022-ga-community/
 https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution
 https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files
 
-Use or further distribution of these Microsoft DLLs is subject to the Microsoft
-terms above. They may be redistributed unmodified only as part of this program,
-with these notices and terms retained for recipients. Do not work around their
-technical limitations or reverse engineer, decompile or disassemble them except
-as permitted by applicable law or applicable third-party licensing terms.
-Microsoft reserves all other rights. The DLLs are provided AS IS, without
-warranties, subject to non-excludable rights under applicable law. These terms
-apply only to the Microsoft DLLs, not to the mod's open-source components.
-
 The original neutral gold-star icon and launcher are authored for this mod;
-neither contains Microsoft or Bohemia artwork. The launcher uses a static CRT.
+neither contains Microsoft or Bohemia artwork.

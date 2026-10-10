@@ -13,6 +13,8 @@
 
 在 **選項 > 遊戲 > 文字語言**（Options > Game > Text language）中選擇 **繁體中文** 或 **简体中文**。
 
+若遊戲因缺少執行階段元件而無法啟動，請安裝或更新微軟官方的 [Visual C++ 可轉散發套件（x64）](https://aka.ms/vs/17/release/vc_redist.x64.exe)。
+
 ## 移除
 
 關閉遊戲後，刪除 `Remastered` 資料夾內的 `@cwr-chinese`、`cwr-chinese.exe` 與 `README-cwr-chinese.txt`。

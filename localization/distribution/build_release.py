@@ -7,7 +7,6 @@ import zipfile
 from pathlib import Path
 from build_content import PATCH, require, digest, build_content
 REPO = PATCH.parent
-MSVC_RUNTIME = ('msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll')
 
 
 def require_clean_tracked(repo, label):
@@ -59,19 +58,13 @@ def source_archive(output, engine):
     return {rel: digest(p.read_bytes()) for rel, p in selected.items()}
 
 
-def package_zip(files, output, stock_executable, vc_redist):
-    # Check the complete staging tree before creating an archive. APL-SA game
-    # data and the three selected Microsoft redistributables are permitted.
+def package_zip(files, output, stock_executable):
+    # Check the complete staging tree before creating an archive.
     entries = sorted(file for file in files.rglob('*') if file.is_file())
     stock_hash = digest(stock_executable.read_bytes())
-    runtime_hashes = {f'@cwr-chinese/client/{name}': digest((vc_redist / name).read_bytes())
-                      for name in MSVC_RUNTIME}
     forbidden = {'.pdb', '.log', '.ico', '.py', '.pyc', '.spec'}
     for file in entries:
         relative = file.relative_to(files).as_posix()
-        if file.name.lower().startswith(('vcruntime', 'msvcp')):
-            require(relative in runtime_hashes and digest(file.read_bytes()) == runtime_hashes[relative],
-                    f'Unexpected or stale Microsoft runtime: {relative}')
         require(file.suffix.lower() not in forbidden or relative.startswith('@cwr-chinese/source/'),
                 f'Unexpected runtime artifact: {relative}')
         if file.suffix.lower() == '.exe':
@@ -86,7 +79,7 @@ def package_zip(files, output, stock_executable, vc_redist):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('output', type=Path)
-    for name in ('game', 'client', 'launcher', 'vc-redist', 'vcpkg', 'installed', 'build-tools'):
+    for name in ('game', 'client', 'launcher', 'vcpkg', 'installed', 'build-tools'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--engine-repo', type=Path, default=REPO / 'build/client-source')
     args = parser.parse_args()
@@ -102,8 +95,6 @@ def main():
     build_content(args.game, out)
     for name in ('PoseidonGame.exe', 'OpenAL32.dll'):
         copy(args.client / name, out / 'client' / name)
-    for name in MSVC_RUNTIME:
-        copy(args.vc_redist / name, out / 'client' / name)
     copy(args.launcher, release / 'files/cwr-chinese.exe')
     copy(Path(__file__).with_name('README-cwr-chinese.txt'), release / 'files/README-cwr-chinese.txt')
     copy(Path(__file__).with_name('MICROSOFT-RUNTIME.txt'), out / 'notices/MICROSOFT-RUNTIME.txt')
@@ -139,7 +130,7 @@ def main():
               'patch_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO).decode().strip()}
     (out / 'source/build-record.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf-8')
     archive = release / 'cwr-chinese.zip'
-    package_zip(release / 'files', archive, args.game / 'PoseidonGame.exe', args.vc_redist)
+    package_zip(release / 'files', archive, args.game / 'PoseidonGame.exe')
     print(f'{archive}: {archive.stat().st_size} bytes; SHA-256 {digest(archive.read_bytes())}')
 
 
