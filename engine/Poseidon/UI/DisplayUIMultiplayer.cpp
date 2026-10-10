@@ -760,7 +760,8 @@ RString CModsList::CheckedModIds() const
 // root to form the absolute, semicolon-separated mod path RequestRemountWithMods
 // wants ("" = base game). Local mods mount from localRoot, downloaded (workshop)
 // mods from workshopRoot — so a mod's source is preserved by its on-disk location.
-RString CModsList::BuildModPath(const char* localRoot, const char* workshopRoot) const
+RString CModsList::BuildModPath(const char* localRoot, const char* workshopRoot,
+                              const std::vector<StagedModInstall>& installs) const
 {
     const std::string local = localRoot ? localRoot : "";
     const std::string workshop = workshopRoot ? workshopRoot : "";
@@ -776,6 +777,21 @@ RString CModsList::BuildModPath(const char* localRoot, const char* workshopRoot)
         const std::string& root = (_modRows[i].source == ModRowSource::Workshop) ? workshop : local;
         if (!out.empty())
             out += ';';
+        // Activation must follow the staged destination, not an installed path
+        // retained from before a catalog folder rename. Leave the row untouched
+        // so cancelled downloads and remount rollback retain the old selection.
+        const char* modId = _modRows[i].modId;
+        if (*modId == '@')
+            ++modId;
+        const auto install = std::find_if(installs.begin(), installs.end(), [&](const StagedModInstall& item)
+        {
+            return _modRows[i].source == ModRowSource::Workshop && stricmp(item.modId.c_str(), modId) == 0;
+        });
+        if (install != installs.end())
+        {
+            out += install->destinationDir;
+            continue;
+        }
         if (_modRows[i].mountPath.GetLength() > 0)
         {
             out += (const char*)_modRows[i].mountPath;

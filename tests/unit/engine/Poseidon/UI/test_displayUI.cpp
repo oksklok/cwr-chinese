@@ -12,8 +12,47 @@
 #include <cstring>
 #include <string>
 #include <Poseidon/Foundation/Strings/RString.hpp>
+#include <Poseidon/IO/ParamFile/ParamFile.hpp>
 
 using namespace Poseidon;
+
+TEST_CASE("staged mod folder rename overrides only the selected workshop mount", "[UI][mods][regression]")
+{
+    const char* resource = R"cfg(class List {
+        style=0; x=0; y=0; w=1; h=1; angle=0; font=""; size=0.04; rows=9;
+        colorText[]={1,1,1,1}; colorSelect[]={1,1,1,1}; colorSelectBackground[]={0,0,0,1};
+    };)cfg";
+    ParamFile config;
+    QIStream in(resource, static_cast<int>(strlen(resource)));
+    config.Parse(in);
+    CModsList list(nullptr, 110, config >> "List");
+    AutoArray<ModRow> rows;
+    ModRow row;
+    row.modId = "@Fixture";
+    row.folderName = "@renamed";
+    row.mountPath = "workshop/@old";
+    row.source = ModRowSource::Workshop;
+    row.state = ModRowState::Active;
+    row.checked = true;
+    rows.Add(row);
+    row.source = ModRowSource::Local;
+    row.mountPath = "custom/@local";
+    rows.Add(row);
+    row.modId = "other";
+    row.source = ModRowSource::Workshop;
+    row.mountPath = "workshop/@other";
+    rows.Add(row);
+    list.SetRows(rows);
+    const std::vector<StagedModInstall> installs{MakeStagedModInstall("workshop/@renamed", "fixture")};
+    CHECK(std::string(list.BuildModPath("local", "workshop", installs)) ==
+          "workshop/@renamed;custom/@local;workshop/@other");
+    // Cancel / keep-for-later has no activation overrides and must not mutate rows.
+    CHECK(std::string(list.BuildModPath("local", "workshop")) ==
+          "workshop/@old;custom/@local;workshop/@other");
+    rows[0].checked = false;
+    list.SetRows(rows);
+    CHECK(std::string(list.BuildModPath("local", "workshop", installs)) == "custom/@local;workshop/@other");
+}
 
 TEST_CASE("displayUI compiles", "[UI][compile]")
 {

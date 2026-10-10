@@ -412,6 +412,15 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
     SetCtrlEnabled(idcPrev, !isDisabled);
     SetCtrlEnabled(idcNext, !isDisabled);
 
+    // A recycled binding slot may still have a primary-cell-only hit area.
+    // Reset it before the header/action early return; bindings override below.
+    if (m_notebook)
+    {
+        float rowY = SlotTrackY(slot) - 0.0285f;
+        m_notebook->SetSubControlPos(idcHover, 0.02f, rowY, 0.96f, 0.075f);
+        m_notebook->SetSubControlPos(idcBarClick, 0.44f, rowY, 0.35f, 0.075f);
+    }
+
     if (isHeader || isAction)
     {
         // Spread Close / Reset / Header text across the full row width
@@ -530,14 +539,6 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         // The dispatch decision happens in OnButtonClicked based on
         // whether the click came in via Hover (5N3) or BarClick (5N7).
         return;
-    }
-
-    // Reset Hover / BarClick to default positions for non-binding rows.
-    if (m_notebook)
-    {
-        float rowY = SlotTrackY(slot) - 0.0285f;
-        m_notebook->SetSubControlPos(idcHover, 0.02f, rowY, 0.96f, 0.075f);
-        m_notebook->SetSubControlPos(idcBarClick, 0.44f, rowY, 0.35f, 0.075f);
     }
 
     PackedColor valueColor = isDisabled ? disabledValueStepColor : valueStepColor;

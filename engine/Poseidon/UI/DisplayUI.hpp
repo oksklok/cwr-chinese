@@ -394,7 +394,8 @@ class CModsList : public C3DListBox
     const std::array<float, MTCCount>& GetColumnWidths() const { return _columnWidths; }
 
     RString CheckedModIds() const;
-    RString BuildModPath(const char* localRoot, const char* workshopRoot) const;
+    RString BuildModPath(const char* localRoot, const char* workshopRoot,
+                        const std::vector<StagedModInstall>& installs = {}) const;
 
     // Tab order matches the resource control order.
     void SetSourceMode(int mode)

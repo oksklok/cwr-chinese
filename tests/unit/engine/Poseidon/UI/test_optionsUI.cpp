@@ -5,6 +5,8 @@
 #include <Poseidon/UI/Controls/UIControlsBase.hpp>
 #include <Poseidon/UI/OptionsUICommon.hpp>
 #include <Poseidon/UI/UITestEngine.hpp>
+#include <Poseidon/IO/ParamFile/ParamFile.hpp>
+#include <SDL3/SDL_keycode.h>
 #include <catch2/catch_test_macros.hpp>
 
 #include <chrono>
@@ -38,6 +40,84 @@ struct TempOptionsDir
     }
 };
 } // namespace
+
+namespace
+{
+class SlotHitControl : public Control
+{
+public:
+    SlotHitControl(ControlsContainer* parent, int idc) : Control(parent, CT_STATIC, idc, 0, 0, 0, 1, 1) {}
+    void OnDraw(float) override {}
+};
+
+class SlotNotebook : public ControlObjectContainer
+{
+public:
+    SlotNotebook(ControlsContainer* parent, const ParamEntry& cls) : ControlObjectContainer(parent, 105, cls)
+    {
+        for (int digit : {3, 7})
+        {
+            ControlInObject item{};
+            item._control = new SlotHitControl(parent, 580 + digit);
+            _controls.Add(item);
+        }
+    }
+};
+
+class SlotDisplay : public Display
+{
+public:
+    SlotDisplay() : Display(nullptr) {}
+    void Attach(ControlObject* notebook) { _objects.Add(notebook); }
+};
+
+struct SlotProvider : OptionsScrollList::Provider
+{
+    int actions = 0;
+    int RowCount() const override { return 10; }
+    const char* RowLabel(int) const override { return ""; }
+    OptionsScrollList::RowDef RowFor(int) const override { return {-1, nullptr, 0}; }
+    int RowValue(int) const override { return 0; }
+    void SetRowValue(int, int) override {}
+    OptionsScrollList::Kind RowKind(int row) const override
+    { return row == 9 ? OptionsScrollList::KindAction : OptionsScrollList::KindBinding; }
+    void OnRowAction(int row, Display&) override { if (row == 9) ++actions; }
+};
+}
+
+TEST_CASE("scrolling a binding slot to an action restores the full click width", "[optionsUI][UI][regression]")
+{
+    const char* resource = R"cfg(class Notebook {
+        model=""; position[]={0,0,1}; positionBack[]={0,0,1};
+        direction[]={0,0,1}; up[]={0,1,0}; scale=1;
+        inBack=0; enableZoom=0; zoomDuration=0;
+    };)cfg";
+    ParamFile config;
+    QIStream in(resource, static_cast<int>(strlen(resource)));
+    config.Parse(in);
+    SlotDisplay display;
+    auto* notebook = new SlotNotebook(&display, config >> "Notebook");
+    display.Attach(notebook);
+    SlotProvider provider;
+    OptionsScrollList list(display, provider);
+    list.FocusInitial();
+    float x, y, w, h;
+    REQUIRE(notebook->GetSubControlPos(583, x, y, w, h));
+    CHECK(w == 0.615f);
+    CHECK(notebook->GetCtrl(587)->IsVisible());
+    list.OnKeyDown(SDLK_PAGEDOWN);
+    REQUIRE(list.ScrollOffset() == 1);
+    REQUIRE(notebook->GetSubControlPos(583, x, y, w, h));
+    CHECK(x == 0.02f);
+    CHECK(w == 0.96f);
+    CHECK_FALSE(notebook->GetCtrl(587)->IsVisible());
+    CHECK(list.OnButtonClicked(583));
+    CHECK(provider.actions == 1);
+    list.OnKeyDown(SDLK_PAGEUP);
+    REQUIRE(notebook->GetSubControlPos(583, x, y, w, h));
+    CHECK(w == 0.615f);
+    CHECK(notebook->GetCtrl(587)->IsVisible());
+}
 
 TEST_CASE("optionsUI compiles", "[optionsUI][tier3]")
 {

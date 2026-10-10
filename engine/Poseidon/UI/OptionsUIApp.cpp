@@ -1562,7 +1562,7 @@ void DisplayMods::OnButtonClicked(int idc)
             return;
         }
 
-        RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
+        RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str(), _stagedInstalls);
         if (_stagedInstalls.empty())
             GApp->RequestRemountWithMods((const char*)modPath);
         else
@@ -1835,7 +1835,7 @@ void DisplayMods::OnChildDestroyed(int idd, int exit)
         if (list != nullptr && GApp != nullptr && GWorld != nullptr && GWorld->GetMode() == GModeIntro)
         {
             MarkCheckedDownloadsReady(list, true);
-            RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
+            RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str(), _stagedInstalls);
             GApp->RequestRemountWithMods((const char*)modPath, std::move(_stagedInstalls));
             GApp->m_remountSaveSelection = true;
         }
