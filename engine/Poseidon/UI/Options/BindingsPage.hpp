@@ -42,6 +42,7 @@ class BindingsPage : public ScrollListPage
     using ConflictCallback = std::function<UserAction(int packedCode, int modifier)>;
 
     void RefreshAfterCapture();
+    void OnReshown(OptionsShell& shell) override;
 
   protected:
     // Per-device hooks.

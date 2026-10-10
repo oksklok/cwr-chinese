@@ -852,6 +852,7 @@ public:
 	PackedColor GetBgColor() const { return _bgColor; }
 
 	void FormatText();
+	void SetTextLines(int lines); // switch a static label to a bounded multiline area
 	int GetLineCount() const { return _lines.Size(); } // wrapped/explicit-break line count (ST_MULTI)
 	RString GetLine(int i) const;
 	float MeasureTextWidth(RString text) const;

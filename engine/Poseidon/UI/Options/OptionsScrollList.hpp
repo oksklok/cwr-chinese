@@ -39,13 +39,6 @@ class OptionsScrollList
 public:
 	enum : int {
 		kVisibleSlots   = 9,
-		kInnerChars     = 16,    // stepper value cell width in chars; also the wide binding primary cell
-		kLabelInnerChars = 18,   // left label column width in chars
-		kBindingLabelInnerChars = 11, // narrower left label width when bindings show chevrons
-		kBindingAltInnerChars = 6, // narrow right-hand binding cell (fits ~"Delete" before it clips)
-		// Matches the hint control's visible glyph budget.  Keep close to
-		// the real 3D width so long descriptions marquee before clipping.
-		kHintInnerChars = 50,
 		kPauseMs        = 1000,
 		kScrollPeriodMs = 100,
 		// Spaces between repeated iterations of a marquee'd string.
@@ -327,11 +320,7 @@ private:
 	int MaxScrollOffset() const;
 
 	void FocusFocusedRow();
-	int  RowLabelInnerChars(int row) const;
-	bool RowLabelNeedsMarquee(int row) const;
-	bool FocusedStepperValueNeedsMarquee() const;
-	bool FocusedBindingCellNeedsMarquee() const;
-	int BindingValueInnerChars() const;
+	void SetFittedText(int idc, const char* text, bool marquee);
 
 	void SetSliderBar(int fillIdc, int percent,
 	                  float trackX, float trackY, float trackH, float trackWidth);

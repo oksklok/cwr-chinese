@@ -550,8 +550,20 @@ const EnumName* Foundation::GetEnumNames(AIUnit::DisabledAI dummy)
 void AIUnitInfo::LoadIdentityName(const ParamEntry& identity)
 {
     _name = DecodeLegacyTextToRString(identity >> "name", GLanguage);
-    const ParamEntry* key = identity.FindEntry("nameKey");
+    // Stock CfgWorlds pools are add-only: addons may add a child class, but
+    // cannot add scalar fields directly to an existing identity.
+    const ParamEntry* metadata = &identity;
+    const ParamEntry* overlay = identity.FindEntry("CWRCDisplayName");
+    // An identity's own key takes precedence over inherited stock metadata.
+    if (!identity.FindEntry("nameKey") && overlay && overlay->IsClass())
+        metadata = overlay;
+    const ParamEntry* key = metadata->FindEntry("nameKey");
     _displayNameKey = key ? RString(*key) : RString();
+    // Stock-pool overlays opt in for one canonical name only. A mod that
+    // inherits the class but supplies its own name must not inherit its label.
+    const ParamEntry* original = metadata->FindEntry("nameKeyOriginal");
+    if (original && _name != DecodeLegacyTextToRString(*original, GLanguage))
+        _displayNameKey = RString();
 }
 
 RString AIUnitInfo::GetDisplayName() const

@@ -118,6 +118,38 @@ TEST_CASE("Identity display localization leaves the script/network name and cont
     ClearStringtable();
 }
 
+TEST_CASE("Stock pool metadata does not rename a custom identity inheriting that pool entry",
+          "[generated-names][localized][canonical]")
+{
+    ClearStringtable();
+    GLanguage = "English";
+    LoadStringtable("global", GetTestFixturePath("generated_names.utf8.csv"), 0, true);
+    ParamFile identities = ParseConfig(
+        "class Stock { access = 1; name = \"David Armstrong\"; face = \"Face1\"; }; "
+        "class Custom: Stock { name = \"My custom soldier\"; }; "
+        "class LocalizedCustom: Stock { name = \"My custom soldier\"; nameKey = \"STR_TEST_IDENTITY\"; }; "
+        "class Player { name = \"David Armstrong\"; };");
+    ParamFile overlay = ParseConfig(
+        "class Stock { class CWRCDisplayName { nameKey = \"STR_TEST_IDENTITY\"; "
+        "nameKeyOriginal = \"David Armstrong\"; }; };");
+    identities.Update(overlay);
+    identities.SetFile(&identities);
+    CHECK(identities.GetEntryCount() == 4);
+    CHECK(RString(identities >> "Stock" >> "face") == RString("Face1"));
+    AIUnitInfo info{};
+    info.LoadIdentityName(identities >> "Stock");
+    CHECK(info.GetDisplayName() == LocalizeString("STR_TEST_IDENTITY"));
+    CHECK(info._name == RString("David Armstrong"));
+    info.LoadIdentityName(identities >> "Custom");
+    CHECK(info._displayNameKey.GetLength() == 0);
+    CHECK(info.GetDisplayName() == RString("My custom soldier"));
+    info.LoadIdentityName(identities >> "LocalizedCustom");
+    CHECK(info.GetDisplayName() == LocalizeString("STR_TEST_IDENTITY"));
+    info.LoadIdentityName(identities >> "Player");
+    CHECK(info.GetDisplayName() == RString("David Armstrong"));
+    ClearStringtable();
+}
+
 TEST_CASE("Identity archive preserves canonical name and optional display metadata",
           "[generated-names][save][load]")
 {

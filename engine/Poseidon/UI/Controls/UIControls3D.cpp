@@ -249,6 +249,13 @@ void C3DStatic::SetText(RString text)
     }
 }
 
+void C3DStatic::SetTextLines(int lines)
+{
+    _maxLines = std::max(1, lines);
+    _style = (_style & ~ST_TYPE) | ST_MULTI;
+    FormatText();
+}
+
 void C3DStatic::FormatText()
 {
     if ((_style & ST_TYPE) != ST_MULTI)

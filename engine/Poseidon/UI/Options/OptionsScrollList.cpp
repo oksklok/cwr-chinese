@@ -222,65 +222,36 @@ void OptionsScrollList::FormatCell(const char* val, int innerChars, bool marquee
     }
 }
 
-int OptionsScrollList::RowLabelInnerChars(int row) const
+void OptionsScrollList::SetFittedText(int idc, const char* text, bool marquee)
 {
-    Kind kind = m_provider.RowKind(row);
-    // Square Chinese mono glyphs need an earlier marquee than Latin letters.
-    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
-                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
-    if (kind == KindBinding && m_provider.BindingUsesChevronUi(row))
-        return chinese ? 4 : kBindingLabelInnerChars;
-    if (kind == KindBinding)
-        return chinese ? 5 : 14;
-    return chinese ? 6 : kLabelInnerChars;
-}
+    if (!text)
+        text = "";
+    auto* label = dynamic_cast<C3DStatic*>(m_host.GetCtrl(idc));
+    if (!label || label->MeasureTextFraction(text) <= 0.98f)
+    {
+        SetRowValue(idc, text);
+        return;
+    }
 
-bool OptionsScrollList::RowLabelNeedsMarquee(int row) const
-{
-    if (row < 0 || row >= m_provider.RowCount())
-        return false;
-    Kind kind = m_provider.RowKind(row);
-    if (kind == KindHeader || kind == KindAction)
-        return false;
-    const char* label = m_provider.RowLabel(row);
-    if (!label)
-        label = "";
-    return Utf8Length(label) > RowLabelInnerChars(row);
-}
-
-bool OptionsScrollList::FocusedStepperValueNeedsMarquee() const
-{
-    if (m_rowFocus < 0 || m_rowFocus >= m_provider.RowCount())
-        return false;
-    if (m_provider.RowKind(m_rowFocus) != KindStepper)
-        return false;
-    RowDef row = m_provider.RowFor(m_rowFocus);
-    if (row.count <= 0)
-        return false;
-    int idx = m_provider.RowValue(m_rowFocus) % row.count;
-    const char* val = (row.options && row.count > 0) ? row.options[idx] : "";
-    return Utf8Length(val) > kInnerChars;
-}
-
-int OptionsScrollList::BindingValueInnerChars() const
-{
-    // Both keyboard cells have the same width; retain square Chinese glyphs.
-    return strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
-           strcmp(GLanguage.Data(), "ChineseTraditional") == 0 ? 4 : 8;
-}
-
-bool OptionsScrollList::FocusedBindingCellNeedsMarquee() const
-{
-    if (m_rowFocus < 0 || m_rowFocus >= m_provider.RowCount())
-        return false;
-    if (m_provider.RowKind(m_rowFocus) != KindBinding)
-        return false;
-    const char* primary = m_provider.BindingPrimary(m_rowFocus);
-    const char* alt = m_provider.BindingAlt(m_rowFocus);
-    if (m_provider.BindingUsesChevronUi(m_rowFocus))
-        return (primary && Utf8Length(primary) > kInnerChars) || (alt && Utf8Length(alt) > kBindingAltInnerChars);
-    const int budget = BindingValueInnerChars();
-    return (primary && Utf8Length(primary) > budget) || (alt && Utf8Length(alt) > budget);
+    // Measure glyphs, not characters: "Delete" and mixed Chinese/Latin key
+    // names fit well before four Chinese glyphs fill the same cell.
+    char visible[512];
+    const int length = Utf8Length(text);
+    const int offset = marquee ? MarqueeOffset(GlobalTickCount() - m_marqueeStartMs, length, 1) : 0;
+    FormatMarquee(text, offset, length, visible, sizeof(visible));
+    int low = 0, high = Utf8Length(visible);
+    char prefix[512];
+    while (low < high)
+    {
+        int count = (low + high + 1) / 2;
+        FormatTruncated(visible, count, prefix, sizeof(prefix));
+        if (label->MeasureTextFraction(prefix) <= 0.98f)
+            low = count;
+        else
+            high = count - 1;
+    }
+    FormatTruncated(visible, low, prefix, sizeof(prefix));
+    SetRowValue(idc, prefix, text);
 }
 
 // Control-update helpers.
@@ -476,7 +447,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         SetLabelColor(idcValStep, isDisabled ? disabledValueStepColor : valueStepColor);
         float rowY = SlotTrackY(slot) - 0.0285f;
         if (m_notebook)
-            m_notebook->SetSubControlPos(idcValStep, 0.02f, rowY, 0.96f, 0.075f);
+            m_notebook->SetSubControlPos(idcValStep, 0.02f, rowY + 0.00375f, 0.92f, 0.0675f);
         SetRowValue(idcValBar, "");
         return;
     }
@@ -490,22 +461,25 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         {
             if (bindingChevronUi)
             {
-                m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY, 0.26f, 0.075f);
-                m_notebook->SetSubControlPos(idcValStep, 0.36f, rowY, 0.22f, 0.075f);
-                m_notebook->SetSubControlPos(idcValBar, 0.64f, rowY, 0.22f, 0.075f);
+                m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY + 0.00375f, 0.26f, 0.0675f);
+                m_notebook->SetSubControlPos(idcValStep, 0.36f, rowY + 0.00375f, 0.22f, 0.0675f);
+                m_notebook->SetSubControlPos(idcValBar, 0.64f, rowY + 0.00375f, 0.22f, 0.0675f);
             }
             else if (isBinding)
             {
                 // Separate label, primary and secondary regions, before the scrollbar.
-                m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY, 0.32f, 0.075f);
-                m_notebook->SetSubControlPos(idcValStep, 0.40f, rowY, 0.25f, 0.075f);
-                m_notebook->SetSubControlPos(idcValBar, 0.69f, rowY, 0.25f, 0.075f);
+                m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY + 0.00375f, 0.34f, 0.0675f);
+                m_notebook->SetSubControlPos(idcValStep, 0.39f, rowY + 0.00375f, 0.265f, 0.0675f);
+                m_notebook->SetSubControlPos(idcValBar, 0.68f, rowY + 0.00375f, 0.265f, 0.0675f);
             }
             else
             {
-                m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY, 0.34f, 0.075f);
-                m_notebook->SetSubControlPos(idcValStep, 0.46f, rowY, 0.44f, 0.075f);
-                m_notebook->SetSubControlPos(idcValBar, 0.81f, rowY, 0.18f, 0.075f);
+                m_notebook->SetSubControlPos(idcLabel, 0.04f, rowY + 0.00375f, 0.38f, 0.0675f);
+                m_notebook->SetSubControlPos(idcValStep, 0.49f, rowY + 0.00375f, 0.41f, 0.0675f);
+                m_notebook->SetSubControlPos(idcValBar, 0.81f, rowY + 0.00375f, 0.135f, 0.0675f);
+                m_notebook->SetSubControlPos(idcPrev, 0.43f, rowY, 0.05f, 0.075f);
+                m_notebook->SetSubControlPos(idcNext, 0.92f, rowY, 0.03f, 0.075f);
+                m_notebook->SetSubControlPos(idcTrack, 0.44f, SlotTrackY(slot), 0.35f, 0.018f);
             }
         }
     }
@@ -514,10 +488,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
     const char* label = m_provider.RowLabel(logicalRow);
     if (!label)
         label = "";
-    const int labelInnerChars = RowLabelInnerChars(logicalRow);
-    char labelBuf[128];
-    FormatCell(label, labelInnerChars, focused, GlobalTickCount() - m_marqueeStartMs, labelBuf, sizeof(labelBuf));
-    SetRowValue(idcLabel, labelBuf, label);
+    SetFittedText(idcLabel, label, focused);
 
     if (isBinding)
     {
@@ -530,14 +501,8 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         const char* altDisplay = (alt && *alt) ? alt : "—";
         // Long key names marquee on the focused row and clip otherwise. The
         // semantic text stays the full value so tests read the real binding.
-        const DWORD marqueeElapsed = GlobalTickCount() - m_marqueeStartMs;
-        char primaryBuf[80];
-        char altBuf[80];
-        const int budget = BindingValueInnerChars();
-        FormatCell(primaryDisplay, bindingChevronUi ? kInnerChars : budget, focused, marqueeElapsed, primaryBuf, sizeof(primaryBuf));
-        FormatCell(altDisplay, bindingChevronUi ? kBindingAltInnerChars : budget, focused, marqueeElapsed, altBuf, sizeof(altBuf));
-        SetRowValue(idcValStep, primaryBuf, primaryDisplay);
-        SetRowValue(idcValBar, altBuf, altDisplay);
+        SetFittedText(idcValStep, primaryDisplay, focused);
+        SetFittedText(idcValBar, altDisplay, focused);
 
         // Tint the cell the next capture will edit (Left/Right switch it) on the
         // focused row, so the two slots and the current selection are visible.
@@ -565,9 +530,9 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         if (m_notebook)
         {
             m_notebook->SetSubControlPos(idcHover, bindingChevronUi ? 0.02f : 0.04f, rowY,
-                                        bindingChevronUi ? 0.96f : 0.61f, 0.075f);
-            m_notebook->SetSubControlPos(idcBarClick, bindingChevronUi ? 0.65f : 0.69f, rowY,
-                                        bindingChevronUi ? 0.30f : 0.25f, 0.075f);
+                                        bindingChevronUi ? 0.96f : 0.615f, 0.075f);
+            m_notebook->SetSubControlPos(idcBarClick, bindingChevronUi ? 0.65f : 0.68f, rowY,
+                                        bindingChevronUi ? 0.30f : 0.265f, 0.075f);
             if (bindingChevronUi)
             {
                 float prevX = (m_bindingSlot == 0) ? 0.30f : 0.58f;
@@ -587,7 +552,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
     {
         float rowY = SlotTrackY(slot) - 0.0285f;
         m_notebook->SetSubControlPos(idcHover, 0.02f, rowY, 0.96f, 0.075f);
-        m_notebook->SetSubControlPos(idcBarClick, 0.40f, rowY, 0.40f, 0.075f);
+        m_notebook->SetSubControlPos(idcBarClick, 0.44f, rowY, 0.35f, 0.075f);
     }
 
     PackedColor valueColor = isDisabled ? disabledValueStepColor : valueStepColor;
@@ -601,9 +566,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
         RowDef row = m_provider.RowFor(logicalRow);
         int idx = (row.count > 0) ? (m_provider.RowValue(logicalRow) % row.count) : 0;
         const char* val = (row.options && row.count > 0) ? row.options[idx] : "";
-        char buf[80];
-        FormatCell(val, kInnerChars, isStepper && focused, GlobalTickCount() - m_marqueeStartMs, buf, sizeof(buf));
-        SetRowValue(idcValStep, buf, val);
+        SetFittedText(idcValStep, val, isStepper && focused);
         SetRowValue(idcValBar, "");
     }
     else if (isSlider)
@@ -620,7 +583,7 @@ void OptionsScrollList::RenderSlot(int slot, int logicalRow)
             snprintf(buf, sizeof(buf), "%3d%%", p);
             SetRowValue(idcValBar, buf);
         }
-        SetSliderBar(idcFill, p, 0.40f, SlotTrackY(slot), 0.018f, 0.40f);
+        SetSliderBar(idcFill, p, 0.44f, SlotTrackY(slot), 0.018f, 0.35f);
         SetRowValue(idcValStep, "");
     }
     else if (isVU)
@@ -771,30 +734,27 @@ void OptionsScrollList::UpdateRowHighlight()
         SetCtrlVisible(kIdcRowBgBase + s, s == focusedSlot);
     }
 
-    // Hint is single-line; long descriptions marquee-scroll horizontally.
-    // Pause for kPauseMs after the row focus changes (so the user reads
-    // the start of the text first), then advance one shift per frame at
-    // kScrollPeriodMs.  m_marqueeStartMs is reset by MoveFocus, so the
-    // hint marquee shares the same timer as the stepper marquee.
+    // A bounded description area below the list, using existing text wrapping.
+    // Three lines also fit the longer original English instructions.
     const char* desc = m_provider.RowDescription(m_rowFocus);
     if (!desc)
         desc = "";
-    int descCpLen = Utf8Length(desc);
-    const bool chinese = strcmp(GLanguage.Data(), "ChineseSimplified") == 0 ||
-                         strcmp(GLanguage.Data(), "ChineseTraditional") == 0;
-    const int hintChars = chinese ? 18 : kHintInnerChars;
-    if (descCpLen > hintChars)
+    if (m_notebook)
+        m_notebook->SetSubControlPos(kIdcHint, 0.02f, 0.875f, 0.96f, 0.12f);
+    if (auto* hint = dynamic_cast<C3DStatic*>(m_host.GetCtrl(kIdcHint)))
+        hint->SetTextLines(3);
+    RString description = desc;
+    if (focusedSlot >= 0 && m_provider.RowKind(m_rowFocus) == KindBinding)
     {
-        DWORD elapsed = GlobalTickCount() - m_marqueeStartMs;
-        int offset = MarqueeOffset(elapsed, descCpLen, hintChars);
-        char buf[128];
-        FormatMarquee(desc, offset, hintChars, buf, sizeof(buf));
-        SetRowValue(kIdcHint, buf, desc);
+        int cellIdc = m_bindingSlot == 1 ? SlotIdcValBar(focusedSlot) : SlotIdcValStep(focusedSlot);
+        const char* binding = m_bindingSlot == 1 ? m_provider.BindingAlt(m_rowFocus) : m_provider.BindingPrimary(m_rowFocus);
+        auto* cell = dynamic_cast<C3DStatic*>(m_host.GetCtrl(cellIdc));
+        // Exceptional combinations still marquee, but can also be read in
+        // full immediately in the existing description area.
+        if (cell && binding && cell->MeasureTextFraction(binding) > 0.98f)
+            description = RString(binding) + RString("\n") + description;
     }
-    else
-    {
-        SetRowValue(kIdcHint, desc);
-    }
+    SetRowValue(kIdcHint, description);
 }
 
 void OptionsScrollList::FocusFocusedRow()
@@ -1126,9 +1086,9 @@ void OptionsScrollList::UpdateMeter()
         int idcPeak = SlotIdcPeak(slot);
         int idcVal = SlotIdcValBar(slot);
         MeterBarLayout layout = {
-            /* trackX */ 0.40f,
+            /* trackX */ 0.44f,
             /* trackY */ SlotTrackY(slot),
-            /* trackW */ 0.40f,
+            /* trackW */ 0.35f,
             /* trackH */ 0.018f,
             /* peakW  */ 0.005f,
         };
@@ -1159,12 +1119,10 @@ void OptionsScrollList::UpdateMarquee()
         m_marqueeRowPrev = m_rowFocus;
         m_marqueeStartMs = GlobalTickCount();
     }
-    if (!RowLabelNeedsMarquee(m_rowFocus) && !FocusedStepperValueNeedsMarquee() && !FocusedBindingCellNeedsMarquee())
-        return;
-    int slot = SlotForRow(m_rowFocus);
-    if (slot < 0)
-        return;
-    RenderSlot(slot, m_rowFocus);
+    // Geometry is resolved by the notebook at draw time. Refresh visible
+    // cells after that, including newly rebound slots and idle clipping.
+    for (int slot = 0; slot < kVisibleSlots; ++slot)
+        RenderSlot(slot, RowAtSlot(slot));
 }
 
 // Frame orchestration + input.
@@ -1176,7 +1134,6 @@ void OptionsScrollList::OnSimulate()
     // notebook's OnMouseZChanged dollies the camera.
     PollWheelScroll();
 
-    UpdateMeter();
     UpdateHoverFocus();
     PollPointerRightClick();
     if (PollPointerActionClick())
@@ -1184,6 +1141,7 @@ void OptionsScrollList::OnSimulate()
     PollScrollbarDrag();
     PollSliderDrag();
     UpdateMarquee();
+    UpdateMeter();
     UpdateRowHighlight();
 }
 

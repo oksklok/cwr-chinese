@@ -100,7 +100,7 @@ TEST_CASE("DisplayPage apply-enable helper tracks any pending display change", "
     CHECK(DisplayPage::HasPendingChanges(pending, applied));
 }
 
-TEST_CASE("DisplayPage aspect descriptions keep the hint marquee active", "[UI][DisplayPage]")
+TEST_CASE("DisplayPage supplies complete aspect descriptions for the wrapped hint", "[UI][DisplayPage]")
 {
     LoadMainMenuStringtable();
 
@@ -111,8 +111,4 @@ TEST_CASE("DisplayPage aspect descriptions keep the hint marquee active", "[UI][
 
     CHECK(aspectDesc.size() > 42);
     CHECK(clampDesc.size() > 42);
-    CHECK(OptionsScrollList::kHintInnerChars > 42);
-    CHECK(OptionsScrollList::kHintInnerChars <= 50);
-    CHECK(aspectDesc.size() > OptionsScrollList::kHintInnerChars);
-    CHECK(clampDesc.size() > OptionsScrollList::kHintInnerChars);
 }

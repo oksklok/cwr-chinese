@@ -25,6 +25,14 @@ namespace Poseidon
 
 extern RString GetKeyName(int dikCode);
 
+void BindingsPage::OnReshown(OptionsShell& shell)
+{
+    // Language reload invalidates the old stringtable pointers, just as on
+    // the other settings pages. Refresh the footer before painting again.
+    m_withClose.SetCloseTexts(LocalizeString("STR_DISP_CLOSE"), LocalizeString("STR_DISP_MAIN_OPT_CLOSE_DESC"));
+    ScrollListPage::OnReshown(shell);
+}
+
 namespace
 {
 // Stringtable IDs for the 5 user-facing category names.  Looked up
