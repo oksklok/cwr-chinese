@@ -1,11 +1,9 @@
 """Regression for stock CSV spaces before quoted commas; run with unittest."""
 import csv
 import io
-import tempfile
 import unittest
-from pathlib import Path
 
-from stock import stock_csv_rows, read_rows
+from stock import stock_csv_rows, stock_columns
 
 
 class StockCsvTests(unittest.TestCase):
@@ -18,11 +16,9 @@ class StockCsvTests(unittest.TestCase):
                      'Casse di munizioni (Occidente, AddOns)']]
         self.assertNotEqual(list(csv.reader(io.StringIO(text))), expected)
         self.assertEqual(stock_csv_rows(text, strict=True), expected)
-        with tempfile.TemporaryDirectory(prefix='cwrc-stock-csv-') as directory:
-            source = Path(directory) / 'stringtable.csv'
-            source.write_bytes(text.encode('ascii'))
-            for legacy in (False, True):
-                self.assertEqual(read_rows(source, legacy=legacy)['STR_CRATE'], expected[0])
+        data = ('LANGUAGE,English,French,Italian\n' + text).encode('ascii')
+        for utf8 in (False, True):
+            self.assertEqual(stock_columns(data, utf8)['STR_CRATE'], expected[0] + [''] * 5)
 
     def test_quoted_spaces_escaped_quotes_and_physical_breaks_survive(self):
         text = 'STR_TEST, " leading, ""quoted""\nsecond line ", trailing \r\n'

@@ -105,18 +105,3 @@ def addon_globals(game, with_rows=False, names=None):
                                   ('English', 'French', 'Italian', 'Spanish', 'German', 'Czech', 'Polish', 'Russian')]
                                  if with_rows else english.strip())
     return values
-
-
-def read_rows(path, legacy=False):
-    rows = stock_csv_rows(path.read_bytes().decode('latin1' if legacy else 'utf-8-sig'), strict=True)
-    if rows and any(r and r[0] == 'LANGUAGE' for r in rows):
-        return stock_columns(path.read_bytes(), not legacy)
-    result = {}
-    for row in rows:
-        if len(row) < 2 or not row[0].startswith('STR'):
-            continue
-        if legacy:
-            row = [row[0]] + [v.encode('latin1').decode('cp1250' if i in (6, 7) else 'cp1251' if i == 8 else 'cp1252', errors='replace')
-                              for i, v in enumerate(row[1:], 1)]
-        result[row[0]] = row[:9]
-    return result
