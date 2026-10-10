@@ -1,7 +1,7 @@
 {
   "repository": "https://github.com/oksklok/cwr-chinese.git",
   "branch": "client-source",
-  "commit": "f825ff9e5557e76e572e2ef7a96dddeb5ae9f36a",
+  "commit": "92d4c0eddbf15158ad6da032296a7c91c7a652d4",
   "baseline": "ffc61838b7e756bec56aafafbf390396e639ac8f",
   "game": "Windows x64 Cold War Assault Remastered 3.05",
   "client": "CWRC",
