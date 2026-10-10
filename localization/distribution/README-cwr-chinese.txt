@@ -1,34 +1,64 @@
-免费社区汉化 / Free community Chinese translation
-Cold War Assault Remastered 3.05 — Windows 10/11 x64 (GOG / Steam)
+简体中文
+========
 
-1. 将 ZIP 解压到包含 Remastered 文件夹的游戏安装目录，而不是 Remastered 内。
-   Extract into the game installation folder containing Remastered, not inside it.
-   Steam 示例：steamapps/common/ARMA Cold War Assault/
-   Steam example: steamapps/common/ARMA Cold War Assault/
-2. 打开 Remastered，双击 cwr-chinese.exe，无需安装或准备。
-   Open Remastered and double-click cwr-chinese.exe. No setup or preparation needed.
-3. 首次启动默认为简体中文，已有的简体或繁體偏好会保留。
-   First launch defaults to Simplified Chinese; earlier SC/TC choices are kept.
-   可在 Options > Game > Text language 选择繁體中文、英语或其他语言。
-   Choose Traditional Chinese, English or another language in that menu.
-   汉化版单独记住语言选择，不改变原版偏好；其他模组保留，配音为英语。
-   The mod remembers your language separately from the original game's choice.
-   Other selected mods stay enabled; voices are English.
-4. 要玩原版游戏，运行 Remastered 内的原版 PoseidonGame.exe。
-   For the normal game, run the original Remastered/PoseidonGame.exe.
-5. 移除：关闭游戏，删除 Remastered 内的 @cwr-chinese、cwr-chinese.exe 和本说明。
-   Remove: close the game, delete those three extracted items inside Remastered.
-   不要删除 Remastered 文件夹。
-   Do not delete the Remastered folder.
-   原版文件、存档和用户配置不受影响。
-   Original files, saves and profiles are left intact.
+Cold War Assault Remastered 汉化补丁
+适用于 GOG / Steam 版 3.05，Windows 10/11 x64。
 
-所需 VC++ 运行库已随附，无需另行安装。
-Required VC++ runtime DLLs are included; no separate installation is needed.
+安装
+1. 将 cwr-chinese.zip 解压到包含 Remastered 文件夹的游戏安装目录。
+   Steam 版通常为 steamapps/common/ARMA Cold War Assault/。
+2. 运行 Remastered/cwr-chinese.exe。
 
-非官方免费模组；包含修改版客户端，不代表 Bohemia Interactive。
-Unofficial free mod with a modified client; not endorsed by Bohemia Interactive.
-Original engine/game: Bohemia Interactive. Chinese adaptation: contributors.
-Game adaptations: APL-SA; code: GPL-3.0-or-later with Section 7 terms;
-fonts: OFL-1.1; Microsoft runtime: separate Microsoft terms.
-Source and separate notices: @cwr-chinese/source and @cwr-chinese/notices.
+切换语言：在“选项 > 游戏 > 文字语言”（Options > Game > Text language）
+中选择“简体中文”或“繁體中文”。配音保留英语。
+
+卸载：关闭游戏，删除 Remastered 内的 @cwr-chinese、cwr-chinese.exe
+和 README-cwr-chinese.txt。
+
+本补丁由社区免费提供，非官方作品。原游戏及引擎由 Bohemia Interactive
+开发，中文内容由社区贡献者制作。源码和许可说明见本说明所在文件夹内的
+@cwr-chinese/source/ 和 @cwr-chinese/notices/。
+
+
+繁體中文（台灣）
+================
+
+Cold War Assault Remastered 中文翻譯模組
+適用於 GOG / Steam 版 3.05，Windows 10/11 x64。
+
+安裝
+1. 將 cwr-chinese.zip 解壓縮至包含 Remastered 資料夾的遊戲安裝目錄。
+   Steam 版通常位於 steamapps/common/ARMA Cold War Assault/。
+2. 執行 Remastered/cwr-chinese.exe。
+
+切換語言：在「選項 > 遊戲 > 文字語言」（Options > Game > Text language）
+中選擇「繁體中文」或「简体中文」。語音保留英語配音。
+
+移除：關閉遊戲後，刪除 Remastered 內的 @cwr-chinese、cwr-chinese.exe
+與 README-cwr-chinese.txt。
+
+本模組由社群免費提供，並非官方作品。原遊戲及引擎由 Bohemia Interactive
+開發，中文翻譯由社群貢獻者製作。原始碼與授權說明位於本說明所在資料夾內的
+@cwr-chinese/source/ 與 @cwr-chinese/notices/。
+
+
+English
+========
+
+Chinese translation for Cold War Assault Remastered
+For GOG / Steam version 3.05 on Windows 10/11 x64.
+
+Install
+1. Extract cwr-chinese.zip into the game installation folder containing Remastered.
+   For Steam, this is typically steamapps/common/ARMA Cold War Assault/.
+2. Run Remastered/cwr-chinese.exe.
+
+Language: in Options > Game > Text language, choose 简体中文 (Simplified Chinese)
+or 繁體中文 (Traditional Chinese). Voices remain in English.
+
+Uninstall: close the game, then delete @cwr-chinese, cwr-chinese.exe and
+README-cwr-chinese.txt from Remastered.
+
+Free, unofficial community translation. Original game and engine by Bohemia
+Interactive; Chinese adaptation by community contributors. Source and license
+notices are in @cwr-chinese/source/ and @cwr-chinese/notices/, alongside this file.

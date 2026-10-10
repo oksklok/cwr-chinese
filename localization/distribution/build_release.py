@@ -46,7 +46,7 @@ def source_archive(output, engine):
                     continue  # Old engine localization is historical, not the patch source.
             else:
                 if len(parts) == 1:
-                    if p.name not in ('LICENSE', 'README.md', 'engine-source.json', '.gitattributes', '.gitignore'):
+                    if p.name not in ('LICENSE', 'README.md', 'README.zh-CN.md', 'README.zh-TW.md', 'engine-source.json', '.gitattributes', '.gitignore'):
                         continue
                 elif parts[0] != 'localization' or p.suffix not in extensions | {'.csv'}:
                     continue

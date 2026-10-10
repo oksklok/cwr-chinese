@@ -1,54 +1,26 @@
+[English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
+
 # Chinese translation for Cold War Assault Remastered
 
-Free, unofficial community **简体中文 / 繁體中文（臺灣）** translation for a
-legitimate Windows x64 **Cold War Assault Remastered 3.05** installation.
-Original engine and game: Bohemia Interactive.
+A free, unofficial community translation with Simplified Chinese and Traditional Chinese (Taiwan) text. It covers the Cold War Crisis and Resistance campaigns, standalone and multiplayer missions, mission wizard templates, menus, editor, encyclopedia and map labels. Voices remain in English.
 
-Extract `cwr-chinese.zip` into the game installation folder containing
-`Remastered/`, then run `Remastered/cwr-chinese.exe`. First launch defaults to
-Simplified Chinese. Options > Game > Text language selects Traditional Chinese
-or a stock language; the mod remembers this separately from the stock language
-preference and retains earlier Chinese choices. The launcher adds
-`@cwr-chinese` alongside other selected mods and uses English voices.
+Supports **Cold War Assault Remastered 3.05** on **Windows 10/11 x64**, from GOG or Steam. The project is preparing for 1.0; no release has been published yet.
 
-The ZIP is ready to use on Windows 10/11 x64, including app-local Visual C++
-runtime DLLs. No installer or player-side generation is needed. Original game
-files, profile/save locations and campaign progression are preserved. To remove
-the translation, close the game and delete only `@cwr-chinese`,
-`cwr-chinese.exe` and `README-cwr-chinese.txt` inside `Remastered/`.
-Run the original executable for the stock game.
+## Install and choose a language
 
-Coverage includes both CWC and Resistance campaigns, 24 standalone missions,
-30 authored multiplayer missions, 36 wizard templates, UI/editor/encyclopedia,
-62 terrain labels and generated display names. The Chinese-only master is
-[localization/distribution/payload.json](localization/distribution/payload.json):
-217 tables, 13,018 rows and 169 display-reference/Chinese HTML recipes.
-Original language columns and fallback remain available.
+1. Extract `cwr-chinese.zip` into the game installation folder that contains `Remastered`. For Steam, this is typically `steamapps/common/ARMA Cold War Assault/`.
+2. Run `Remastered/cwr-chinese.exe`.
 
-The pinned localization client supplies Chinese language selection, separate
-font sets, text wrapping and display labels. Campaign text is loaded from
-`@cwr-chinese/localization/Campaigns` while stock campaign paths and logic remain
-intact; other content uses the existing mod loaders. Display names do not rename
-script/save/network identities or players. The window title remains `Poseidon`;
-modified-program identification appears in metadata and notices. CWRC is an
-internal codename. The ten existing OFL fonts are packaged unchanged; see the
-[Simplified](localization/font/NOTICE.md) and
-[Traditional](localization/font/ChineseTraditional/NOTICE.md) font notices.
+In **Options > Game > Text language**, select **简体中文** or **繁體中文**.
 
-For development, use the [build document](localization/distribution/BUILD.md)
-and [terminology reference](localization/TERMINOLOGY.md).
-[engine-source.json](engine-source.json) pins the matching
-[client-source branch](https://github.com/oksklok/cwr-chinese/tree/client-source).
-Builders reconstruct ready-made overlays from compatible retail data and verify
-their exact content before packaging.
+## Uninstall
 
-This is preparation for 1.0, with no tagged or published release. The editorial
-review is complete. Final corresponding-source, license and notice review is a
-separate pre-release step. Remote multiplayer NPC display-name synchronization
-is outside this cleanup's scope; a full campaign playthrough is not claimed.
+Close the game, then delete `@cwr-chinese`, `cwr-chinese.exe` and `README-cwr-chinese.txt` from `Remastered`.
 
-Code is [GPL-3.0-or-later with Section 7 terms](LICENSE). Retail-derived overlays
-and Chinese adaptations are APL-SA; original material is attributed to Bohemia
-Interactive and adaptations to the translation contributors. Fonts are OFL-1.1.
-The ZIP includes matching source, dependency sources and separate notices.
-See [component attribution and terms](localization/distribution/COMPONENTS.txt).
+## Source and credits
+
+Original game and engine by Bohemia Interactive; Chinese adaptation by community contributors. This mod includes a modified client and is not endorsed by Bohemia Interactive.
+
+See the [build instructions](localization/distribution/BUILD.md), [terminology reference](localization/TERMINOLOGY.md) and [pinned client source](engine-source.json). The ZIP includes source and notices under `Remastered/@cwr-chinese/source/` and `Remastered/@cwr-chinese/notices/`.
+
+Code uses [GPL-3.0-or-later with Section 7 terms](LICENSE); game adaptations use APL-SA, and fonts use OFL-1.1. See the [component notices](localization/distribution/COMPONENTS.txt) and [Simplified](localization/font/NOTICE.md) / [Traditional](localization/font/ChineseTraditional/NOTICE.md) font notices for attribution and terms.
