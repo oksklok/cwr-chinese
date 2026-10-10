@@ -56,7 +56,9 @@ RString GetFullPlayerName(Person* person)
     int player = person->GetRemotePlayer();
     if (player == 1)
     {
-        return person->GetInfo()._name;
+        // Scripted radio subtitles may be spoken by a story character, not a
+        // multiplayer username. Resolve only explicit identity display metadata.
+        return person->GetInfo().GetDisplayName();
     }
 
     const PlayerIdentity* identity = GetNetworkManager().FindIdentity(player);
@@ -66,7 +68,7 @@ RString GetFullPlayerName(Person* person)
     }
     else
     {
-        return person->GetInfo()._name;
+        return person->GetInfo().GetDisplayName();
     }
 }
 
