@@ -30,6 +30,9 @@
   wrapped help; stock-generated SC/TC NPC display names without renaming
   script/save/network identities or players. Tested SC/TC at 1280×900 and
   1920×1080, English settings, local multiplayer AI and story-name fallback.
+- Complete: compact vehicle-statistics heading, correct display-settings revert
+  label, distinct keypad comma/period labels, and localized story names in radio
+  chat. SC/TC checked in-game; canonical identities and English remain unchanged.
 - Before public release: final corresponding-source/license/notice review and
   public release documentation. No tag, public release or binary upload yet.
 
