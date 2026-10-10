@@ -10,11 +10,27 @@ Stock assets/executable, saves and
 unrelated mods are untouched. The README uses a distinct name to avoid replacing
 a game's existing README.
 
-All content is ready-made: 217 translated tables, 139 display-reference/Chinese HTML files,
+All content is ready-made: 217 translated tables, 169 display-reference/Chinese HTML files,
 24 standalone banks, 30 multiplayer banks, 36 templates, terrain and UI overlays,
-ten unchanged fonts, localization client/OpenAL, source and notices. No player-side
+ten Chinese fonts, localization client/OpenAL, source and notices. No player-side
 Python, PyInstaller, preparation executable/marker, source inventory validation,
 installer, registry, backup or recovery machinery remains.
+
+## Consolidated linguistic corrections — 2026-10-10
+
+Applied the master workbook's 441 actionable recommendations: 401 string keys
+across 130 tables and 40 linked HTML paragraphs in 15 wizard templates. Five
+editorial questions and optional/rejected proposals remain unapplied. English
+and other stock-language cells, links, placeholders, mission logic and existing
+font outlines/metrics are preserved. Only 15 required characters were added to
+each Traditional font subset; Simplified fonts and the client remain unchanged.
+
+Passed: reconstruction of all 217 tables / 11,155 bilingual entries, exact
+comparison with the approved replacements, existing CSV/format/link checks,
+ten-font coverage, all content builders and deployment checks, and eight focused
+CSV/packaging/template tests. The new template test checks that Chinese HTML is
+added without changing stock HTML or scripts. This pass is not a new in-game
+GOG/Steam acceptance run; earlier physical results below are historical.
 
 ## Native executable test
 

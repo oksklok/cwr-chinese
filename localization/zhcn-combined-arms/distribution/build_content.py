@@ -135,7 +135,12 @@ def reconstruct(game, payload, out):
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_bytes(data)
     for edit in manifest['edits']:
-        data = target(game, edit['source']).read_bytes()
+        source = edit['source']
+        if isinstance(source, list):
+            from build_labels import pbo_parts
+            data = pbo_parts(target(game, source[0]).read_bytes())[2][source[1].encode()]
+        else:
+            data = target(game, source).read_bytes()
         # Descending offsets preserve all stock bytes except these known insertions/replacements.
         for offset, count, replacement in reversed(edit['operations']):
             data = data[:offset] + replacement.encode('utf-8') + data[offset+count:]

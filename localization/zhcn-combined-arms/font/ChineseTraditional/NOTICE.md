@@ -45,6 +45,11 @@ the Simplified fonts remain byte-identical. Contributors and weights are unchang
 
 Reproduce with fontTools 4.66.1 and the three hash-checked sources above:
 
+The consolidated linguistic corrections add the required glyphs
+俐兮凡叉帆懈拚搏撇擒攬簣膨酷駁 to the Traditional subsets. Existing glyph
+outlines, advances, font roles and vertical metrics are preserved. The builder
+reads the Chinese-only master directly; reconstructed CSV fixtures are optional.
+
 ```text
 python localization/zhcn-combined-arms/font/build_font.py SOURCE_DIRECTORY game-local/Remastered/fonts --language ChineseTraditional
 ```

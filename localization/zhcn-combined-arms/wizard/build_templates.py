@@ -1,6 +1,7 @@
 """Generate APL-SA wizard PBO overlays without modifying installed stock assets.
 
-Only the existing UTF-8 CSV member is replaced. --check never writes.
+Replace the UTF-8 CSV and add reviewed Chinese-only briefing variants.
+Stock HTML and all mission logic stay unchanged. --check never writes.
 """
 import argparse
 import hashlib
@@ -31,6 +32,15 @@ def main():
         if b'stringtable.utf8.csv' not in payloads:
             raise ValueError(('Missing stock UTF-8 table', relative))
         payloads[b'stringtable.utf8.csv'] = (ROOT / relative.removesuffix('.pbo') / 'stringtable.utf8.csv').read_bytes()
+        for language in ('ChineseSimplified', 'ChineseTraditional'):
+            name = f'briefing.{language}.utf8.html'.encode()
+            translated = ROOT / relative.removesuffix('.pbo') / name.decode()
+            if translated.is_file():
+                if name in payloads:
+                    raise ValueError(('Unexpected stock Chinese briefing', relative, name))
+                data = translated.read_bytes()
+                payloads[name] = data
+                headers.append((name, [0, len(data), 0, 0, len(data)]))
         out = bytearray()
         for name, fields in headers:
             if name is None:
@@ -60,7 +70,7 @@ def main():
         for target, data in outputs.items():
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
-    print(f'PASS: {len(outputs)} wizard overlays; stock hashes, only CSV payload changed, deployment equality')
+    print(f'PASS: {len(outputs)} wizard overlays; stock hashes, localized CSV/Chinese HTML, deployment equality')
 
 
 if __name__ == '__main__':

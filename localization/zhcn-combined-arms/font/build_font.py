@@ -10,6 +10,7 @@ This is a font-only helper, not a game-data extraction/translation pipeline.
 import hashlib
 import argparse
 import csv
+import json
 import tempfile
 from pathlib import Path
 
@@ -84,6 +85,19 @@ def main():
     args = parser.parse_args()
     source_dir, base_dir = args.source_dir, args.base_dir
     required = set()
+    # The shipped Chinese-only master is authoritative; reconstructed CSVs are
+    # developer fixtures and need not be present when extending a font subset.
+    manifest = json.loads((ROOT.parent / 'distribution/payload.json').read_text(encoding='utf-8'))
+    column = 1 if args.language == 'ChineseSimplified' else 2
+    for table in manifest['tables']:
+        for row in table['rows']:
+            required.update(map(ord, row[column]))
+    # A wording edit must not remove glyphs already available to players.
+    existing_dir = ROOT / 'ChineseTraditional' if args.language == 'ChineseTraditional' else ROOT
+    for existing in existing_dir.glob('cwr_*.ttf'):
+        with TTFont(existing) as font:
+            required.update(cp for cp in font.getBestCmap()
+                            if 0x3400 <= cp <= 0x9FFF or 0xF900 <= cp <= 0xFAFF)
     for path in ROOT.parent.rglob('*.csv'):
         with path.open(encoding='utf-8-sig', newline='') as stream:
             rows = csv.reader(stream)
@@ -205,7 +219,7 @@ def main():
         for identifier, value in names.items():
             merged['name'].setName(value, identifier, 3, 1, 0x409)
         cmap = merged.getBestCmap()
-        assert not (required - set(cmap)), f'{role}: missing prototype characters'
+        assert not (required - set(cmap)), (role, 'missing text characters', sorted(required - set(cmap)))
         assert not ({cp for cp in common if 0x4E00 <= cp <= 0x9FFF} - set(cmap))
         for cp, glyph in base_cmap.items():
             if not chinese(cp):
