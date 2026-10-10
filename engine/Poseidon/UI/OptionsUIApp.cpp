@@ -204,6 +204,17 @@ DisplayMain::DisplayMain(ControlsContainer* parent) : Display(parent)
     Load(mainRsc);
     //	LoadHeader();
 
+    // LGPL section 6: accompany the menu's copyright with the library notice.
+    // Reuse its non-interactive text style without changing retail resources.
+    if (const ParamEntry* copy = (Res >> mainRsc).FindEntry("Copy"))
+    {
+        CStatic* notice = new CStatic(this, -1, *copy);
+        notice->SetPos(0.01f, 0.955f, 0.98f, 0.025f);
+        notice->SetText("OpenAL Soft (c) Chris Robinson et al. - LGPL-2.0-or-later. "
+                        "License: @cwr-chinese/notices/third-party/openal-soft.txt");
+        _controlsForeground.Add(notice);
+    }
+
     // Hijack a community addon's custom menu that has no Mods entry: clone the Quit
     // button (so the new entry matches the mod's own menu styling), give it the
     // Mods idc + label, and place it immediately to the left of Quit on the same

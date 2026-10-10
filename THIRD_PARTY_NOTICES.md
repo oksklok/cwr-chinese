@@ -340,7 +340,7 @@ noted where pinned by an `overrides` entry in the manifest.
 | stb | MIT **OR** Public Domain (Unlicense) | © Sean Barrett | <https://github.com/nothings/stb> |
 | mimalloc *(2.2.4)* | MIT | © 2018–2021 Microsoft Corporation, Daan Leijen | <https://github.com/microsoft/mimalloc> |
 | SDL3 | Zlib | © 1997–2025 Sam Lantinga | <https://libsdl.org> |
-| OpenAL Soft | LGPL-2.1-or-later | © the OpenAL Soft authors (Chris Robinson et al.) | <https://openal-soft.org> |
+| OpenAL Soft | LGPL-2.0-or-later | © the OpenAL Soft authors (Chris Robinson et al.) | <https://openal-soft.org> |
 | Opus | BSD-3-Clause | © 2001–2023 Xiph.Org, Skype Limited, et al. | <https://opus-codec.org> |
 | libogg | BSD-3-Clause | © 2002 Xiph.Org Foundation | <https://xiph.org/ogg> |
 | libvorbis | BSD-3-Clause | © 2002–2020 Xiph.Org Foundation | <https://xiph.org/vorbis> |
@@ -465,24 +465,24 @@ used in advertising or otherwise to promote the sale, use or other dealings in
 this Software without prior written authorization of the copyright holder.
 ```
 
-## 2.5 GNU LGPL v2.1 (OpenAL Soft)
+## 2.5 GNU Library GPL v2 (OpenAL Soft)
 
-OpenAL Soft is licensed under the **GNU Lesser General Public License, version 2.1
+OpenAL Soft is licensed under the **GNU Library General Public License, version 2
 or later**, which is compatible with this project's GPL-3.0-or-later license. The
 standard library notice is:
 
 ```
 OpenAL Soft is free software; you can redistribute it and/or modify it under the
-terms of the GNU Lesser General Public License as published by the Free Software
-Foundation; either version 2.1 of the License, or (at your option) any later
+terms of the GNU Library General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
 version.
 
 OpenAL Soft is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+PARTICULAR PURPOSE. See the GNU Library General Public License for more details.
 ```
 
-Full license text: <https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>
+Full license text: <https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html>
 
 **Local modifications.** OpenAL Soft is built from a locally patched copy via the vcpkg
 overlay port in [`cmake/vcpkg-overlay-ports/openal-soft/`](cmake/vcpkg-overlay-ports/openal-soft).
@@ -492,9 +492,13 @@ The changes are:
 - `devendor-fmt.diff` — builds against the external fmt library instead of the vendored copy.
 - `pkgconfig-cxx.diff` — corrects C++ linkage flags in the generated pkg-config file.
 
-These patches are distributed under OpenAL Soft's own GNU LGPL-2.1-or-later. OpenAL Soft is
+These patches are distributed under OpenAL Soft's own GNU LGPL-2.0-or-later. OpenAL Soft is
 dynamically linked; as required by the LGPL, you may relink the program against your own
 build of the library.
+
+All three changes were present in the upstream CWR import dated 2026-06-22
+(`ea77e57`). Dated modification comments were added to the patches on 2026-10-10;
+these comments do not change the library's compiled behavior.
 
 ## 2.6 FreeType License (FTL) / GPLv2 (FreeType)
 

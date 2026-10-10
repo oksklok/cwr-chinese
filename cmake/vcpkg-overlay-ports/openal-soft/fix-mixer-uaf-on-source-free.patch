@@ -2,10 +2,11 @@ diff --git a/al/source.cpp b/al/source.cpp
 index 77f8bfa..695575c 100644
 --- a/al/source.cpp
 +++ b/al/source.cpp
-@@ -41,6 +41,7 @@
+@@ -41,6 +41,8 @@
  #include <stdexcept>
  #include <string>
  #include <string_view>
++// CWR: mixer lifetime fix present 2026-06-22; modification notice added 2026-10-10.
 +#include <thread>
  #include <tuple>
  #include <type_traits>
