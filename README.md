@@ -1,4 +1,18 @@
-# Arma: Cold War Assault - Remastered
+# CWRC localization client source
+
+This branch is the unofficial CWRC fork used by the community Chinese translation
+of Cold War Assault Remastered 3.05. CWRC is an internal codename, not an official
+Bohemia product or public game title. Original engine and game: Bohemia Interactive.
+
+The [localization repository](https://github.com/oksklok/cwr-chinese/tree/main)
+contains the Chinese-only recipes, fonts, launcher and packaging tools.
+Its `engine-source.json` pins the matching commit on this branch. Follow the
+[build instructions](https://github.com/oksklok/cwr-chinese/blob/main/localization/distribution/BUILD.md)
+for the Windows localization client. Changes here support Chinese language/font
+selection, text overlays and display labels while preserving stock gameplay,
+save paths, input and network identities. Original game data is required separately.
+
+## Upstream source and attribution
 
 This repository holds the engine and game source code (codename *Poseidon*) behind *Arma: Cold War Assault* — the game first released in 2001 as *Operation Flashpoint: Cold War Crisis*. That release launched Bohemia Interactive and began the technology lineage that later grew into Real Virtuality, Arma, and Enfusion. The code has been modernized to C++20, built with CMake and Clang, with cross-platform support for Windows x64 and Linux x64.
 Bohemia Interactive is releasing it to the community that has kept this game alive for more than two decades — to study it, build on it, fix it, and create from it. Three things are worth keeping separate:
@@ -85,8 +99,6 @@ the GPL with additional terms per Section 7 in [`LICENSE`](LICENSE).
 
 ## Contributing
 
-This is a **locked** repository: pull requests are not accepted here, and this
-repository will not be continuously updated.
-Issues are only for bugs in official Bohemia Interactive builds distributed on
-Steam. For ideas, development builds, ports, and community work, fork the code or
-join the community continuation. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for more information.
+The upstream contribution policy in [`CONTRIBUTING.md`](CONTRIBUTING.md) applies
+to Bohemia's official repository. Report issues with this localization fork to
+`oksklok/cwr-chinese`; do not report fork-specific behavior as an official game bug.

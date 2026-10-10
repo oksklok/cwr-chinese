@@ -207,21 +207,6 @@ void OptionsScrollList::FormatMarquee(const char* val, int offset, int innerChar
     *o = '\0';
 }
 
-void OptionsScrollList::FormatCell(const char* val, int innerChars, bool marquee, DWORD elapsedMs, char* out,
-                                   size_t outsz)
-{
-    const int cpLen = Utf8Length(val);
-    if (marquee && cpLen > innerChars)
-    {
-        int offset = MarqueeOffset(elapsedMs, cpLen, innerChars);
-        FormatMarquee(val, offset, innerChars, out, outsz);
-    }
-    else
-    {
-        FormatTruncated(val, innerChars, out, outsz);
-    }
-}
-
 void OptionsScrollList::SetFittedText(int idc, const char* text, bool marquee)
 {
     if (!text)

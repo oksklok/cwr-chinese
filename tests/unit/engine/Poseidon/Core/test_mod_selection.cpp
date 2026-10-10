@@ -58,15 +58,32 @@ TEST_CASE("LoadModSelection returns empty for a missing file", "[mods][selection
     CHECK(LoadModSelection("/no/such/path/mods.cfg").empty());
 }
 
-TEST_CASE("MODS UI keeps the parsed mount set alive during selection persistence", "[mods][selection][regression]")
+TEST_CASE("Failed MODS activation preserves the selection across restart", "[mods][selection][regression]")
 {
-    // All() returns a reference. Iterating All() on a temporary ActiveMods
-    // used a destroyed container and silently saved an empty mods.cfg.
-    const auto source = std::filesystem::path(TESTS_ROOT_DIR).parent_path() /
-                        "engine/Poseidon/UI/OptionsUIApp.cpp";
-    std::ifstream input(source);
-    REQUIRE(input.is_open());
-    const std::string text((std::istreambuf_iterator<char>(input)), {});
-    CHECK(text.find("ActiveModsFromMountPath((const char*)modPath).All()") == std::string::npos);
-    CHECK(text.find("ActiveModsFromMountPath((const char*)ModSystem::GetModList()).All()") == std::string::npos);
+    const auto root = MakeTempDir();
+    const auto cfg = (root / "mods.cfg").string();
+    const std::vector<std::string> previous = {"@user-mod", "@cwr-chinese"};
+    REQUIRE(SaveModSelection(cfg, previous));
+    bool attempted = false;
+    CHECK_FALSE(ActivateModSelection(cfg, "@broken;@cwr-chinese", [&] {
+        attempted = true;
+        CHECK(LoadModSelection(cfg) == previous); // no speculative save during remount
+        return false; // remount has recovered the previous active set
+    }));
+    REQUIRE(attempted);
+    CHECK(LoadModSelection(cfg) == previous); // startup reads mods.cfg again
+
+    CHECK(ActivateModSelection(cfg, "@another;@cwr-chinese", [&] {
+        CHECK(LoadModSelection(cfg) == previous);
+        return true;
+    }));
+    CHECK(LoadModSelection(cfg) == std::vector<std::string>{"@another", "@cwr-chinese"});
+    CHECK(ActivateModSelection(cfg, "", [] { return true; }));
+    CHECK(LoadModSelection(cfg).empty()); // explicitly disabling all mods persists too
+
+    std::filesystem::remove(cfg);
+    CHECK_FALSE(ActivateModSelection(cfg, "@broken", [] { return false; }));
+    CHECK_FALSE(std::filesystem::exists(cfg)); // failed first apply creates no startup selection
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
 }

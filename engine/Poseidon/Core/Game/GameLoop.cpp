@@ -3,6 +3,8 @@
 #include <Poseidon/Core/Config/Config.hpp>
 #include <Poseidon/Foundation/Platform/AppConfig.hpp>
 #include <Poseidon/Core/Application.hpp>
+#include <Poseidon/Core/ModSelection.hpp>
+#include <Poseidon/Foundation/Platform/GamePaths.hpp>
 #include <Poseidon/Core/PendingConnect.hpp>
 #include <Poseidon/Core/Global.hpp>
 #include <Poseidon/Audio/IAudioSystem.hpp>
@@ -146,7 +148,12 @@ bool AppIdle()
     if (GApp->m_remountRequested)
     {
         GApp->m_remountRequested = false;
-        if (GApp->m_remountHasModPath)
+        const bool saveSelection = std::exchange(GApp->m_remountSaveSelection, false);
+        if (GApp->m_remountHasModPath && saveSelection)
+            ActivateModSelection(Foundation::GamePaths::Instance().UserDir() + "mods.cfg",
+                                 GApp->m_remountModPath,
+                                 [] { return GApp->ReloadGameContentWithMods(GApp->m_remountModPath.c_str()); });
+        else if (GApp->m_remountHasModPath)
             GApp->ReloadGameContentWithMods(GApp->m_remountModPath.c_str());
         else
             GApp->ReloadGameContent();

@@ -1,4 +1,6 @@
 #include <Poseidon/Core/ModSelection.hpp>
+#include <Poseidon/Core/ModCollection.hpp>
+#include <Poseidon/Foundation/Framework/Log.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -64,5 +66,18 @@ bool SaveModSelection(const std::string& cfgPath, const std::vector<std::string>
         out << mod << "\n";
     }
     return out.good();
+}
+bool ActivateModSelection(const std::string& cfgPath, const std::string& modPath,
+                          const std::function<bool()>& activate)
+{
+    if (!activate())
+        return false;
+    std::vector<std::string> selection;
+    const auto selectedMods = ActiveModsFromMountPath(modPath);
+    for (const auto& mod : selectedMods.All())
+        selection.push_back(mod.path);
+    if (!SaveModSelection(cfgPath, selection))
+        LOG_WARN(Core, "Could not save the MODS selection");
+    return true;
 }
 } // namespace Poseidon

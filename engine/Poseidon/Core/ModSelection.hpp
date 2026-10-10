@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 #include <vector>
 
 namespace Poseidon
@@ -13,4 +14,8 @@ std::vector<std::string> LoadModSelection(const std::string& cfgPath);
 /// Writes active mod ids, one per line (parent directory created if needed).
 /// Returns false on write failure.
 bool SaveModSelection(const std::string& cfgPath, const std::vector<std::string>& mods);
+
+/// Activate first; a rejected selection must never become the next startup's selection.
+bool ActivateModSelection(const std::string& cfgPath, const std::string& modPath,
+                          const std::function<bool()>& activate);
 } // namespace Poseidon

@@ -77,10 +77,6 @@ public:
 	static constexpr int SlotIdcNext    (int slot) { return 500 + slot * 10 + 9; }
 	static int SlotForControlIdc(int idc);
 
-	// Render one text cell into `out`: marquee-scroll it when `marquee` is set and it
-	// overflows `innerChars`, else clip. Shared by row label, stepper, and both cells.
-	static void FormatCell(const char* val, int innerChars, bool marquee, DWORD elapsedMs, char* out, size_t outsz);
-
 	// Per-row shape descriptor.  count encoding:
 	//   > 0 — stepper/toggle, options[] has count strings to cycle
 	//   -1 — slider, value is rowValueIdx as 0..100 percent
@@ -338,6 +334,8 @@ private:
 	// byte — used so marquee math + width thresholds work in characters
 	// the user actually sees, not raw bytes.
 	static int  Utf8Length(const char* s);
+public:
+	// Shared by the settings renderer and MODS guidance.
 	// Truncate or pass-through to fit `innerChars` in the output buffer.
 	static void FormatTruncated(const char* val, int innerChars, char* out, size_t outsz);
 	// Marquee window of `innerChars` codepoints over the input, advanced
@@ -352,6 +350,7 @@ private:
 	// off the left, with a small visible gap between them.
 	static int  MarqueeOffset(DWORD elapsedMs, int valLen, int innerChars);
 
+private:
 	Display&                 m_host;
 	Provider&                m_provider;
 	ControlObjectContainer*  m_notebook = nullptr;   // resolved once in ctor

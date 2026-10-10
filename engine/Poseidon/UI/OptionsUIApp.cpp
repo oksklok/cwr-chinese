@@ -6,7 +6,6 @@
 using namespace Poseidon;
 #include <Poseidon/Core/Config/EngineConfig.hpp>
 #include <Poseidon/Core/Config/UserConfig.hpp>
-#include <Poseidon/Core/ModSelection.hpp>
 #include <Poseidon/UI/Map/UIMap.hpp>
 #include <Poseidon/UI/Locale/MissionHtmlLocalization.hpp>
 
@@ -1564,19 +1563,11 @@ void DisplayMods::OnButtonClicked(int idc)
         }
 
         RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
-        std::vector<std::string> selection;
-        const auto selectedMods = ActiveModsFromMountPath((const char*)modPath);
-        for (const auto& mod : selectedMods.All())
-            selection.push_back(mod.path);
-        if (!SaveModSelection(Foundation::GamePaths::Instance().UserDir() + "mods.cfg", selection))
-        {
-            LOG_WARN(Core, "Could not save the MODS selection");
-            return;
-        }
         if (_stagedInstalls.empty())
             GApp->RequestRemountWithMods((const char*)modPath);
         else
             GApp->RequestRemountWithMods((const char*)modPath, std::move(_stagedInstalls));
+        GApp->m_remountSaveSelection = true;
         return;
     }
 
@@ -1845,16 +1836,8 @@ void DisplayMods::OnChildDestroyed(int idd, int exit)
         {
             MarkCheckedDownloadsReady(list, true);
             RString modPath = list->BuildModPath(LocalModsRoot().c_str(), WorkshopModsRoot().c_str());
-            std::vector<std::string> selection;
-            const auto selectedMods = ActiveModsFromMountPath((const char*)modPath);
-            for (const auto& mod : selectedMods.All())
-                selection.push_back(mod.path);
-            if (!SaveModSelection(Foundation::GamePaths::Instance().UserDir() + "mods.cfg", selection))
-            {
-                LOG_WARN(Core, "Could not save the MODS selection");
-                return;
-            }
             GApp->RequestRemountWithMods((const char*)modPath, std::move(_stagedInstalls));
+            GApp->m_remountSaveSelection = true;
         }
     }
     else if (idd == IDD_MODS_DOWNLOAD && exit == IDC_MODS_DOWNLOAD_KEEP)
@@ -1896,7 +1879,11 @@ RString FormatModsGuidance(RString text, float measuredFraction, DWORD elapsedMs
     const int codepoints = Foundation::CountUtf8Codepoints(text);
     const int visible = std::max(1, static_cast<int>(codepoints / measuredFraction));
     char buffer[512];
-    OptionsScrollList::FormatCell((const char*)text, visible, true, elapsedMs, buffer, sizeof(buffer));
+    if (codepoints > visible)
+        OptionsScrollList::FormatMarquee(text, OptionsScrollList::MarqueeOffset(elapsedMs, codepoints, visible),
+                                        visible, buffer, sizeof(buffer));
+    else
+        OptionsScrollList::FormatTruncated(text, visible, buffer, sizeof(buffer));
     return RString(buffer);
 }
 

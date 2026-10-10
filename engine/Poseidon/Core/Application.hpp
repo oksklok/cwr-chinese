@@ -102,6 +102,7 @@ class Application
     std::string m_remountModPath;     // explicit mod set when m_remountHasModPath ("" = base game)
     bool m_remountFailed = false;     // a Remount rolled back; the menu shows a message + clears this
     std::vector<Poseidon::StagedModInstall> m_remountInstalls;
+    bool m_remountSaveSelection = false; // only explicit MODS-screen applies persist
 
     // Queue an in-process re-mount for the next AppIdle (the only safe point). Both are safe
     // to call mid-frame / from an ImGui handler — they only set state; the teardown+reload
@@ -109,11 +110,13 @@ class Application
     void RequestRemount() // reload with the currently mounted mod set
     {
         m_remountHasModPath = false;
+        m_remountSaveSelection = false;
         m_remountRequested = true;
     }
     void RequestRemountWithMods(const char* modPath) // modPath = semicolon-separated set, "" = base game
     {
         m_remountModPath = modPath ? modPath : "";
+        m_remountSaveSelection = false;
         m_remountHasModPath = true;
         m_remountRequested = true;
     }
