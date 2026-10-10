@@ -1,9 +1,9 @@
 {
   "repository": "https://github.com/oksklok/cwr-chinese.git",
   "branch": "client-source",
-  "commit": "e6d43fd9c55ab3e923bff5300dbea832562435c4",
+  "commit": "f825ff9e5557e76e572e2ef7a96dddeb5ae9f36a",
   "baseline": "ffc61838b7e756bec56aafafbf390396e639ac8f",
   "game": "Windows x64 Cold War Assault Remastered 3.05",
   "client": "CWRC",
-  "note": "Client-source branch in this repository; CWRC-only source/test changes on official 3.05, no old localization/Vulkan history. Historical local RC/build records remain unchanged; a migration rebuild is a new artifact."
+  "note": "CWRC localization client based on official 3.05. Build this exact client-source commit with the localization source on main."
 }

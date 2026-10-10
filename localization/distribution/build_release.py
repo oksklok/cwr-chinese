@@ -6,8 +6,14 @@ import subprocess
 import zipfile
 from pathlib import Path
 from build_content import PATCH, require, digest, build_content
-REPO = PATCH.parents[1]
+REPO = PATCH.parent
 MSVC_RUNTIME = ('msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll')
+
+
+def require_clean_tracked(repo, label):
+    require(not subprocess.check_output(
+        ['git', 'status', '--porcelain', '--untracked-files=no'], cwd=repo).strip(),
+        f'Commit the {label} changes before packaging')
 
 
 def copy(source, dest):
@@ -44,7 +50,7 @@ def source_archive(output, engine):
                         continue
                 elif parts[0] != 'localization' or p.suffix not in extensions | {'.csv'}:
                     continue
-                if p.suffix == '.csv' and rel != 'localization/zhcn-combined-arms/mod/bin/stringtable.csv':
+                if p.suffix == '.csv' and rel != 'localization/mod/bin/stringtable.csv':
                     raise ValueError(f'Stock language table in patch source: {rel}')
             selected[prefix + '/' + rel] = p
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
@@ -85,11 +91,11 @@ def main():
     parser.add_argument('--engine-repo', type=Path, default=REPO / 'build/client-source')
     args = parser.parse_args()
     engine = args.engine_repo.resolve()
+    require_clean_tracked(REPO, 'localization')
     pin = json.loads((REPO / 'engine-source.json').read_text(encoding='utf-8'))
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=engine).decode().strip()
     require(commit == pin['commit'], 'Client source differs from engine-source.json')
-    require(not subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=engine).strip(),
-            'Commit the client before packaging')
+    require_clean_tracked(engine, 'client')
     release = args.output.resolve()
     require(not release.exists(), 'Choose an absent output directory')
     out = release / 'files/@cwr-chinese'

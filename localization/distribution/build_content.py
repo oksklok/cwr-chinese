@@ -14,8 +14,8 @@ from pathlib import Path, PurePosixPath
 
 PATCH = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PATCH))
-from validate_campaign import HEADER, stock_columns
-import validate_resistance
+from stock import HEADER, stock_columns, addon_globals
+from validate_content import validate
 
 GLOBAL_ADDONS = ('6G30.pbo', 'ABox.pbo', 'Apac.pbo', 'BISCamel.pbo', 'BMP2.pbo',
                  'Bizon.pbo', 'Flags.pbo', 'G36a.pbo', 'Hunter.pbo', 'KOLO.PBO',
@@ -62,13 +62,8 @@ def stock_globals(game, sources=None):
               if sources is not None else (game / 'BIN').glob('STRINGTABLE_*.utf8.csv'))
     for p in sorted(tables):
         values.update(read_stock(game, p.relative_to(game).as_posix()))
-    prior = validate_resistance.GAME
-    try:
-        validate_resistance.GAME = game
-        for k, v in validate_resistance.addon_globals(with_rows=True, names=GLOBAL_ADDONS).items():
-            values.setdefault(k, v)
-    finally:
-        validate_resistance.GAME = prior
+    for k, v in addon_globals(game, with_rows=True, names=GLOBAL_ADDONS).items():
+        values.setdefault(k, v)
     return values
 
 
@@ -193,6 +188,7 @@ def build_content(game, mod):
         patch = Path(work) / 'patch'
         assemble(payload)
         manifest = reconstruct(game, payload, patch)
+        validate(patch, manifest)
         shutil.copytree(patch / 'mod/bin', mod / 'bin', dirs_exist_ok=True)
         shutil.copytree(patch / 'campaign', mod / 'localization/Campaigns', dirs_exist_ok=True)
         for language, source in [('ChineseSimplified', patch / 'font'), ('ChineseTraditional', patch / 'font/ChineseTraditional')]:

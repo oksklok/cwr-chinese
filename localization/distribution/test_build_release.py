@@ -2,9 +2,10 @@
 import tempfile
 import unittest
 import zipfile
+import subprocess
 from pathlib import Path
 
-from build_release import MSVC_RUNTIME, package_zip
+from build_release import MSVC_RUNTIME, package_zip, require_clean_tracked
 
 
 class PackagingTests(unittest.TestCase):
@@ -26,6 +27,28 @@ class PackagingTests(unittest.TestCase):
 
     def package(self):
         package_zip(self.files, self.output, self.stock, self.redist)
+
+    def test_packaging_requires_clean_tracked_sources(self):
+        repo = self.root / 'repo'
+        repo.mkdir()
+        def git(*args):
+            subprocess.run(['git', '-c', 'user.name=Packaging test', '-c',
+                            'user.email=test@example.invalid', *args], cwd=repo,
+                           check=True, capture_output=True)
+        git('init')
+        tracked = repo / 'source.txt'
+        tracked.write_text('committed')
+        git('add', '.')
+        git('commit', '-m', 'fixture')
+        (repo / 'untracked-build-output').write_text('ignored for cleanliness')
+        require_clean_tracked(repo, 'localization')
+        tracked.write_text('modified')
+        for label in ('localization', 'client'):
+            with self.assertRaisesRegex(ValueError, f'Commit the {label}'):
+                require_clean_tracked(repo, label)
+        git('add', 'source.txt')
+        with self.assertRaisesRegex(ValueError, 'Commit the localization'):
+            require_clean_tracked(repo, 'localization')
 
     def test_stock_executable_is_rejected_before_archive_creation(self):
         for executable in (self.client, self.files / 'cwr-chinese.exe'):

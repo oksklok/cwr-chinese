@@ -223,10 +223,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('game', type=Path, help='Untouched-stock Remastered directory (campaign CSV patches are fine)')
     parser.add_argument('--check', action='store_true', help='Check generated deployment without writing')
-    parser.add_argument('--mod-dir', type=Path)
+    parser.add_argument('--mod-dir', type=Path, required=True)
     args = parser.parse_args()
     game = args.game.resolve()
-    mod = args.mod_dir or game / '@zhcn-prototype'
+    mod = args.mod_dir.resolve()
     # The engine prefers config.cpp to config.bin, so our overlay would be ignored.
     bin_dir = mod / 'bin'
     if bin_dir.is_dir():

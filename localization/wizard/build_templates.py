@@ -19,10 +19,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('game', type=Path)
     parser.add_argument('--check', action='store_true')
-    parser.add_argument('--mod-dir', type=Path)
+    parser.add_argument('--mod-dir', type=Path, required=True)
     args = parser.parse_args()
     game = args.game.resolve()
-    mod = args.mod_dir or game / '@zhcn-prototype'
+    mod = args.mod_dir.resolve()
     outputs = {}
     for relative, digest in json.loads((ROOT / 'stock-hashes.json').read_text()).items():
         source = (game / relative).read_bytes()

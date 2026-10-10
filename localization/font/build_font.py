@@ -1,7 +1,7 @@
-"""Rebuild five prototype fonts; requires fontTools 4.66.1.
+"""Rebuild five Chinese role fonts; requires fontTools 4.66.1.
 
 Usage: python build_font.py SOURCE_DIRECTORY ORIGINAL_GAME_FONTS_DIRECTORY
-Sources: NotoSansSC.ttf, NotoSerifSC.ttf, LXGWWenKai-Medium.ttf (see README).
+Sources: NotoSansSC.ttf, NotoSerifSC.ttf, LXGWWenKai-Medium.ttf (see NOTICE.md).
 For --language ChineseTraditional: NotoSansTC.ttf, NotoSerifTC.ttf,
 Iansui-Regular.ttf; see ChineseTraditional/NOTICE.md. Existing SC fonts supply
 only the Simplified picker-autonym glyph.

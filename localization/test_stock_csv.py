@@ -5,8 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from validate_resistance import stock_csv_rows
-from validate_ui import read_rows
+from stock import stock_csv_rows, read_rows
 
 
 class StockCsvTests(unittest.TestCase):

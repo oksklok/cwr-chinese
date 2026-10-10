@@ -1,6 +1,6 @@
 """Pack APL-SA authored MP overlays from compatible stock 3.05 missions.
 
-Ready-made adaptations may ship under APL-SA; see DISTRIBUTION.md. --check is read-only.
+Ready-made adaptations may ship under APL-SA; see ../distribution/COMPONENTS.txt. --check is read-only.
 """
 import argparse
 import hashlib
@@ -72,10 +72,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('game', type=Path)
     parser.add_argument('--check', action='store_true')
-    parser.add_argument('--mod-dir', type=Path)
+    parser.add_argument('--mod-dir', type=Path, required=True)
     args = parser.parse_args()
     game = args.game.resolve()
-    mod = args.mod_dir or game / '@zhcn-prototype'
+    mod = args.mod_dir.resolve()
     outputs = {}
     for name, digest in json.loads((ROOT / 'stock-hashes.json').read_text()).items():
         data = pack(overlay_payloads(game, name, digest))

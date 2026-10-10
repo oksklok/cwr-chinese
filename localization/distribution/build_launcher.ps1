@@ -4,7 +4,7 @@ param(
     [string]$EngineRepo = ''
 )
 $ErrorActionPreference = 'Stop'
-if (!$EngineRepo) { $EngineRepo = "$PSScriptRoot/../../../build/client-source" }
+if (!$EngineRepo) { $EngineRepo = "$PSScriptRoot/../../build/client-source" }
 $destination = [IO.Path]::GetFullPath($Output)
 $iconDirectory = (Resolve-Path "$EngineRepo/apps/cwr/Game").Path
 New-Item -ItemType Directory -Force -Path $destination | Out-Null

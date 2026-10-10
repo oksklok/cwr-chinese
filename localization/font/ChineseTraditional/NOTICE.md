@@ -38,22 +38,17 @@ existing corresponding Simplified 简 glyph to display the raw 简体中文 pick
 autonym; the SC source/contributor notices in ../NOTICE.md apply to that glyph.
 These fallback contributors are also recorded in the generated font name tables.
 
-The Taiwan editorial pass extended only the Traditional subsets for ten newly
-required characters: 史契棧檻甘薯訂迺邱鈴. All 4,272 existing non-CJK glyph
-outlines/advances and role vertical metrics match the previous Traditional fonts;
-the Simplified fonts remain byte-identical. Contributors and weights are unchanged.
+The subsets cover the current translation corpus, including editorial corrections
+and generated names. The builder retains all existing CJK glyphs when adding
+coverage; contributors, weights and vertical metrics remain as documented above.
 
 Reproduce with fontTools 4.66.1 and the three hash-checked sources above:
 
-The consolidated linguistic corrections add the required glyphs
-俐兮凡叉帆懈拚搏撇擒攬簣膨酷駁 to the Traditional subsets. Existing glyph
-outlines, advances, font roles and vertical metrics are preserved. The builder
-reads the Chinese-only master directly; reconstructed CSV fixtures are optional.
-
 ```text
-python localization/zhcn-combined-arms/font/build_font.py SOURCE_DIRECTORY game-local/Remastered/fonts --language ChineseTraditional
+python localization/font/build_font.py SOURCE_DIRECTORY ORIGINAL_GAME_FONTS_DIRECTORY --language ChineseTraditional
 ```
 
-Keep the existing Simplified fonts available for the picker glyph. Deploy only
-the final five TTFs to `@zhcn-prototype/Fonts/ChineseTraditional/`; sources and
-temporary intermediates stay local. The font license does not license game assets.
+Keep the existing Simplified fonts available for the picker glyph. The content
+builder packages the finished faces in `@cwr-chinese/Fonts/ChineseTraditional/`.
+Sources and temporary intermediates stay local. The font license does not
+license game assets.

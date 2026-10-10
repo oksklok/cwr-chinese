@@ -85,5 +85,5 @@ The other four roles retain original non-CJK outlines/advances. All role vertica
 metrics are retained relative to the originals' static default instances.
 Fonts are merged, renamed, and stripped of unused CJK
 layout/variation data. Font role multipliers and UI sizes are unchanged; stock
-languages still load the unmodified stock fonts. See ../TYPOGRAPHY.md for the
-separate Chinese-only wrapping and key-label changes.
+languages still load the unmodified stock fonts. Chinese-only wrapping and
+key-label fitting are implemented in the pinned client source.
