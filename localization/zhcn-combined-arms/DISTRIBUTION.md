@@ -18,6 +18,10 @@ installer, registry, backup or recovery machinery remains.
 
 ## Consolidated linguistic corrections — 2026-10-10
 
+`game-local/cwr-chinese-editorial/cwr-chinese.zip`: **132,422,240 bytes**;
+SHA-256 `9a75c704abf82988f222311c620f87cbdef818d32ca76e2ea04a7e185d4a98c3`.
+Packaged main `0cb594a`, unchanged client `a151692`. Previous polish ZIP preserved.
+
 Applied the master workbook's 441 actionable recommendations: 401 string keys
 across 130 tables and 40 linked HTML paragraphs in 15 wizard templates. Five
 editorial questions and optional/rejected proposals remain unapplied. English
@@ -29,7 +33,10 @@ Passed: reconstruction of all 217 tables / 11,155 bilingual entries, exact
 comparison with the approved replacements, existing CSV/format/link checks,
 ten-font coverage, all content builders and deployment checks, and eight focused
 CSV/packaging/template tests. The new template test checks that Chinese HTML is
-added without changing stock HTML or scripts. This pass is not a new in-game
+added without changing stock HTML or scripts. Actual Steam inputs reconstructed
+the same 386 table/HTML/reference files as GOG. Archive CRC, player-facing layout,
+unchanged client/runtime/launcher and Simplified fonts were verified in the ZIP.
+This pass is not a new in-game
 GOG/Steam acceptance run; earlier physical results below are historical.
 
 ## Native executable test
