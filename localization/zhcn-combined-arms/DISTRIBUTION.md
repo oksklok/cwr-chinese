@@ -16,6 +16,16 @@ ten Chinese fonts, localization client/OpenAL, source and notices. No player-sid
 Python, PyInstaller, preparation executable/marker, source inventory validation,
 installer, registry, backup or recovery machinery remains.
 
+## In-game editorial follow-up — 2026-10-10
+
+Seven SC/TC keys corrected after isolated GOG mission checks: Killdozer's Zulu
+support unit, Hold Malden's actual gunner action, Hold City's capture ending,
+and four East-side Demolition Squad briefing fragments. West's flag-ownership
+wording was verified correct and retained; the original tank-commander speaker
+label remains an editorial choice. Stock languages, links, logic, fonts and
+client are unchanged. Checks used controlled radio/flag/end states, not full
+playthroughs or a Steam acceptance rerun.
+
 ## Consolidated linguistic corrections — 2026-10-10
 
 `game-local/cwr-chinese-editorial/cwr-chinese.zip`: **132,422,240 bytes**;

@@ -23,8 +23,9 @@
   including saved SC/TC selection, other mod coexistence, deletion and stock
   English launch. No first-run content is generated.
 - Complete: apply 441 consolidated linguistic recommendations; preserve stock
-  languages and existing font metrics. Five ambiguous editorial questions remain
-  deferred; optional/rejected review proposals were not applied.
+  languages and existing font metrics. In-game checks resolved four deferred
+  questions (seven further SC/TC keys); retain the source's tank-commander label.
+  Optional/rejected review proposals were not applied.
 - Before public release: final corresponding-source/license/notice review and
   public release documentation. No tag, public release or binary upload yet.
 
