@@ -1,28 +1,28 @@
-[English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
+[English](README.en.md) | [简体中文](README.md) | [繁體中文](README.zh-TW.md)
 
-# Chinese translation for Cold War Assault Remastered
+# Cold War Assault Remastered 汉化补丁
 
-A free, unofficial community translation with Simplified Chinese and Traditional Chinese (Taiwan) text. It covers the Cold War Crisis and Resistance campaigns, standalone and multiplayer missions, mission wizard templates, menus, editor, encyclopedia and map labels. Voices remain in English.
+由社区制作的免费非官方汉化补丁，提供简体中文和繁体中文（台湾）。汉化范围包括 Cold War Crisis 和 Resistance 战役、单人及多人任务、任务向导模板、菜单、编辑器、百科和地图地名。配音保留英语。
 
-Supports **Cold War Assault Remastered 3.05** on **Windows 10/11 x64**, from GOG or Steam.
+适用于 GOG 或 Steam 版 **Cold War Assault Remastered 3.05**，支持 **Windows 10/11 x64**。
 
-## Install and choose a language
+## 安装与语言选择
 
-1. Extract `cwr-chinese.zip` into the game installation folder that contains `Remastered`. For Steam, this is typically `steamapps/common/ARMA Cold War Assault/`.
-2. Run `Remastered/cwr-chinese.exe`.
+1. 将 `cwr-chinese.zip` 解压到包含 `Remastered` 文件夹的游戏安装目录。Steam 版通常为 `steamapps/common/ARMA Cold War Assault/`。
+2. 运行 `Remastered/cwr-chinese.exe`。
 
-In **Options > Game > Text language**, select **简体中文** or **繁體中文**.
+在 **选项 > 游戏 > 文字语言**（Options > Game > Text language）中选择 **简体中文** 或 **繁體中文**。
 
-If the game fails to start because of missing runtime dependencies, install or update the official [Microsoft Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+如果游戏因缺少运行库而无法启动，请安装或更新微软官方的 [Visual C++ 运行库（x64）](https://aka.ms/vs/17/release/vc_redist.x64.exe)。
 
-## Uninstall
+## 卸载
 
-Close the game, then delete `@cwr-chinese`, `cwr-chinese.exe` and `README-cwr-chinese.txt` from `Remastered`.
+关闭游戏，删除 `Remastered` 文件夹内的 `@cwr-chinese`、`cwr-chinese.exe` 和 `README-cwr-chinese.txt`。
 
-## Source and credits
+## 源码与致谢
 
-Original game and engine by Bohemia Interactive; Chinese adaptation by community contributors. This mod includes a modified client and is not endorsed by Bohemia Interactive.
+原游戏及引擎由 Bohemia Interactive 开发，中文内容由社区贡献者制作。本补丁包含修改版客户端，非 Bohemia Interactive 官方作品。
 
-See the [build instructions](localization/distribution/BUILD.md), [terminology reference](localization/TERMINOLOGY.md) and [pinned client source](engine-source.json). The ZIP includes source and notices under `Remastered/@cwr-chinese/source/` and `Remastered/@cwr-chinese/notices/`.
+开发相关资料见[构建说明](localization/distribution/BUILD.md)、[术语表](localization/TERMINOLOGY.md)和[客户端源码版本](engine-source.json)。压缩包内的源码和许可说明分别位于 `Remastered/@cwr-chinese/source/` 和 `Remastered/@cwr-chinese/notices/`。
 
-Code uses [GPL-3.0-or-later with Section 7 terms](LICENSE); game adaptations use APL-SA, and fonts use OFL-1.1. See the [component notices](localization/distribution/COMPONENTS.txt) and [Simplified](localization/font/NOTICE.md) / [Traditional](localization/font/ChineseTraditional/NOTICE.md) font notices for attribution and terms.
+代码采用 [GPL-3.0-or-later 及第 7 条附加条款](LICENSE)，游戏改编内容采用 APL-SA，字体采用 OFL-1.1。完整署名和许可信息见[组件说明](localization/distribution/COMPONENTS.txt)及[简体](localization/font/NOTICE.md)、[繁体](localization/font/ChineseTraditional/NOTICE.md)字体说明。

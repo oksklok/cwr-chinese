@@ -1,4 +1,4 @@
-[English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md)
+[English](README.en.md) | [简体中文](README.md) | [繁體中文](README.zh-TW.md)
 
 # Cold War Assault Remastered 中文翻譯模組
 
