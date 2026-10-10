@@ -26,6 +26,10 @@
   languages and existing font metrics. In-game checks resolved four deferred
   questions (seven further SC/TC keys); retain the source's tank-commander label.
   Optional/rejected review proposals were not applied.
+- Complete: measured settings text fitting, aligned binding/slider cells and
+  wrapped help; stock-generated SC/TC NPC display names without renaming
+  script/save/network identities or players. Tested SC/TC at 1280×900 and
+  1920×1080, English settings, local multiplayer AI and story-name fallback.
 - Before public release: final corresponding-source/license/notice review and
   public release documentation. No tag, public release or binary upload yet.
 

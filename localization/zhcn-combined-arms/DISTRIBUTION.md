@@ -10,7 +10,7 @@ Stock assets/executable, saves and
 unrelated mods are untouched. The README uses a distinct name to avoid replacing
 a game's existing README.
 
-All content is ready-made: 217 translated tables, 169 display-reference/Chinese HTML files,
+All content is ready-made: 218 translated tables, 169 display-reference/Chinese HTML files,
 24 standalone banks, 30 multiplayer banks, 36 templates, terrain and UI overlays,
 ten Chinese fonts, localization client/OpenAL, source and notices. No player-side
 Python, PyInstaller, preparation executable/marker, source inventory validation,
