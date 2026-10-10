@@ -18,6 +18,10 @@ installer, registry, backup or recovery machinery remains.
 
 ## In-game editorial follow-up — 2026-10-10
 
+`game-local/cwr-chinese-editorial-final/cwr-chinese.zip`: **132,422,708 bytes**;
+SHA-256 `ce540aebf65544fd58a8508bac4fbe2e7b9be6ad10a002256180f46de1826ea1`.
+Packaged main `c29eeb9`, unchanged client `a151692`. Previous editorial ZIP preserved.
+
 Seven SC/TC keys corrected after isolated GOG mission checks: Killdozer's Zulu
 support unit, Hold Malden's actual gunner action, Hold City's capture ending,
 and four East-side Demolition Squad briefing fragments. West's flag-ownership
@@ -25,6 +29,12 @@ wording was verified correct and retained; the original tank-commander speaker
 label remains an editorial choice. Stock languages, links, logic, fonts and
 client are unchanged. Checks used controlled radio/flag/end states, not full
 playthroughs or a Steam acceptance rerun.
+
+Passed: exact seven-key/stock-column comparison, ten-font coverage, eight existing
+CSV/packaging/template tests, all content builders and deployment checks, ZIP CRC
+and packaged-table equality. Only two campaign tables and two MP banks changed
+outside source/receipts; all MP non-table members and other shipped assets are
+byte-identical. The rebuilt ZIP was not subjected to another in-game run.
 
 ## Consolidated linguistic corrections — 2026-10-10
 
